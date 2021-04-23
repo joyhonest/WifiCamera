@@ -313,7 +313,6 @@ public class ObjectDetector
             fos.close();
             //Toast.makeText(context, "保存成功,位置:" + filePic.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         // 其次把文件插入到系统图库
