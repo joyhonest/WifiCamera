@@ -38,9 +38,11 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //implementation files('libs/androideventbus-1.0.5.1.jar')
+
     //compileOnly 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'org.simple:androideventbus:1.0.5.1'
+    //implementation 'org.simple:androideventbus:1.0.5.1'
     compileOnly 'org.tensorflow:tensorflow-android:1.13.1'
 }
 

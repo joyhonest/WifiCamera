@@ -8,12 +8,13 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
-import android.os.Handler;
+
 import android.util.Log;
+
 
 import org.simple.eventbus.EventBus;
 import org.tensorflow.Session;
+
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -337,7 +338,6 @@ public class wifination {
                 //Log.e("AABB","Len = "+i);
                 Integer a = i;
                 EventBus.getDefault().post(a,"Playduration");
-
             }
 
             @Override
