@@ -50,6 +50,7 @@ dependencies {
 //  4.6.1 因为Jcenter 将失效，  将Eeventbus 内置到SDK中
 
 
+
 //publish {
 //    userOrg = 'aivenlau'//bintray.com用户名
 //    groupId = 'com.Joyhonest'//jcenter上的路径
