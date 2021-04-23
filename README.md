@@ -2,12 +2,12 @@
 
 1 在项目的主build.gradle 添加    
   
-   allprojects {    
-			repositories {  
-					...  		  	
-					maven { url 'https://jitpack.io' }  
-  			}  
-		}  
+    allprojects {    
+       repositories {  
+            ...  		  	
+            maven { url 'https://jitpack.io' }  
+         }  
+     }  
   
 2  在模块的 build.gradle 添加  
 		dependencies {  
