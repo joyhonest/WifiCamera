@@ -32,6 +32,6 @@ dependencies {
     //implementation 'com.Joyhonest:Wifi_Camera:4.6.0'
     implementation project(':jh_wificamera')
      //implementation 'com.Joyhonest:Wifi_Camera:4.5.2'
-    implementation 'org.simple:androideventbus:1.0.5.1'
+    //implementation 'org.simple:androideventbus:1.0.5.1'
     //implementation 'com.Joyhonest:Wifi_Camera:3.8.1'
 }
