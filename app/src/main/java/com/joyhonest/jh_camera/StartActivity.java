@@ -24,14 +24,10 @@ import org.simple.eventbus.Subscriber;
 //import org.simple.eventbus.EventBus;
 
 
-public class                StartActivity extends AppCompatActivity {
+public class  StartActivity extends AppCompatActivity {
     private  String TAG = "Wifi_Camera";
-
-
     ImageView  DispImageView;
-
     boolean  bPlaying = false;
-
     Button   button;
 
     @Override
@@ -47,12 +43,13 @@ public class                StartActivity extends AppCompatActivity {
                 if(!bPlaying)
                 {
                     wifination.naSetRevBmp(true);
+                    wifination.naStartRead20000_20001();
                     wifination.naInit("");
-                    wifination.naSetAdjGsensorData(true);
-                    wifination.naSetEnableRotate(true);
-                    wifination.naSetCircul(true);
-                    wifination.naSetSensor(true);
-                    wifination.naSetsquare(true);
+                    wifination.naSetAdjGsensorData(false);
+                    wifination.naSetEnableRotate(false);
+                    wifination.naSetCircul(false);
+                    wifination.naSetSensor(false);
+                    wifination.naSetsquare(false);
                 }
                 else
                 {
@@ -111,11 +108,11 @@ public class                StartActivity extends AppCompatActivity {
                         Log.e("abc","OpenCamera");
                         wifination.naSetRevBmp(true);
                         wifination.naInit("");
-                        wifination.naSetAdjGsensorData(true);
-                        wifination.naSetEnableRotate(true);
-                        wifination.naSetCircul(true);
-                        wifination.naSetSensor(true);
-                        wifination.naSetsquare(true);
+                        wifination.naSetAdjGsensorData(false);
+                        wifination.naSetEnableRotate(false);
+                        wifination.naSetCircul(false);
+                        wifination.naSetSensor(false);
+                        wifination.naSetsquare(false);
                     }
                 },150);
             }

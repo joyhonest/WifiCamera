@@ -21,10 +21,8 @@ buildscript {
 allprojects {
     repositories {
         //bintray环境
+        //maven { url 'https://dl.bintray.com/novoda-oss/snapshots/' }
 
-        maven { url 'https://dl.bintray.com/novoda-oss/snapshots/' }
-        //你的maven路径
-        //maven { url 'https://dl.bintray.com/aivenlau/maven' }
         google()
         jcenter()
     }
