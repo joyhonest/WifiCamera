@@ -38,3 +38,7 @@ dependencies {
     //implementation 'org.simple:androideventbus:1.0.5.1'
     //implementation 'com.Joyhonest:Wifi_Camera:3.8.1'
 }
+
+//git commit -m "xxx" -a
+//git push -u origin main
+
