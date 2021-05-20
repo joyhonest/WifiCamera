@@ -8,16 +8,17 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-
+import android.os.Build;
+import android.os.Handler;
 import android.util.Log;
-
 
 import org.simple.eventbus.EventBus;
 import org.tensorflow.Session;
 
-
 import java.io.File;
 import java.nio.ByteBuffer;
+
+
 
 
 /**
@@ -32,6 +33,7 @@ public class wifination {
     public  final   static    int  GP4225_Type_Video = 1;
     public  final   static    int  GP4225_Type_Locked = 2;
     public  final   static    int  GP4225_Type_Photo = 3;
+
     public final static int IC_NO = -1;
     public final static int IC_GK = 0;
     public final static int IC_GP = 1;
@@ -338,6 +340,7 @@ public class wifination {
                 //Log.e("AABB","Len = "+i);
                 Integer a = i;
                 EventBus.getDefault().post(a,"Playduration");
+
             }
 
             @Override
@@ -840,7 +843,9 @@ public class wifination {
     }
 
 
+
     //20000端口SDK内部没有处理的在此处返回
+
     private static void OnGetGP_Status(int nStatus) {
         int nType =  ((nStatus>>16) & 0xFFFF);
         switch(nType)
@@ -1026,7 +1031,6 @@ public class wifination {
 
 
         }
-
     }
 
     //// 测试信息。。。。。
@@ -1307,4 +1311,11 @@ public class wifination {
 
     }
 
+
+//    static GPUImage  gpuImage;
+//
+//    private  static  void F_GET()
+//    {
+//        gpuImage.getBitmapWithFilterApplied()
+//    }
 }
