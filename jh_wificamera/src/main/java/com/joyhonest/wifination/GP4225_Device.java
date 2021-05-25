@@ -344,8 +344,9 @@ public class GP4225_Device {
                     byte[] buffer = new byte[n_len];
                     System.arraycopy(data, 10, buffer, 0, n_len);
                     sVer = new String(buffer);
-                    Log.e("ABC", sVer);
+
                     EventBus.getDefault().post(sVer, "GP4225_GetFireWareVersion");
+                    EventBus.getDefault().post(sVer, "onGetFirmwareVersion");
                 }
                 break;
                 case 0x000A: {

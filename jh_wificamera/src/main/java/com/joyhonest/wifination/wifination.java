@@ -140,6 +140,11 @@ public class wifination {
     public static native  void  naSetLedMode(int nMode);
     public static native  void  naGetLedMode();
 
+    public static   void  naGetFirmwareVersion()
+    {
+        na4225_ReadFireWareVer();
+    }
+
 
 
     //写数据到设备
