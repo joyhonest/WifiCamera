@@ -26,6 +26,7 @@ import java.util.Set;
 public final class Logger {
   private static final String DEFAULT_TAG = "tensorflow";
   private static final int DEFAULT_MIN_LOG_LEVEL = Log.DEBUG;
+
   // Classes to be ignored when examining the stack trace
   private static final Set<String> IGNORED_CLASS_NAMES;
 

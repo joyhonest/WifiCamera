@@ -39,7 +39,9 @@ import java.util.Collections;
 import java.util.List;
 
 public final class DeviceFilter {
+
 	private static final String TAG = "DeviceFilter";
+
 	// USB Vendor ID (or -1 for unspecified)
 	public final int mVendorId;
 	// USB Product ID (or -1 for unspecified)

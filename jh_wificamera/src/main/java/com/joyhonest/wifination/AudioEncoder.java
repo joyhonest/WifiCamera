@@ -16,6 +16,7 @@ public class AudioEncoder implements AudioCodec {
     private Worker mWorker;
     private final String TAG = "AudioEncoder";
     private byte[] mFrameByte;
+
     public MediaFormat mediaFormat;
 
     public AudioEncoder() {

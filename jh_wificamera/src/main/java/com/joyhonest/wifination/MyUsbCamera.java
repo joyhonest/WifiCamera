@@ -16,8 +16,6 @@ import android.util.Log;
 
 
 
-//import org.simple.eventbus.EventBus;
-
 import org.simple.eventbus.EventBus;
 
 import java.io.File;
@@ -32,6 +30,8 @@ import java.util.List;
 public class MyUsbCamera {
 
     private boolean DEBUG = true;
+
+
     private final String TAG ="MyUsbCamera";
 
     private static final String ACTION_USB_PERMISSION_BASE = "com.serenegiant.USB_PERMISSION.";

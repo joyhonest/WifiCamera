@@ -10,8 +10,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 
-//import org.simple.eventbus.EventBus;
-
 import org.simple.eventbus.EventBus;
 
 import java.io.File;
@@ -23,6 +21,8 @@ import java.util.List;
 
 public class ObjectDetector
 {
+
+
     private static Context  AppContext=null;
     //private   static  int   cropSize = 300;
     public    static  int  nWidth=300;
@@ -313,6 +313,7 @@ public class ObjectDetector
             fos.close();
             //Toast.makeText(context, "保存成功,位置:" + filePic.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         // 其次把文件插入到系统图库

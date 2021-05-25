@@ -2,8 +2,6 @@ package com.joyhonest.wifination;
 
 import android.util.Log;
 
-//import org.simple.eventbus.EventBus;
-
 import org.simple.eventbus.EventBus;
 
 import java.util.ArrayList;
@@ -19,7 +17,11 @@ public class GP4225_Device {
     int[] nCountX = new int[10];
     int[] nCountY = new int[10];
     int[] nCountZ = new int[10];
+
+
     public boolean bProcessesGsensorDataByApp = false;
+
+
     public boolean bAdjGsensorData = true;
 
 
@@ -185,6 +187,8 @@ public class GP4225_Device {
                 bAdjfocus = false;
                 nSDRecordTime = 0;
             }
+            Integer nb = nBattery;
+            EventBus.getDefault().post(nb,"onGetBattery");
             EventBus.getDefault().post("", "GP4225_GetStatus");
             return true;
         }
@@ -300,8 +304,23 @@ public class GP4225_Device {
                     EventBus.getDefault().post(aa, "GP4225_GetDeviceRecordTime");
                 }
                 break;
-//                case 0x0005:
-//                    break;
+                case 0x0005:  //返回SSID
+                    if(n_len>0)
+                    {
+                        byte da[] = new byte[n_len+1];
+                        da[n_len]=0;
+                        System.arraycopy(data, 10, da, 0,n_len);
+                        try {
+                            String str = new String(da);
+                            EventBus.getDefault().post(str,"onGetWiFiSSID");
+                        }
+                        catch (Exception e) {
+                            //e.printStackTrace();
+                            ;
+                        }
+
+                    }
+                    break;
 //                case 0x0006:
 //                    break;
                 case 0x0007: //WifiChannel
@@ -353,9 +372,9 @@ public class GP4225_Device {
                 {
                     byte a = data[10];
                     Integer aa = (int) a;
+                    EventBus.getDefault().post(aa, "onGetLed");
                     EventBus.getDefault().post(aa, "GP4225_GetLed");
                 }
-
                 break;
                 case 0x0010: //GP4225_GetResolution
                 {
@@ -544,8 +563,15 @@ public class GP4225_Device {
                         EventBus.getDefault().post(da, "GP4225_GetRadarData");
                     }
                     break;
+                case 0x0020: {
+                    int a = data[11];
+                    Integer aa = (int) a;
+                    EventBus.getDefault().post(aa, "onGetLedMode");
+                }
+                    break;
 
-                case 0x0050: {
+                case 0x0050:
+                    {
                     byte[] aa = null;
                     if (n_len > 0) {
                         aa = new byte[n_len];

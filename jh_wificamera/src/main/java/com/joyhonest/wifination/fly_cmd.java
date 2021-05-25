@@ -33,4 +33,5 @@ public class fly_cmd {
     public static int CamMovStep = 0;    //镜头调节级数		上、下、左、右调节（00-1F）
     public static int CamMovDir = 0;        //镜头调节方向		00 上，01 下，10 左，11 右
     public static byte[] cmd = new byte[30];
+
 }

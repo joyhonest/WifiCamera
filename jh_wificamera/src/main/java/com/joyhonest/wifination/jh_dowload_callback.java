@@ -9,6 +9,7 @@ public class jh_dowload_callback {
     public int nPercentage;
     public int nError;
     public String  sError_Info;
+
     public jh_dowload_callback(int n, String sFilename_, int nErr) {
         sFileName = sFilename_;
         nPercentage = n;

@@ -180,3 +180,6 @@ publish {
    // ./gradlew clean build bintrayUpload  -PbintrayUser=aivenlau  -PbintrayKey=18013f247275f1d35b7d591240c8594d99ef7a85 -PdryRun=false
 }
 */
+
+//git commit -m "xxx" -a
+//git push -u origin main

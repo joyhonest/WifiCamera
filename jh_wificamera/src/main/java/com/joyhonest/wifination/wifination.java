@@ -132,14 +132,22 @@ public class wifination {
     */
 
 
+    public static native  void  naSetLedPWM(byte nPwm);
+    public static native  void  naGetLedPWM();
+    public static native  void  naGetBattery();
+    public static native  void  naGetWifiSSID();
+    public static native  void  naSetWifiSSID(String sSSid);
+    public static native  void  naSetLedMode(int nMode);
+    public static native  void  naGetLedMode();
+
+
+
     //写数据到设备
     public static native  void naWriteData2Flash(byte[]data,int nLen);
     //需要读取设备数据，读取的数据从OnGetGP_Status 返回
     public static native  void naReadDataFromFlash();
 
-    public static native  void  naSetLedPWM(byte nPwm);
 
-    public static native  void  naGetLedPWM();
 
 
     public static native int naInit(String pFileName);
@@ -645,7 +653,17 @@ public class wifination {
     private  static boolean  bProgressGP4225UDP=true;
 
 
+    private static void onGetBattery(int nBattery_)
+    {
+        Integer  nBattery = nBattery_;
+        EventBus.getDefault().post(nBattery,"onGetBattery");
+    }
 
+    private static  void onGetLedPwm(int nLed_)    //GP 30 模块返回LED PWM设定值
+    {
+        Integer  nLed = nLed_;
+        EventBus.getDefault().post(nLed,"onGetLed");
+    }
 
     private static  void onUdpRevData(byte[] data,int nPort)      // naStartReadUdp，后，读取到的数据从这里返回
     {

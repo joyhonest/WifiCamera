@@ -3,10 +3,8 @@ package com.joyhonest.wifination;
 
 import android.util.Log;
 
-//import org.simple.eventbus.EventBus;
-
-
 import org.simple.eventbus.EventBus;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +18,7 @@ public class JH_Tools {
 
     //////////////
     private static int nCmdResType = 0;
+
     public static List<Byte> wifiData = new ArrayList<Byte>(100);
     private static List<MyCmdData> array = new ArrayList<MyCmdData>(100);
 

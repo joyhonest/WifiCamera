@@ -40,8 +40,10 @@ import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
  */
 public class JH_ObjectDetectionAPIModel implements Classifier {
   private static final Logger LOGGER = new Logger();
+
   // Only return this many results.
   private static final int MAX_RESULTS = 100;
+
   // Config values.
   private String inputName;
   //private int inputSize;

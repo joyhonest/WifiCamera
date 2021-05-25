@@ -16,6 +16,7 @@ public class MyMediaMuxer {
     private static  int audioInx=-1;
     private static  int videoInx=-1;
 
+
     public  static MediaFormat formatV;
     public  static MediaFormat formatA;
 
