@@ -29,6 +29,10 @@ public class GP4225_Device {
     public boolean bSD;
     public boolean bSDRecording;
 
+
+    public byte[] MacAddress = new byte[6];
+
+
     public int VideosCount;
     public int LockedCount;
     public int PhotoCount;
@@ -63,9 +67,10 @@ public class GP4225_Device {
             nCountY[x] = 0;
             nCountZ[x] = 0;
         }
-//        PhotoFileList = new ArrayList<>();
-//        LockedFileList = new ArrayList<>();
-//        VideoFileList = new ArrayList<>();
+        for(int x=0;x<6;x++)
+        {
+            MacAddress[x]=0;
+        }
         nBattery = -1;
         VideosCount = 0;
         LockedCount = 0;
@@ -173,14 +178,24 @@ public class GP4225_Device {
             if (data.length >= 34) {
                 nBattery = data[32] & 0xFF;
                 bAdjfocus = (data[33] != 0);
+
+                if (data.length >= 35) {
+                    nFuncMask = data[34] & 0xFF;
+                }
+
                 if (data.length >= 40) {
                     nSDRecordTime = (data[36] & 0xFF) + (data[37] & 0xFF) * 0x100 + (data[38] & 0xFF) * 0x10000 + (data[39] & 0xFF) * 0x1000000;
                 } else {
                     nSDRecordTime = 0;
                 }
-                if (data.length >= 35) {
-                    nFuncMask = data[34] & 0xFF;
+                if(data.length>=48)
+                {
+                    for(int i=0;i<6;i++)
+                    {
+                        MacAddress[i]=data[40+i];
+                    }
                 }
+
             } else {
                 nFuncMask = 0;
                 nBattery = 4;
@@ -496,7 +511,7 @@ public class GP4225_Device {
                                                 } else {
                                                     bFlash = false;
                                                     nNoesie = 0;
-                                                //    Log.e("TT5","NOFlash");
+                                                    //    Log.e("TT5","NOFlash");
                                                 }
                                             } else{
                                                 nNoesie_No = 0;
@@ -504,13 +519,13 @@ public class GP4225_Device {
                                         }
                                     }
                                     if (!bFlash) {
-                                            wifination.naSetGsensor2SDK(xx + nAdjAngle, yy, zz);
+                                        wifination.naSetGsensor2SDK(xx + nAdjAngle, yy, zz);
                                     }
                                     nXX_pre = xx;
                                     nYY_pre = yy;
                                     nZZ_pre = zz;
                                 } else {
-                                        wifination.naSetGsensor2SDK(xx, yy, zz);
+                                    wifination.naSetGsensor2SDK(xx, yy, zz);
                                 }
 
 
@@ -566,13 +581,13 @@ public class GP4225_Device {
                     break;
                 case 0x0020: {
                     int a = data[11];
-                    Integer aa = (int) a;
+                    Integer aa = (int)a;
                     EventBus.getDefault().post(aa, "onGetLedMode");
                 }
-                    break;
+                break;
 
                 case 0x0050:
-                    {
+                {
                     byte[] aa = null;
                     if (n_len > 0) {
                         aa = new byte[n_len];
