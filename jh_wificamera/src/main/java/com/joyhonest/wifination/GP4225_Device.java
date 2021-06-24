@@ -190,6 +190,7 @@ public class GP4225_Device {
                 }
                 if(data.length>=48)
                 {
+
                     for(int i=0;i<6;i++)
                     {
                         MacAddress[i]=data[40+i];

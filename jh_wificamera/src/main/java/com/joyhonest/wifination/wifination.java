@@ -8,12 +8,9 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
-import android.os.Handler;
 import android.util.Log;
 
 import org.simple.eventbus.EventBus;
-import org.tensorflow.Session;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -868,6 +865,8 @@ public class wifination {
 
 
     //20000端口SDK内部没有处理的在此处返回
+    private static int nSecuritySeed = -1;
+    public  static int nSecurityStatus = 0;
 
     private static void OnGetGP_Status(int nStatus) {
         int nType =  ((nStatus>>16) & 0xFFFF);
@@ -923,6 +922,8 @@ public class wifination {
                 for (int i = 0; i < nLen; i++) {
                     cmd[i] = buf.get(i + BMP_Len);
                 }
+
+                //SecuritySeed =
                 EventBus.getDefault().post(cmd, "GetDataFromRs232");
             }
                 break;
@@ -938,6 +939,32 @@ public class wifination {
                     cmd[i] = buf.get(i + BMP_Len);
                 }
                 EventBus.getDefault().post(cmd, "GetWifiSendData");
+            }
+                break;
+
+            case 0x5444:
+                {
+                int nLen = (nStatus & 0xFF);
+                byte[] cmd = new byte[nLen];
+
+                ByteBuffer buf = wifination.mDirectBuffer;
+                //buf.rewind();
+                for (int i = 0; i < nLen; i++) {
+                    cmd[i] = buf.get(i + BMP_Len);
+                }
+
+                nSecurityStatus = cmd[0];
+                nSecuritySeed  = (cmd[1]&0xFF) + (cmd[2]&0xFF)*0x100 + (cmd[3]&0xFF)*0x10000 +(cmd[4]&0xFF)*0x1000000;
+                Integer  da = nSecurityStatus;
+                if((nSecurityStatus & 0x01) == 1  && (nSecurityStatus & 0x02) ==0 )
+                {
+                    naSetSecurity(nSecuritySeed);
+                    EventBus.getDefault().post(da, "GetSecurityInfo1");
+                }
+                else
+                {
+                    EventBus.getDefault().post(da, "GetSecurityInfo");
+                }
             }
                 break;
             case  0x2000://              回传 模块本身信息数据
@@ -1313,7 +1340,7 @@ public class wifination {
             }
     }
 
-
+    private static native int  naSetSecurity(int nSeed);
 
     private  static  void onGetVideoData() //读取到了视频数据，不一定是完整的一帧数据，只是接收到了视频数据，就会回调
     {
@@ -1336,9 +1363,14 @@ public class wifination {
 
 
 //    static GPUImage  gpuImage;
-//
 //    private  static  void F_GET()
 //    {
 //        gpuImage.getBitmapWithFilterApplied()
 //    }
+
+    // BK security
+    public static native  void naCheckSecurityStatus(int nPassword);
+
+
+
 }
