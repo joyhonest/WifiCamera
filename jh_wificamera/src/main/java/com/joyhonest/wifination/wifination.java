@@ -865,7 +865,7 @@ public class wifination {
 
 
     //20000端口SDK内部没有处理的在此处返回
-    private static int nSecuritySeed = -1;
+    public  static int nSecuritySeed = -1;
     public  static int nSecurityStatus = 0;
 
     private static void OnGetGP_Status(int nStatus) {
@@ -956,12 +956,12 @@ public class wifination {
                 nSecurityStatus = cmd[0];
                 nSecuritySeed  = (cmd[1]&0xFF) + (cmd[2]&0xFF)*0x100 + (cmd[3]&0xFF)*0x10000 +(cmd[4]&0xFF)*0x1000000;
                 Integer  da = nSecurityStatus;
-                if((nSecurityStatus & 0x01) == 1  && (nSecurityStatus & 0x02) ==0 )
-                {
-                    naSetSecurity(nSecuritySeed);
-                    EventBus.getDefault().post(da, "GetSecurityInfo1");
-                }
-                else
+//                if((nSecurityStatus & 0x01) == 1  && (nSecurityStatus & 0x02) ==0 )
+//                {
+//                    naSetSecurity(nSecuritySeed);
+//                    EventBus.getDefault().post(da, "GetSecurityInfo");
+//                }
+//                else
                 {
                     EventBus.getDefault().post(da, "GetSecurityInfo");
                 }
@@ -1340,7 +1340,7 @@ public class wifination {
             }
     }
 
-    private static native int  naSetSecurity(int nSeed);
+
 
     private  static  void onGetVideoData() //读取到了视频数据，不一定是完整的一帧数据，只是接收到了视频数据，就会回调
     {
@@ -1369,6 +1369,7 @@ public class wifination {
 //    }
 
     // BK security
+    public static native int  naSetSecurity(int nSeed);
     public static native  void naCheckSecurityStatus(int nPassword);
 
 
