@@ -181,5 +181,7 @@ publish {
 }
 */
 
+//4.9.0  //修复 naStop 后可以立即调用 naInit
+
 //git commit -m "xxx" -a
 //git push -u origin main
