@@ -46,7 +46,7 @@ dependencies {
     compileOnly 'org.tensorflow:tensorflow-android:1.13.1'
 }
 
-
+//4.9.0
 //  4.6.1 因为Jcenter 将失效，  将Eeventbus 内置到SDK中
 
 
@@ -182,6 +182,7 @@ publish {
 */
 
 //4.9.0  //修复 naStop 后可以立即调用 naInit
+//4.9.1  //优化 圆形显示的锯齿
 
 //git commit -m "xxx" -a
 //git push -u origin main
