@@ -202,6 +202,35 @@ public class VideoMediaCoder {
 
 
 
+    public boolean CheckResolutionSupport(int width,int height)//,int bitrate,int fps)
+    {
+
+        int re = 0;
+        try {
+            re = initMediaCodec(width, height, 8000, 20);
+        }
+        catch ( Exception e)
+        {
+            re = 0;
+        }
+        if(re ==0)
+            return false;
+        if(mMediaCodec==null)
+        {
+            return false;
+        }
+        boolean re1 = true;
+        try {
+            mMediaCodec.dequeueInputBuffer(5000);
+        }
+        catch (Exception e)
+        {
+            re1 = false;
+        }
+        F_CloseEncoder();
+        return re1;
+    }
+
         int  ddd=0;
     public  void  offerEncoder(byte[] data,int nLen)
     {

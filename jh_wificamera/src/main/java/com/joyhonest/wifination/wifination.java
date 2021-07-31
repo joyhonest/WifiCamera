@@ -1179,6 +1179,13 @@ public class wifination {
         }
     }
 
+
+    public static boolean CheckResolutionSupport(int width,int height)
+    {
+        VideoMediaCoder v = new VideoMediaCoder();
+        return v.CheckResolutionSupport(width,height);
+    }
+
     ///////////video Media
     private  static int F_InitEncoder(int width,int height,int bitrate,int fps)
     {
