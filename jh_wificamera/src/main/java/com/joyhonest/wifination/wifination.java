@@ -6,8 +6,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.media.MediaCodecInfo;
+import android.media.MediaCodecList;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.util.Log;
 
 import org.simple.eventbus.EventBus;
@@ -1180,10 +1183,34 @@ public class wifination {
     }
 
 
-    public static boolean CheckResolutionSupport(int width,int height)
+    public static boolean CheckResolutionSupport(int width, int height)
     {
-        VideoMediaCoder v = new VideoMediaCoder();
-        return v.CheckResolutionSupport(width,height);
+        int numCodecs = MediaCodecList.getCodecCount();
+        for (int i = 0; i < numCodecs; i++) {
+            MediaCodecInfo codecInfo = MediaCodecList.getCodecInfoAt(i);
+
+            if (!codecInfo.isEncoder()) {
+                continue;
+            }
+            String VCODEC="video/avc";
+            String[] types = codecInfo.getSupportedTypes();
+            for (int j = 0; j < types.length; j++)
+            {
+                if (types[j].equalsIgnoreCase(VCODEC))
+                {
+                    MediaCodecInfo.CodecCapabilities codecCapabilities = codecInfo.getCapabilitiesForType(VCODEC);
+                    if (codecCapabilities != null)
+                    {
+                        MediaCodecInfo.VideoCapabilities  videoCapabilities = codecCapabilities.getVideoCapabilities();
+                        if (videoCapabilities != null) {
+                            return videoCapabilities.isSizeSupported(width,width);
+                        }
+                    }
+                }
+
+        }
+        return false;
+
     }
 
     ///////////video Media
