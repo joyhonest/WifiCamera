@@ -1194,23 +1194,19 @@ public class wifination {
             }
             String VCODEC="video/avc";
             String[] types = codecInfo.getSupportedTypes();
-            for (int j = 0; j < types.length; j++)
-            {
-                if (types[j].equalsIgnoreCase(VCODEC))
-                {
+            for (int j = 0; j < types.length; j++) {
+                if (types[j].equalsIgnoreCase(VCODEC)) {
                     MediaCodecInfo.CodecCapabilities codecCapabilities = codecInfo.getCapabilitiesForType(VCODEC);
-                    if (codecCapabilities != null)
-                    {
-                        MediaCodecInfo.VideoCapabilities  videoCapabilities = codecCapabilities.getVideoCapabilities();
+                    if (codecCapabilities != null) {
+                        MediaCodecInfo.VideoCapabilities videoCapabilities = codecCapabilities.getVideoCapabilities();
                         if (videoCapabilities != null) {
-                            return videoCapabilities.isSizeSupported(width,width);
+                            return videoCapabilities.isSizeSupported(width, width);
                         }
                     }
                 }
-
+            }
         }
         return false;
-
     }
 
     ///////////video Media
