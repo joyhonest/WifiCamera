@@ -1200,7 +1200,7 @@ public class wifination {
                     if (codecCapabilities != null) {
                         MediaCodecInfo.VideoCapabilities videoCapabilities = codecCapabilities.getVideoCapabilities();
                         if (videoCapabilities != null) {
-                            return videoCapabilities.isSizeSupported(width, width);
+                            return videoCapabilities.isSizeSupported(width, height);
                         }
                     }
                 }
