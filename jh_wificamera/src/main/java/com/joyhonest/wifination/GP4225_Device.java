@@ -13,6 +13,7 @@ public class GP4225_Device {
 
 
     public int nAdjAngle = 0;
+    public int nGsensorType=-1;
 
     int[] nCountX = new int[10];
     int[] nCountY = new int[10];
@@ -447,6 +448,12 @@ public class GP4225_Device {
                         boolean bStatus = ((status & 0x1) == 0);
                         boolean bAdj = (((status >> 1) & 0x01) == 1);
                         int nType = (status >> 8) & 0xFF;
+                        if(nGsensorType>=0)
+                        {
+                            nType = nGsensorType;
+                        }
+                        int nNoesieSet=20;
+                        int nNoesieSetNo=20;
                         int nCount = 1;
 //                        xx = 0;
 //                        yy = 0;
@@ -460,6 +467,7 @@ public class GP4225_Device {
                             {
                                 nLevelMax = 210;
                                 nLevelMin = 60;
+                                nCount = 1;
                                 xx /= 4;
                                 yy /= 4;
                                 zz /= 4;
@@ -472,6 +480,17 @@ public class GP4225_Device {
                                 xx /= 2;        //4
                                 yy /= 2;
                                 zz /= 2;
+                            }
+                            else if (nType == 2)
+                            {
+                                nNoesieSet=20;
+                                nNoesieSetNo=15;
+                                nLevelMax = 200;
+                                nLevelMin = 50;
+                                nCount = 1;
+                                xx /= 4;        //4
+                                yy /= 4;
+                                zz /= 4;
                             }
                             else
                             {
@@ -494,8 +513,8 @@ public class GP4225_Device {
                                     if (daV > nLevelMax) //220
                                     {
                                         nNoesie++;
-                                        if (nNoesie > 20) {
-                                            nNoesie = 20;
+                                        if (nNoesie > nNoesieSet) {
+                                            nNoesie = nNoesieSet;
                                         }
                                         if (nNoesie > nCount) {
                                             if (!bFlash) {
@@ -504,15 +523,15 @@ public class GP4225_Device {
                                             }
                                         }
                                     } else {
-                                        if (bFlash) {
+                                        if (bFlash)
+                                        {
                                             if (daV < nLevelMin) //60
                                             {
-                                                if (nNoesie_No < 20) {
+                                                if (nNoesie_No < nNoesieSetNo) {
                                                     nNoesie_No++;
                                                 } else {
                                                     bFlash = false;
                                                     nNoesie = 0;
-                                                    //    Log.e("TT5","NOFlash");
                                                 }
                                             } else{
                                                 nNoesie_No = 0;

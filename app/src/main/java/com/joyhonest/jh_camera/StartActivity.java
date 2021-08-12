@@ -36,48 +36,51 @@ public class  StartActivity extends AppCompatActivity {
         button = findViewById(R.id.button1);
         DispImageView = findViewById(R.id.DispImageView);
         button.setText("Play");
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!bPlaying)
-                {
-                    wifination.naSetRevBmp(true);
-                    wifination.naStartRead20000_20001();
-                    wifination.naInit("");
-                    wifination.naSetAdjGsensorData(false);
-                    wifination.naSetEnableRotate(false);
-                    wifination.naSetCircul(false);
-                    wifination.naSetSensor(false);
-                    wifination.naSetsquare(false);
-                }
-                else
-                {
-                    wifination.naStopRecord_All();
-                    wifination.naStop();
-                }
-                bPlaying = !bPlaying;
-                if(bPlaying)
-                {
-                    button.setText("Stop");
-                }
-                else
-                {
-                    button.setText("Play");
-                }
-            //    startActivity(new Intent(StartActivity.this, PlayActivity.class));
-//                byte[]data = new byte[10];
-//                data[0]='J';
-//                data[1]='H';
-//                data[2]='C';
-//                data[3]='M';
-//                data[4]='D';
-//                data[5]=0x20;
-//                data[6]=0x01;
-//                data[7]=0x00;
-//
-//                wifination.naSentUdpData("192.168.29.1",20000,data,8);
-            }
-        });
+
+        button.setOnClickListener(view->DoPlay());
+
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(!bPlaying)
+//                {
+//                    wifination.naSetRevBmp(true);
+//                    wifination.naStartRead20000_20001();
+//                    wifination.naInit("");
+//                    wifination.naSetAdjGsensorData(false);
+//                    wifination.naSetEnableRotate(false);
+//                    wifination.naSetCircul(false);
+//                    wifination.naSetSensor(false);
+//                    wifination.naSetsquare(false);
+//                }
+//                else
+//                {
+//                    wifination.naStopRecord_All();
+//                    wifination.naStop();
+//                }
+//                bPlaying = !bPlaying;
+//                if(bPlaying)
+//                {
+//                    button.setText("Stop");
+//                }
+//                else
+//                {
+//                    button.setText("Play");
+//                }
+//            //    startActivity(new Intent(StartActivity.this, PlayActivity.class));
+////                byte[]data = new byte[10];
+////                data[0]='J';
+////                data[1]='H';
+////                data[2]='C';
+////                data[3]='M';
+////                data[4]='D';
+////                data[5]=0x20;
+////                data[6]=0x01;
+////                data[7]=0x00;
+////
+////                wifination.naSentUdpData("192.168.29.1",20000,data,8);
+//            }
+//        });
 
         //wifination.naSetDebug(true);
 
@@ -87,6 +90,36 @@ public class  StartActivity extends AppCompatActivity {
      //   EventBus.getDefault().register(this);
     }
 
+
+    public void DoPlay()
+    {
+        if(!bPlaying)
+        {
+            wifination.naSetRevBmp(true);
+            wifination.naStartRead20000_20001();
+            wifination.naInit("");
+            wifination.naSetAdjGsensorData(false);
+            wifination.naSetEnableRotate(false);
+            wifination.naSetCircul(false);
+            wifination.naSetSensor(false);
+            wifination.naSetsquare(false);
+        }
+        else
+        {
+            wifination.naStopRecord_All();
+            wifination.naStop();
+        }
+        bPlaying = !bPlaying;
+        if(bPlaying)
+        {
+            button.setText("Stop");
+        }
+        else
+        {
+            button.setText("Play");
+        }
+
+    }
 
     private Handler openHandler = new Handler();
     private Handler openHandler1 = new Handler();
