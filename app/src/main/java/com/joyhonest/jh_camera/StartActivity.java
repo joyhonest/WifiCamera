@@ -97,12 +97,18 @@ public class  StartActivity extends AppCompatActivity {
         {
             wifination.naSetRevBmp(true);
             wifination.naStartRead20000_20001();
+
             wifination.naInit("");
-            wifination.naSetAdjGsensorData(false);
-            wifination.naSetEnableRotate(false);
-            wifination.naSetCircul(false);
-            wifination.naSetSensor(false);
-            wifination.naSetsquare(false);
+            wifination.naSetCameraDataRota(180);
+
+            wifination.naSetGsensorType(2);
+            wifination.naSetMirror(false);
+            //wifination.naSetAdjGsensorData(false);
+            wifination.naSetEnableRotate(true);
+            wifination.naSetCircul(true);
+            wifination.naSetSensor(true);
+            wifination.naSetsquare(true);
+            wifination.naSet3DDenoiser(false);
         }
         else
         {
@@ -139,12 +145,15 @@ public class  StartActivity extends AppCompatActivity {
                     public void run() {
                         Log.e("abc","OpenCamera");
                         wifination.naSetRevBmp(true);
+                        wifination.naSetGsensorType(2);
                         wifination.naInit("");
-                        wifination.naSetAdjGsensorData(false);
-                        wifination.naSetEnableRotate(false);
-                        wifination.naSetCircul(false);
-                        wifination.naSetSensor(false);
-                        wifination.naSetsquare(false);
+                        wifination.naSetCameraDataRota(180);
+                        wifination.naSetMirror(false);
+                        wifination.naSetSensor(true);
+                        wifination.naSetEnableRotate(true);
+                        wifination.naSetCircul(true);
+                        wifination.naSetsquare(true);
+                        wifination.naSet3DDenoiser(false);
                     }
                 },150);
             }
