@@ -145,8 +145,9 @@ public class  StartActivity extends AppCompatActivity {
                     public void run() {
                         Log.e("abc","OpenCamera");
                         wifination.naSetRevBmp(true);
-                        wifination.naSetGsensorType(2);
+
                         wifination.naInit("");
+                        wifination.naSetGsensorType(2);
                         wifination.naSetCameraDataRota(180);
                         wifination.naSetMirror(false);
                         wifination.naSetSensor(true);

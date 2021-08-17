@@ -556,6 +556,9 @@ public class wifination {
     public static native void naSetGsensorPara(int n,float nAngle);
 
 
+    public static native  void naRelinkPlay();
+
+
     public static void naSetGsensorType(int n) {
         gp4225_Device.nGsensorType = n;
     }

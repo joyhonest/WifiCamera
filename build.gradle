@@ -25,6 +25,7 @@ allprojects {
 
         google()
         jcenter()
+        maven { url 'https://jitpack.io' }
     }
     tasks.withType(Javadoc).all {
         enabled = false
