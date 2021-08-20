@@ -134,31 +134,31 @@ public class  StartActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.e("abc","onResume");
-        openHandler.removeCallbacksAndMessages(null);
-        openHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                wifination.naStop();
-                openHandler1.removeCallbacksAndMessages(null);
-                openHandler1.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.e("abc","OpenCamera");
-                        wifination.naSetRevBmp(true);
-
-                        wifination.naInit("");
-                        wifination.naSetGsensorType(2);
-                        wifination.naSetCameraDataRota(180);
-                        wifination.naSetMirror(false);
-                        wifination.naSetSensor(true);
-                        wifination.naSetEnableRotate(true);
-                        wifination.naSetCircul(true);
-                        wifination.naSetsquare(true);
-                        wifination.naSet3DDenoiser(false);
-                    }
-                },150);
-            }
-        });
+//        openHandler.removeCallbacksAndMessages(null);
+//        openHandler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                wifination.naStop();
+//                openHandler1.removeCallbacksAndMessages(null);
+//                openHandler1.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Log.e("abc","OpenCamera");
+//                        wifination.naSetRevBmp(true);
+//
+//                        wifination.naInit("");
+//                        wifination.naSetGsensorType(2);
+//                        wifination.naSetCameraDataRota(180);
+//                        wifination.naSetMirror(false);
+//                        wifination.naSetSensor(true);
+//                        wifination.naSetEnableRotate(true);
+//                        wifination.naSetCircul(true);
+//                        wifination.naSetsquare(true);
+//                        wifination.naSet3DDenoiser(false);
+//                    }
+//                },150);
+//            }
+//        });
     }
 
     @Override
@@ -186,6 +186,7 @@ public class  StartActivity extends AppCompatActivity {
         wifination.naStop();
         EventBus.getDefault().unregister(this);
     }
+
 
 
     @Subscriber(tag = "ReviceBMP")
