@@ -188,6 +188,9 @@ public class wifination {
     private static  String sVideoName="";
     public static  boolean bG_Audio=false;
 
+
+    public static  native void naSetScaleHighQuality(int nQ);
+
     public static  void naStartRecord(String pFileName, final  int PhoneOrSD)
     {
         sVideoName = pFileName;
