@@ -29,6 +29,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         btn_Stop.setOnClickListener(this);
 
 
+
+
 //        wifination.naStop();
 //        wifination.naSetRevBmp(false);
 //        new Handler().postDelayed(new Runnable() {
