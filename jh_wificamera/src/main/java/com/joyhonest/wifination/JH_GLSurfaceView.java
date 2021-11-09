@@ -5,6 +5,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 
 import android.util.AttributeSet;
+import android.util.Log;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -30,16 +31,15 @@ public class JH_GLSurfaceView extends GLSurfaceView  implements GLSurfaceView.Re
     public JH_GLSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
-
     }
 
     private void init(final Context context) {
         setEGLContextClientVersion(2);
-        //setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        setRenderer(this);
+       // setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         //setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         /*渲染方式，RENDERMODE_WHEN_DIRTY表示被动渲染，只有在调用requestRender或者onResume等方法时才会进行渲染。RENDERMODE_CONTINUOUSLY表示持续渲染*/
 
-        setRenderer(this);
     }
 
 
@@ -51,6 +51,7 @@ public class JH_GLSurfaceView extends GLSurfaceView  implements GLSurfaceView.Re
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         wifination.changeLayout(width, height);
+        Log.e("TAG","www ="+width+" h= "+height);
     }
 
     @Override

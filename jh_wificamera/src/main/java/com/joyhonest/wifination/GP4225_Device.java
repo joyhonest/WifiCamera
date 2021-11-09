@@ -404,10 +404,10 @@ public class GP4225_Device {
                 case 0x0012:    //G-Sensor 数据
                 {
                     if (n_len == 8) {
-                        int status = data[10] & 0xFF + (data[11] & 0xFF) * 0x100;
-                        int yy = (data[12] & 0xFF) | ((data[13]) * 0x100);
-                        int xx = (data[14] & 0xFF) | ((data[15]) * 0x100);
-                        int zz = (data[16] & 0xFF) | ((data[17]) * 0x100);
+                        int status = data[10] & 0xFF + (data[11] &0xFF ) * 0x100;
+                        int yy = (data[12] & 0xFF) | ((data[13] ) * 0x100);
+                        int xx = (data[14] & 0xFF) | ((data[15] ) * 0x100);
+                        int zz = (data[16] & 0xFF) | ((data[17] ) * 0x100);
                         zz = -zz;
 //                        if(nG_inx<10)
 //                        {

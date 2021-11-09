@@ -9,8 +9,8 @@ public interface AudioCodec {
     String MIME_TYPE = MediaFormat.MIMETYPE_AUDIO_AAC;
 
     int KEY_CHANNEL_COUNT = 1;
-    int KEY_SAMPLE_RATE = 44100;
-    int KEY_BIT_RATE = KEY_SAMPLE_RATE * KEY_CHANNEL_COUNT * 16;
+    int KEY_SAMPLE_RATE = 32000;
+    int KEY_BIT_RATE = 64000; //KEY_SAMPLE_RATE * KEY_CHANNEL_COUNT * 16;
     int KEY_AAC_PROFILE = MediaCodecInfo.CodecProfileLevel.AACObjectLC;
 
     int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;

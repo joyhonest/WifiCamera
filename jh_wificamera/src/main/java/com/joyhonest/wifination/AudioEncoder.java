@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.WeakHashMap;
 
 
 public class AudioEncoder implements AudioCodec {
@@ -22,6 +23,14 @@ public class AudioEncoder implements AudioCodec {
     public AudioEncoder() {
         //  mClient=client;
     }
+
+
+    public boolean  isCanRecordAudio()
+    {
+        Worker p = new Worker();
+        return p.isCanRecordAudio();
+    }
+
 
     public boolean  start() {
         if (mWorker == null)
@@ -43,9 +52,6 @@ public class AudioEncoder implements AudioCodec {
             mWorker.setRunning(false);
             mWorker = null;
         }
-        //if(!mClient.hasRelease()){
-        //    mClient.release();
-        // }
     }
 
 
@@ -63,11 +69,6 @@ public class AudioEncoder implements AudioCodec {
         boolean bStart = false;
         @Override
         public void run() {
-//            if (!prepare()) {
-//                Log.d(TAG, "音频编码器初始化失败");
-//                isRunning = false;
-//            }
-
             int re = 0;
             bStart = false;
             pts=0;
@@ -97,43 +98,78 @@ public class AudioEncoder implements AudioCodec {
             }
         }
 
+
+        public    boolean isCanRecordAudio()
+        {
+            boolean re = false;
+            try {
+                int minBufferSize = AudioRecord.getMinBufferSize(KEY_SAMPLE_RATE, CHANNEL_MODE,AUDIO_FORMAT);
+                mRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, KEY_SAMPLE_RATE, CHANNEL_MODE, AUDIO_FORMAT, minBufferSize);
+                mRecord.startRecording();
+                mRecord.stop();
+                mRecord.release();
+                mRecord = null;
+                re = true;
+            }
+            catch (Exception e)
+            {
+                ;
+            }
+
+            return re;
+        }
+
+
         /**
          * 连接服务端，编码器配置
          *
          * @return true配置成功，false配置失败
          */
         public boolean prepare() {
+            boolean re = false;
             try {
+                MyMediaMuxer.nFramesAudio=0;
+
+
+
                 mBufferInfo = new MediaCodec.BufferInfo();
                 mEncoder = MediaCodec.createEncoderByType(MIME_TYPE);
                 mediaFormat = MediaFormat.createAudioFormat(MIME_TYPE, KEY_SAMPLE_RATE, KEY_CHANNEL_COUNT);
-                mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, KEY_BIT_RATE);
-                mediaFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, KEY_SAMPLE_RATE);
-                mediaFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, KEY_CHANNEL_COUNT);
+                mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, 32000);
                 mediaFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, KEY_AAC_PROFILE);
                 mEncoder.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
                 mEncoder.start();
-            } catch (IOException e) {
+                re = true;
+            } catch (Exception  e) {
                 e.printStackTrace();
-                return false;
+                re =false;
             }
+            if(!re)
+            {
+                return re;
+            }
+            re = false;
             try {
-                int minBufferSize = AudioRecord.getMinBufferSize(KEY_SAMPLE_RATE, CHANNEL_MODE,AUDIO_FORMAT) * 2;
+
+                int minBufferSize = AudioRecord.getMinBufferSize(KEY_SAMPLE_RATE, CHANNEL_MODE,AUDIO_FORMAT);
                 mRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, KEY_SAMPLE_RATE, CHANNEL_MODE, AUDIO_FORMAT, minBufferSize);
                 int buffSize = Math.min(BUFFFER_SIZE, minBufferSize);
                 mFrameSize = buffSize;
+                MyMediaMuxer.nCt = (mFrameSize * 1000000) / (KEY_SAMPLE_RATE * 2 * KEY_CHANNEL_COUNT);
                 mBuffer = new byte[mFrameSize];
                 pts_unit = (long) ((((float)mFrameSize)/(KEY_BIT_RATE/8))*1000000);
                 mRecord.startRecording();
+                re = true;
             }
             catch (Exception e)
             {
+                mEncoder.stop();
+                mEncoder.release();
                 mRecord = null;
                 mEncoder = null;
-                return false;
+                re = false;
             }
-
-            return true;
+            return re;
         }
 
 
@@ -141,14 +177,12 @@ public class AudioEncoder implements AudioCodec {
 
         private void encode(byte[] data) {
             long ppp = 0;
-           // Log.e(TAG, "buffer len="+data.length);
-            ByteBuffer[] inputBuffers = mEncoder.getInputBuffers();
-            ByteBuffer[] outputBuffers = mEncoder.getOutputBuffers();
+
             int inputBufferId = mEncoder.dequeueInputBuffer(1000 * 50);
             if (inputBufferId >= 0) {
-                ByteBuffer bb = inputBuffers[inputBufferId];
-                bb.put(data, 0, data.length);
 
+                ByteBuffer bb = mEncoder.getInputBuffer(inputBufferId);// inputBuffers[inputBufferId];
+                bb.put(data, 0, data.length);
                 ppp = pts*pts_unit;
                 pts++;
                 mEncoder.queueInputBuffer(inputBufferId, 0, data.length, ppp, 0);
@@ -164,55 +198,13 @@ public class AudioEncoder implements AudioCodec {
 
             if (outputBufferIndex >= 0) {  //编码器有可能一次性突出多条数据 所以使用while
                 // outputBuffers[outputBufferId] is ready to be processed or rendered.
-                ByteBuffer bb = outputBuffers[outputBufferIndex];
-
+                ByteBuffer bb =mEncoder.getOutputBuffer(outputBufferIndex);//  outputBuffers[outputBufferIndex];
                 bb.rewind();
                 byte[] dataA = new byte[aBufferInfo.size];
                 bb.get(dataA, 0, dataA.length);
-                //naSentVoiceData(dataA, aBufferInfo.size);
-
-                MyMediaMuxer.WritSample(dataA,false,false,ppp);
-
-                //Log.e(TAG, "buffer len="+aBufferInfo.size);
+                MyMediaMuxer.WritSample(dataA,false,aBufferInfo);
                 mEncoder.releaseOutputBuffer(outputBufferIndex, false);
-               // outputBufferIndex = mEncoder.dequeueOutputBuffer(aBufferInfo, 0);
             }
-
-
-            /*
-            int inputBufferIndex = mEncoder.dequeueInputBuffer(-1);
-            if (inputBufferIndex >= 0) {
-                ByteBuffer inputBuffer = mEncoder.getInputBuffer(inputBufferIndex);
-                inputBuffer.clear();
-                inputBuffer.put(data);
-                inputBuffer.limit(data.length);
-                mEncoder.queueInputBuffer(inputBufferIndex, 0, data.length,
-                        System.nanoTime(), 0);
-            }
-
-            int outputBufferIndex = mEncoder.dequeueOutputBuffer(mBufferInfo, 0);
-            while (outputBufferIndex >= 0) {
-                ByteBuffer outputBuffer = mEncoder.getOutputBuffer(outputBufferIndex);
-                //给adts头字段空出7的字节
-                int length=mBufferInfo.size;//+7;
-                if(mFrameByte==null||mFrameByte.length<length){
-                    mFrameByte=new byte[length];
-                }
-                //addADTStoPacket(mFrameByte,length);
-                //outputBuffer.get(mFrameByte,7,mBufferInfo.size);
-                outputBuffer.get(mFrameByte,0,mBufferInfo.size);
-                //boolean isSusscess1=mClient.sendInt(length);
-                //boolean isSusscess2=mClient.send(mFrameByte,0,length);
-                //if(!(isSusscess1&&isSusscess2)){
-                  //  isRunning=false;
-                  //  mClient.release();
-                //}
-                naSentVoiceData(mFrameByte,mBufferInfo.size);
-
-                mEncoder.releaseOutputBuffer(outputBufferIndex, false);
-                outputBufferIndex = mEncoder.dequeueOutputBuffer(mBufferInfo, 0);
-            }
-            */
         }
 
         /**

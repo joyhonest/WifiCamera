@@ -3,6 +3,7 @@ package com.joyhonest.wifination;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -13,12 +14,22 @@ public class MyMediaMuxer {
     private  static boolean bRecording=false;
     private  static MediaMuxer mediaMuxer=null;
 
-    private static  int audioInx=-1;
-    private static  int videoInx=-1;
+    public  static  int audioInx=-1;
+    public  static  int videoInx=-1;
 
 
     public  static MediaFormat formatV;
     public  static MediaFormat formatA;
+
+    public  static   int fps = 25;
+
+
+    public static  long  nCountFrame=0;
+
+    public  static long   nFramesAudio=0;
+
+    public static  int nCt = (2048 * 1000000) / (16000 * 2 * 1);
+
 
     public  static int  start(String strNme)
     {
@@ -34,45 +45,48 @@ public class MyMediaMuxer {
             formatA = null;
             mediaMuxer = new MediaMuxer(strNme, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
 
+
         }catch (Exception e)
         {
             e.printStackTrace();
         }
-
         return 0;
     }
 
-    static void WritSample(byte[] data, boolean bKey, boolean bVideo, long ppp)
+
+    static int WritSample(byte[] data, boolean bVideo,  MediaCodec.BufferInfo info)  //long ppp,
     {
         if(!bRecording)
-            return;
-        if(!bStartWrite && bVideo && bKey)
+            return -1;
+        if(!bStartWrite && bVideo && (info.flags & MediaCodec.BUFFER_FLAG_KEY_FRAME)!=0)
         {
             bStartWrite = true;
             Log.e("media","firset key Framne");
         }
         if(!bStartWrite)
-            return;
-
+            return -2;
+        int re = -1;
         if(bVideo)
         {
             if (data != null && mediaMuxer != null)
             {
-                MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
-                info.offset=0;
-                info.size=data.length;
-                info.flags = 0;// MediaCodec.BUFFER_FLAG_PARTIAL_FRAME;
-                if(bKey)
+
+              //  Log.e("TAG","offset = "+info.offset + " size = "+info.size+" size1 = "+data.length);
+                if((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) !=0 )
                 {
-                    info.flags = MediaCodec.BUFFER_FLAG_SYNC_FRAME;
+                    ;
                 }
-                info.presentationTimeUs = ppp;
-                try {
-                    mediaMuxer.writeSampleData(videoInx, ByteBuffer.wrap(data), info);
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
+                else {
+                    try {
+                        long  us =nCountFrame*1000000/fps ;
+                        info.presentationTimeUs = us;
+                        mediaMuxer.writeSampleData(videoInx,ByteBuffer.wrap(data), info);
+                        nCountFrame++;
+                        re = 0;
+                    } catch (Exception e) {
+                        Log.e("TAG", "write data eror");
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -82,13 +96,12 @@ public class MyMediaMuxer {
             {
                 if(audioInx>=0)
                 {
-                    MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
-                    info.offset=0;
-                    info.size=data.length;
-                    info.flags = 0;
-                    info.presentationTimeUs = ppp;
                     try {
+                        long usA = nFramesAudio*nCt;
+                        info.presentationTimeUs = usA;
                         mediaMuxer.writeSampleData(audioInx, ByteBuffer.wrap(data), info);
+                        nFramesAudio++;
+                        re = 0;
                     }
                     catch (Exception e)
                     {
@@ -98,6 +111,7 @@ public class MyMediaMuxer {
             }
 
         }
+        return re;
     }
 
 
@@ -106,7 +120,8 @@ public class MyMediaMuxer {
         if(format!=null && mediaMuxer!=null)
         {
             try {
-                if (videoInx < 0) {
+                if (videoInx < 0)
+                {
                     videoInx = mediaMuxer.addTrack(format);
                 }
             }
@@ -123,16 +138,27 @@ public class MyMediaMuxer {
                     {
                         bRecording = true;
                         bStartWrite = false;
+                        MyMediaMuxer.nFramesAudio=0;
+                        MyMediaMuxer.nCountFrame=0;
                         mediaMuxer.start();
                         Log.e("media","Start 111");
                     }
                 }
                 else
                 {
-                    bRecording = true;
-                    bStartWrite = false;
-                    mediaMuxer.start();
-                    Log.e("media","Start 222");
+                    try {
+                        bRecording = true;
+                        bStartWrite = false;
+                        MyMediaMuxer.nFramesAudio=0;
+                        MyMediaMuxer.nCountFrame=0;
+                        mediaMuxer.start();
+                        Log.e("media","Start 222");
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+
                 }
             }
         }
@@ -157,6 +183,8 @@ public class MyMediaMuxer {
                     {
                         bRecording = true;
                         bStartWrite = false;
+                        MyMediaMuxer.nFramesAudio=0;
+                        MyMediaMuxer.nCountFrame=0;
                         mediaMuxer.start();
                         Log.e("media","Start 333");
                     }
@@ -165,7 +193,6 @@ public class MyMediaMuxer {
                         Log.e("media","Start 444");
                     }
             }
-
         }
     }
 
@@ -175,6 +202,8 @@ public class MyMediaMuxer {
     {
          if(bRecording)
          {
+             bRecording = false;
+             SystemClock.sleep(100);
              try {
                  mediaMuxer.stop();
                  mediaMuxer.release();
@@ -188,7 +217,7 @@ public class MyMediaMuxer {
              formatA = null;
 
              mediaMuxer=null;
-             bRecording = false;
+
              audioInx = -1;
              videoInx = -1;
          }
