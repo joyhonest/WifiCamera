@@ -27,17 +27,18 @@ public class  StartActivity extends AppCompatActivity {
     private  String TAG = "Wifi_Camera";
     ImageView  DispImageView;
     boolean  bPlaying = false;
-    Button   button;
+    Button   button_play;
+    Button   button_stop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        button = findViewById(R.id.button1);
+        button_play = findViewById(R.id.btn_Play);
+        button_stop = findViewById(R.id.btn_Stop);
         DispImageView = findViewById(R.id.DispImageView);
-        button.setText("Play");
-
-        button.setOnClickListener(view->DoPlay());
+        button_play.setText("Play");
+        button_play.setOnClickListener(view->DoPlay());
 
 //        button.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -98,6 +99,7 @@ public class  StartActivity extends AppCompatActivity {
             wifination.naSetRevBmp(true);
             wifination.naStartRead20000_20001();
 
+            wifination.naSetGsensorRotaFillWhite(true);
             wifination.naInit("");
             wifination.naSetCameraDataRota(180);
 
@@ -105,9 +107,9 @@ public class  StartActivity extends AppCompatActivity {
             wifination.naSetMirror(false);
             //wifination.naSetAdjGsensorData(false);
             wifination.naSetEnableRotate(true);
-            wifination.naSetCircul(true);
+//            wifination.naSetCircul(true);
             wifination.naSetSensor(true);
-            wifination.naSetsquare(true);
+//            wifination.naSetsquare(true);
             wifination.naSet3DDenoiser(false);
         }
         else
@@ -116,13 +118,14 @@ public class  StartActivity extends AppCompatActivity {
             wifination.naStop();
         }
         bPlaying = !bPlaying;
+
         if(bPlaying)
         {
-            button.setText("Stop");
+            button_play.setText("Stop");
         }
         else
         {
-            button.setText("Play");
+            button_play.setText("Play");
         }
 
     }

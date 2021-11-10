@@ -31,7 +31,7 @@ public class MyMediaMuxer {
     public static  int nCt = (2048 * 1000000) / (16000 * 2 * 1);
 
 
-    public  static int  start(String strNme)
+    public  static int  init(String strNme)
     {
         if(bRecording)
         {

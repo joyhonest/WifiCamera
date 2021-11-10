@@ -33,6 +33,18 @@ public class AudioEncoder implements AudioCodec {
 
 
     public boolean  start() {
+        if(mWorker !=null)
+        {
+            mWorker.setRunning(false);
+            try {
+                mWorker.join(100);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            mWorker = null;
+        }
         if (mWorker == null)
         {
             mWorker = new Worker();
@@ -194,6 +206,7 @@ public class AudioEncoder implements AudioCodec {
             if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 MediaFormat newFormat = mEncoder.getOutputFormat();
                 MyMediaMuxer.AddAudioTrack(newFormat);
+                Log.e(TAG,"add audio track");
             }
 
             if (outputBufferIndex >= 0) {  //编码器有可能一次性突出多条数据 所以使用while

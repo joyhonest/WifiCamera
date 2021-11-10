@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 
 public class wifination {
 
+
     public  final   static    int  GP4225_Type_Video = 1;
     public  final   static    int  GP4225_Type_Locked = 2;
     public  final   static    int  GP4225_Type_Photo = 3;
@@ -197,33 +198,53 @@ public class wifination {
     public static  void naStartRecord(String pFileName, final  int PhoneOrSD)
     {
         sVideoName = pFileName;
-
-        if(bG_Audio)
+        String tmpFileName = sVideoName+"_.tmp";
+        if(PhoneOrSD == TYPE_BOTH_PHONE_SD || PhoneOrSD == TYPE_ONLY_PHONE)
         {
-            if(!AudioEncoder.isCanRecordAudio())  //判读是否可以录音，因为有时录音权限没有打开就无法录音
+            if(isPhoneRecording()) {
+                return;
+            }
+
+            if(tmpFileName.length()>10)
             {
-                bG_Audio = false;
+                MyMediaMuxer.init(tmpFileName);
+            }
+
+            if(bG_Audio)
+            {
+                if(!AudioEncoder.isCanRecordAudio())  //判读是否可以录音，因为有时录音权限没有打开就无法录音
+                {
+                    bG_Audio = false;
+                }
+            }
+
+            if(bG_Audio)
+            {
+                boolean re = G_StartAudio(1);
+                if(!re) //录音权限被拒绝
+                {
+                    bG_Audio=false;
+                }
+                else
+                {
+                    int nn = 0;
+                    while(MyMediaMuxer.audioInx<0)
+                    {
+                        SystemClock.sleep(10);
+                        nn++;
+                        if(nn>50)
+                            break;
+                    }
+
+                }
+            }
+            if(!bG_Audio)
+            {
+                G_StartAudio(0);
             }
         }
 
-        if(bG_Audio)
-        {
-            boolean re = G_StartAudio(1);
-            if(!re) //录音权限被拒绝
-            {
-                bG_Audio=false;
-            }
-            else
-            {
-                SystemClock.sleep(200);
-            }
-        }
-        if(!bG_Audio)
-        {
-            G_StartAudio(0);
-        }
-        naStartRecordA(sVideoName+"_.tmp",PhoneOrSD);
-
+        naStartRecordA(tmpFileName,PhoneOrSD);
     }
 
     // 获取录像时间 ms
@@ -1187,11 +1208,11 @@ public class wifination {
     ///////////video Media
     public  static int F_InitEncoder(int width,int height,int bitrate,int fps)
     {
-        String tmpFileName = sVideoName+"_.tmp";
-        if(tmpFileName!=null && tmpFileName.length()>10)
-        {
-            MyMediaMuxer.start(tmpFileName);
-        }
+//        String tmpFileName = sVideoName+"_.tmp";
+//        if(tmpFileName!=null && tmpFileName.length()>10)
+//        {
+//            MyMediaMuxer.init(tmpFileName);
+//        }
         return videoMediaCoder.initMediaCodec(width,height,bitrate,fps);
     }
 
