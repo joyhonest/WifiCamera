@@ -600,9 +600,11 @@ public class GP4225_Device {
                     }
                     break;
                 case 0x0020: {
-                    int a = data[11];
-                    Integer aa = (int)a;
-                    EventBus.getDefault().post(aa, "onGetLedMode");
+                    if(data.length>=12) {
+                        int a = data[11];
+                        Integer aa = (int) a;
+                        EventBus.getDefault().post(aa, "onGetLedMode");
+                    }
                 }
                 break;
 
