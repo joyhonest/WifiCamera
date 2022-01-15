@@ -526,7 +526,6 @@ public class wifination {
     public static  native void naSetbRotaHV(boolean b); //b = flase  表示手机是竖屏显示，但因为我们的camera是横屏数据，所以还需调用 naRotation 来转 90度满屏显示
     //b = true,  手机横屏显示，此时如果调用 naRotation， 就只是把 显示画面旋转 ，如果转 90 ，-90 270 ，就会显示有 黑边
     public static native boolean naSetWifiPassword(String sPassword);
-
     public static native void naSetLedOnOff(boolean bOpenLed);
 
 
@@ -912,7 +911,6 @@ public class wifination {
                 if (nLen > CmdLen)
                     nLen = CmdLen;
                 byte[] cmd = new byte[nLen];
-
                 ByteBuffer buf = wifination.mDirectBuffer;
                 //buf.rewind();
                 for (int i = 0; i < nLen; i++) {
@@ -1198,7 +1196,6 @@ public class wifination {
             bmp = Bitmap.createBitmap(i & 0xFFFF, ((i >> 16)& 0xFFFF), Bitmap.Config.ARGB_8888);
         if(bmp.getWidth()!=(i & 0xFFFF) || bmp.getHeight()!=((i >> 16)& 0xFFFF) )
             bmp = Bitmap.createBitmap(i & 0xFFFF, ((i >> 16)& 0xFFFF), Bitmap.Config.ARGB_8888);
-        //ByteBuffer buf = wifination.mDirectBuffer;
         mDirectBuffer.rewind();
         bmp.copyPixelsFromBuffer(mDirectBuffer);    //
         if(bRevBmp) {
@@ -1298,6 +1295,7 @@ public class wifination {
     public  static native  void naSetnAdjDelay(int nms);
     public  static native void naStartAdjFocus(int x,int y);
     public  static native int  naGetVcm();
+    public  static native void  naSetVcm(int nvcm);
     private  static  void  onAdjFocus(int n)
     {
         Integer  data = n;
@@ -1431,6 +1429,14 @@ public class wifination {
         }
         return false;
     }
+
+
+    //读取， data_ = null 或者 nLen = 0
+    public static  native void naSetBK_Para(byte []data_,int nLen);
+    public static  native  void naSetBK_MacAddress(byte []data_,int nLen);
+
+    //根据自定义协议来。
+    public static  native void naSetCustomData(byte []data_,int nLen);
 
 
 }

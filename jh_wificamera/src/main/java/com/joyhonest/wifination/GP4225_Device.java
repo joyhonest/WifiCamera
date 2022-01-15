@@ -173,8 +173,8 @@ public class GP4225_Device {
             PhotoCount = ((data[20] & 0xFF) + (data[21] & 0xFF) * 0x100 + (data[22] & 0xFF) * 0x10000 + (data[23] & 0xFF) * 0x1000000);
 
             if (n_len >= 0x1A) {
-                nSDAllSize = ((data[24] & 0xFF) + (data[25] & 0xFF) * 0x100 + (data[26] & 0xFF) * 0x10000 + (data[27] & 0xFF) * 0x1000000 + (data[34] & 0xFF) * 0x100000000L);
-                nSDAvaildSize = ((data[28] & 0xFF) + (data[29] & 0xFF) * 0x100 + (data[30] & 0xFF) * 0x10000 + (data[31] & 0xFF) * 0x1000000 + (data[35] & 0xFF) * 0x100000000L);
+                nSDAllSize = ((data[24] & 0xFF) + (data[25] & 0xFF) * 0x100 + (data[26] & 0xFF) * 0x10000 + (data[27] & 0xFF) * 0x1000000L + (data[34] & 0xFF) * 0x100000000L);
+                nSDAvaildSize = ((data[28] & 0xFF) + (data[29] & 0xFF) * 0x100 + (data[30] & 0xFF) * 0x10000 + (data[31] & 0xFF) * 0x1000000L + (data[35] & 0xFF) * 0x100000000L);
             }
             if (data.length >= 34) {
                 nBattery = data[32] & 0xFF;
@@ -207,6 +207,13 @@ public class GP4225_Device {
             Integer nb = nBattery;
             EventBus.getDefault().post(nb,"onGetBattery");
             EventBus.getDefault().post("", "GP4225_GetStatus");
+            return true;
+        }
+        if(m_cmd == 0xFE01)
+        {
+            byte[] buffer = new byte[n_len+4];
+            System.arraycopy(data,6,buffer,0,n_len+4);
+            EventBus.getDefault().post(buffer,"onGetCustomData");
             return true;
         }
         if (m_cmd == 0x0002)  //GetFileList
@@ -386,7 +393,7 @@ public class GP4225_Device {
                     EventBus.getDefault().post(aa, "GP4225_GetVcm");
                 }
                 break;
-                case 0x000E:  //GP4225_GetLed
+                case 0x000E:  //GP4225_GetLed   ip 192.168.34.1
                 {
                     byte a = data[10];
                     Integer aa = (int) a;
@@ -599,12 +606,25 @@ public class GP4225_Device {
                         EventBus.getDefault().post(da, "GP4225_GetRadarData");
                     }
                     break;
-                case 0x0020: {
-                    if(data.length>=12) {
-                        int a = data[11];
-                        Integer aa = (int) a;
-                        EventBus.getDefault().post(aa, "onGetLedMode");
-                    }
+                case 0x0020:
+                {
+                    int a = data[11];
+                    Integer aa = (int)a;
+                    EventBus.getDefault().post(aa, "onGetLedMode");
+                }
+                break;
+                case 0x0024:  //BK_PARA
+                {
+                    byte []da = new byte[n_len];
+                    System.arraycopy(data, 10, da, 0, n_len);
+                    EventBus.getDefault().post(da, "onGetBK_ParaData");
+                }
+                break;
+                case 0x0025: //BK_Macaddres
+                {
+                    byte []da = new byte[n_len];
+                    System.arraycopy(data, 10, da, 0, n_len);
+                    EventBus.getDefault().post(da, "onGetBK_GetMacAddress");
                 }
                 break;
 
