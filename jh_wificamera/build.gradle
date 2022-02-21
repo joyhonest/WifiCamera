@@ -194,6 +194,7 @@ publish {
 //5.19     添加Gsensor旋转时，填充背景是否为黑或者白的API。另外修改了录像录音的流程。
 //5.20     添加Gsensor滤波
 //5.23     添加BK的操作，具体参见V2.7版协议
+//5.24     修改SetLedPMW, 添加对 192.168.29.1 模块支持
 
 //git commit -m "xxx" -a
 //git push -u origin main
