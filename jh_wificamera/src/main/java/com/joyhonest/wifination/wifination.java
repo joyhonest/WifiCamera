@@ -266,6 +266,7 @@ public class wifination {
     public static native boolean isPhoneRecording();
     //设定录像的分辨率，一般无需设定，默认位模块传回视频分辨率
     public static native int naSetRecordWH(int ww, int hh);
+    public static  native long naGetRecordWH();
     public static native  int naGetDispWH();
     //设定是否需要SDK内部来显示，b = true， SDK 把解码到的图像发送到JAVA，由APP自己来显示而不是通过SDK内部来渲染显示
     // SDK解码后图像 由 ReceiveBmp 返回
