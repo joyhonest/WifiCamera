@@ -263,6 +263,9 @@ public class wifination {
 
     }
     //手机是否在录像
+
+    public static native  boolean naIsJoyCamera();  //判断连接的WIFI是否是我司的产品
+
     public static native boolean isPhoneRecording();
     //设定录像的分辨率，一般无需设定，默认位模块传回视频分辨率
     public static native int naSetRecordWH(int ww, int hh);
@@ -692,6 +695,7 @@ public class wifination {
     {
         Integer  nLed = nLed_;
         EventBus.getDefault().post(nLed,"onGetLed");
+        EventBus.getDefault().post(nLed,"onGetLedPWM");
     }
 
     private static  void onUdpRevData(byte[] data,int nPort)      // naStartReadUdp，后，读取到的数据从这里返回
@@ -1327,6 +1331,11 @@ public class wifination {
 
 //2021-01-18
 
+    // 0 - VGA 1 720p  2 = 1080P
+    public static native void naSetDeviceResolution(int n);
+
+    //通过 GP4225_GetResolution 消息返回
+    public static native void naGetDeviceResolution();
 
 
     private static  ByteBuffer picBuffer=ByteBuffer.allocate(60*60*4);
