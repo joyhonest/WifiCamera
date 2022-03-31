@@ -197,5 +197,6 @@ publish {
 //5.24     修改SetLedPMW, 添加对 192.168.29.1 模块支持
 //5.25     添加 naGetRecordWH()
 //5.26     添加 naSetDeviceResolution
+//5.27     添加 naSetSDRecordResolution naSetMicOnOff
 //git commit -m "xxx" -a
 //git push -u origin main

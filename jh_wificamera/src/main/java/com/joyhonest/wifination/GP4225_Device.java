@@ -393,11 +393,12 @@ public class GP4225_Device {
                     EventBus.getDefault().post(aa, "GP4225_GetVcm");
                 }
                 break;
-                case 0x000E:  //GP4225_GetLed   ip 192.168.34.1
+                case 0x000E:  //GP4225_GetLed   ip 192.168.34.1  192.168.29.1
                 {
                     byte a = data[10];
                     Integer aa = (int) a;
                     EventBus.getDefault().post(aa, "onGetLed");
+                    EventBus.getDefault().post(aa, "onGetLedPWM");
                     EventBus.getDefault().post(aa, "GP4225_GetLed");
                 }
                 break;
@@ -607,27 +608,42 @@ public class GP4225_Device {
                     }
                     break;
                 case 0x0020:
-                {
-                    int a = data[11];
-                    Integer aa = (int)a;
-                    EventBus.getDefault().post(aa, "onGetLedMode");
-                }
-                break;
+                    {
+                        int a = data[11];
+                        Integer aa = (int)a;
+                        EventBus.getDefault().post(aa, "onGetLedMode");
+                    }
+                    break;
                 case 0x0024:  //BK_PARA
-                {
-                    byte []da = new byte[n_len];
-                    System.arraycopy(data, 10, da, 0, n_len);
-                    EventBus.getDefault().post(da, "onGetBK_ParaData");
-                }
-                break;
+                    {
+                        byte []da = new byte[n_len];
+                        System.arraycopy(data, 10, da, 0, n_len);
+                        EventBus.getDefault().post(da, "onGetBK_ParaData");
+                    }
+                    break;
                 case 0x0025: //BK_Macaddres
                 {
                     byte []da = new byte[n_len];
                     System.arraycopy(data, 10, da, 0, n_len);
                     EventBus.getDefault().post(da, "onGetBK_GetMacAddress");
                 }
-                break;
+                    break;
+                case 0x0026:
+                {
+                    byte a = data[10];
+                    Integer aa = (int) a;
+                    EventBus.getDefault().post(aa, "onGetMicSttus");
 
+                }
+                break;
+                case 0x0027: //SD Record Resolution
+                {
+                    byte []da = new byte[8];
+                    System.arraycopy(data, 10, da, 0, n_len);
+                    EventBus.getDefault().post(da, "onGetSDRecordResolution");
+
+                }
+                break;
                 case 0x0050:
                 {
                     byte[] aa = null;
