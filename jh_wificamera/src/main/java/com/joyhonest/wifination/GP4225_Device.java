@@ -632,7 +632,7 @@ public class GP4225_Device {
                 {
                     byte a = data[10];
                     Integer aa = (int) a;
-                    EventBus.getDefault().post(aa, "onGetMicSatus");
+                    EventBus.getDefault().post(aa, "onGetMicStatus");
 
                 }
                 break;
