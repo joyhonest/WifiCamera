@@ -198,5 +198,7 @@ publish {
 //5.25     添加 naGetRecordWH()
 //5.26     添加 naSetDeviceResolution
 //5.27     添加 naSetSDRecordResolution naSetMicOnOff
+//5.28     bugs fixed
+//5.29     bugs fixed
 //git commit -m "xxx" -a
 //git push -u origin main
