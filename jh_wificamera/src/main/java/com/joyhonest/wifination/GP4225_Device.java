@@ -6,6 +6,7 @@ import org.simple.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class GP4225_Device {
 
@@ -196,7 +197,9 @@ public class GP4225_Device {
                     {
                         MacAddress[i]=data[40+i];
                     }
-                    String str = new String(MacAddress);
+
+                    String str = String.format(Locale.getDefault(),"%02X%02X%02X%02X%02X%02X",
+                            MacAddress[0],MacAddress[1],MacAddress[2],MacAddress[3],MacAddress[4],MacAddress[5]);
                     EventBus.getDefault().post(str,"onMacAddress");
                 }
 
