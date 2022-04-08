@@ -1473,6 +1473,6 @@ public class wifination {
         }
     }
 
-    private static native void naStartOta(String sOtaPath);
+    public static native void naStartOta(String sOtaPath);
 
 }
