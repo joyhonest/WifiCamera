@@ -196,6 +196,8 @@ public class GP4225_Device {
                     {
                         MacAddress[i]=data[40+i];
                     }
+                    String str = new String(MacAddress);
+                    EventBus.getDefault().post(str,"onMacAddress");
                 }
 
             } else {
@@ -608,26 +610,26 @@ public class GP4225_Device {
                     }
                     break;
                 case 0x0020:
-                    {
-                        int a = data[11];
-                        Integer aa = (int)a;
-                        EventBus.getDefault().post(aa, "onGetLedMode");
-                    }
-                    break;
+                {
+                    int a = data[11];
+                    Integer aa = (int)a;
+                    EventBus.getDefault().post(aa, "onGetLedMode");
+                }
+                break;
                 case 0x0024:  //BK_PARA
-                    {
-                        byte []da = new byte[n_len];
-                        System.arraycopy(data, 10, da, 0, n_len);
-                        EventBus.getDefault().post(da, "onGetBK_ParaData");
-                    }
-                    break;
+                {
+                    byte []da = new byte[n_len];
+                    System.arraycopy(data, 10, da, 0, n_len);
+                    EventBus.getDefault().post(da, "onGetBK_ParaData");
+                }
+                break;
                 case 0x0025: //BK_Macaddres
                 {
                     byte []da = new byte[n_len];
                     System.arraycopy(data, 10, da, 0, n_len);
                     EventBus.getDefault().post(da, "onGetBK_GetMacAddress");
                 }
-                    break;
+                break;
                 case 0x0026:
                 {
                     byte a = data[10];

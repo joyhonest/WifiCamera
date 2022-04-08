@@ -387,7 +387,7 @@ public class wifination {
 
             @Override
             public void PlayTime(int da) {
-              //  Log.e("AABB","time = "+da);
+                //  Log.e("AABB","time = "+da);
                 Integer a = da;
                 EventBus.getDefault().post(a,"PlayTime");
             }
@@ -445,6 +445,7 @@ public class wifination {
 
 
 
+
     //获取SD卡中视频的的缩略图(针对  IC_GKA),一般建议如果已经下载到手机的视频文件,利用系统函数来获取缩略图,本函数主要是用于获取没有下载到手机
 //的SD卡中的视频文件缩略图,调用次函数后,SDK会回调 GetThumb(byte[] data,String sFilename), data 是缩略图数据,filename是表明是哪个视频文件
 //一般,我们在调用naGetVideoDir()时, 在回调函数GetFiles(byte[] filesname)得到文件名,在调用此函数来获取缩略图
@@ -473,7 +474,7 @@ public class wifination {
     public static  int naGkASetRecordResolution(boolean b20P)
     {
         if(b20P) {
-           return  naSetRecordWH(1280, 720);
+            return  naSetRecordWH(1280, 720);
         }
         else
         {
@@ -535,7 +536,7 @@ public class wifination {
 
     public static native void naRotation(int n);  // n == 0 || n ==90 || n ==-90 || n ==180 || n==270
     public static  native void naSetbRotaHV(boolean b); //b = flase  表示手机是竖屏显示，但因为我们的camera是横屏数据，所以还需调用 naRotation 来转 90度满屏显示
-                                                        //b = true,  手机横屏显示，此时如果调用 naRotation， 就只是把 显示画面旋转 ，如果转 90 ，-90 270 ，就会显示有 黑边
+    //b = true,  手机横屏显示，此时如果调用 naRotation， 就只是把 显示画面旋转 ，如果转 90 ，-90 270 ，就会显示有 黑边
     public static native boolean naSetWifiPassword(String sPassword);
     public static native void naSetLedOnOff(boolean bOpenLed);
 
@@ -708,22 +709,22 @@ public class wifination {
     private static  void onUdpRevData(byte[] data,int nPort)      // naStartReadUdp，后，读取到的数据从这里返回
     {
         UpdData  udp_data = new UpdData(data,nPort);
-         if(nPort == 20001) {
-             if (bProgressGP4225UDP) {
-                 if (!gp4225_Device.GP4225_PressData(data)) {
-                     EventBus.getDefault().post(data, "onUdpRevData");
-                     EventBus.getDefault().post(udp_data, "onUdpRevData_NewVer");
-                 }
-             } else {
-                 EventBus.getDefault().post(data, "onUdpRevData");
-                 EventBus.getDefault().post(udp_data, "onUdpRevData_NewVer");
-             }
-         }
-         else
-         {
-             EventBus.getDefault().post(data, "onUdpRevData");
-             EventBus.getDefault().post(udp_data, "onUdpRevData_NewVer");
-         }
+        if(nPort == 20001) {
+            if (bProgressGP4225UDP) {
+                if (!gp4225_Device.GP4225_PressData(data)) {
+                    EventBus.getDefault().post(data, "onUdpRevData");
+                    EventBus.getDefault().post(udp_data, "onUdpRevData_NewVer");
+                }
+            } else {
+                EventBus.getDefault().post(data, "onUdpRevData");
+                EventBus.getDefault().post(udp_data, "onUdpRevData_NewVer");
+            }
+        }
+        else
+        {
+            EventBus.getDefault().post(data, "onUdpRevData");
+            EventBus.getDefault().post(udp_data, "onUdpRevData_NewVer");
+        }
     }
 
     public static Bitmap naGetVideoThumbnail(String filename)
@@ -743,7 +744,7 @@ public class wifination {
 
     private static void OnPlayIsStarting_Callback(int n)
     {
-          //n !=0  Play is Start  0= Play is over
+        //n !=0  Play is Start  0= Play is over
         Integer i = n;
         EventBus.getDefault().post(i,"OnPlayStatus");
 
@@ -828,18 +829,18 @@ public class wifination {
             Bitmap croppedBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(croppedBitmap);
             Matrix frameToCropTransform;
-                frameToCropTransform =
-                        ImageUtils.getTransformationMatrix(
-                                width, height,
-                                newWidth, newHeight,
-                                0, false);
+            frameToCropTransform =
+                    ImageUtils.getTransformationMatrix(
+                            width, height,
+                            newWidth, newHeight,
+                            0, false);
 
-                Matrix cropToFrameTransform = new Matrix();
-                frameToCropTransform.invert(cropToFrameTransform);
-                canvas.drawBitmap(bmp, frameToCropTransform, null);
+            Matrix cropToFrameTransform = new Matrix();
+            frameToCropTransform.invert(cropToFrameTransform);
+            canvas.drawBitmap(bmp, frameToCropTransform, null);
 
-                bmp.recycle();
-                bmp = croppedBitmap;
+            bmp.recycle();
+            bmp = croppedBitmap;
         }
 
         int ww = bmp.getWidth();
@@ -897,8 +898,8 @@ public class wifination {
 
     private static  void OnGetAngle(float nAngle)
     {
-            Float  a = nAngle;
-            EventBus.getDefault().post(a,"OnGetAngle");
+        Float  a = nAngle;
+        EventBus.getDefault().post(a,"OnGetAngle");
     }
 
 
@@ -916,7 +917,7 @@ public class wifination {
                 Integer ix = (nStatus & 0xFF);
                 EventBus.getDefault().post(ix, "OnGetPwmData");
             }
-                break;
+            break;
             case   0x3005:    //读取flash数据
             {
                 int nLen = (nStatus & 0xFFFF);
@@ -930,7 +931,7 @@ public class wifination {
                 }
                 EventBus.getDefault().post(cmd, "ReadDataFromFlash");
             }
-                break;
+            break;
             case   0x3006:      //写数据结果
             {
                 int re  = 1;
@@ -946,7 +947,7 @@ public class wifination {
                 Integer ii = re;
                 EventBus.getDefault().post(ii, "WriteData2FlashResult");
             }
-                break;
+            break;
             case 0xFFFF:                    //所有通过串口传过来的数据 ，用于与固件调试时使用
             {
                 int nLen = (nStatus & 0xFFFF);
@@ -964,7 +965,7 @@ public class wifination {
                 //SecuritySeed =
                 EventBus.getDefault().post(cmd, "GetDataFromRs232");
             }
-                break;
+            break;
             case 0x5443:            //wifi透传数据
             {
                 int nLen = (nStatus & 0xFF);
@@ -978,10 +979,10 @@ public class wifination {
                 }
                 EventBus.getDefault().post(cmd, "GetWifiSendData");
             }
-                break;
+            break;
 
             case 0x5444:
-                {
+            {
                 int nLen = (nStatus & 0xFF);
                 byte[] cmd = new byte[nLen];
 
@@ -1004,7 +1005,7 @@ public class wifination {
                     EventBus.getDefault().post(da, "GetSecurityInfo");
                 }
             }
-                break;
+            break;
             case  0x2000://              回传 模块本身信息数据
             {
                 int nLen = (nStatus & 0xFF);
@@ -1016,7 +1017,7 @@ public class wifination {
                 }
                 EventBus.getDefault().post(cmd, "GetWifiInfoData");
             }
-                break;
+            break;
 
             case 0x1021:
             case 0xFFFE:            //电量
@@ -1024,14 +1025,14 @@ public class wifination {
                 Integer nB = nStatus &0x0F;;
                 EventBus.getDefault().post(nB, "OnGetBatteryLevel");
             }
-                break;
+            break;
 
             case  0x0006:       //返回显示Style
             {
                 Integer nB = nStatus &0x0F;
                 EventBus.getDefault().post(nB, "OnGetSetStyle");
             }
-                break;
+            break;
 
             case 0xFFFC:            //按键  -- 这是为了兼容之前的SDK，新版的SDK通过  OnKeyPress  返回
                 Integer ix = nStatus &0xFF;                //返回 模块按键
@@ -1115,7 +1116,7 @@ public class wifination {
                         break;
                 }
             }
-                break;
+            break;
 
 
         }
@@ -1180,7 +1181,7 @@ public class wifination {
         EventBus.getDefault().post(n, "Key_Pressed");
     }
 
-   //返回手势识别的300*300 图像，用 C来处理缩放用来提供效率
+    //返回手势识别的300*300 图像，用 C来处理缩放用来提供效率
     private static void GestureBmp(int i)
     {
 
@@ -1229,10 +1230,10 @@ public class wifination {
 
     public   static  void offerEncoder(byte[] data,int nLen)
     {
-         if(videoMediaCoder!=null)
-         {
-             videoMediaCoder.offerEncoder(data,nLen);
-         }
+        if(videoMediaCoder!=null)
+        {
+            videoMediaCoder.offerEncoder(data,nLen);
+        }
     }
 
 
@@ -1321,7 +1322,7 @@ public class wifination {
 
 
 
-//2020-09-25
+    //2020-09-25
     public static native  void na4225_ReadDeviceInfo(); //读取  GP4225_GetDeviceInfo  返回
     public static native  int  naSetIR(int n); //红外
     public static native  int  naReadIR();   // GP4225_GetIR_Status  返回
@@ -1352,43 +1353,43 @@ public class wifination {
     private static PictureFromVideo_Interface globalPictureFromaeInterface = null;
     private static void onProgressGetPictureFromVideo(byte[]data,int nStatus)
     {
-            if(globalPictureFromaeInterface !=null)
+        if(globalPictureFromaeInterface !=null)
+        {
+            if(nStatus ==1)
             {
-                 if(nStatus ==1)
-                 {
-                     int  nCountFrame = ((data[0] & 0xFF) +
-                                         (data[1] & 0xFF) * 0x100 +
-                                         (data[2] & 0xFF) * 0x10000 +
-                                         (data[3] & 0xFF) * 0x1000000);
-                     int nTimes = ((data[4] & 0xFF) +
-                             (data[5] & 0xFF) * 0x100 +
-                             (data[6] & 0xFF) * 0x10000 +
-                             (data[7] & 0xFF) * 0x1000000);
+                int  nCountFrame = ((data[0] & 0xFF) +
+                        (data[1] & 0xFF) * 0x100 +
+                        (data[2] & 0xFF) * 0x10000 +
+                        (data[3] & 0xFF) * 0x1000000);
+                int nTimes = ((data[4] & 0xFF) +
+                        (data[5] & 0xFF) * 0x100 +
+                        (data[6] & 0xFF) * 0x10000 +
+                        (data[7] & 0xFF) * 0x1000000);
 
-                     globalPictureFromaeInterface.onStart(nCountFrame,nTimes);
-                 }
-                 else if(nStatus == 2)
-                 {
-                     // 数组放到buffer中
-                     picBuffer.rewind();
-                     picBuffer.put(data);
-                     //重置 limit 和postion 值 否则 buffer 读取数据不对
-                     picBuffer.rewind();
-                     Bitmap picBmp =  Bitmap.createBitmap(60, 60, Bitmap.Config.ARGB_8888);
-                     picBmp.copyPixelsFromBuffer(picBuffer);
-                     globalPictureFromaeInterface.onGetaPicture(picBmp);
-                 }
-                 else if(nStatus == 3)
-                 {
-                     globalPictureFromaeInterface.onEnd();
-                     globalPictureFromaeInterface = null;
-                 }
-                 else if(nStatus<0)
-                 {
-                     globalPictureFromaeInterface.onError(nStatus);
-                     globalPictureFromaeInterface = null;
-                 }
+                globalPictureFromaeInterface.onStart(nCountFrame,nTimes);
             }
+            else if(nStatus == 2)
+            {
+                // 数组放到buffer中
+                picBuffer.rewind();
+                picBuffer.put(data);
+                //重置 limit 和postion 值 否则 buffer 读取数据不对
+                picBuffer.rewind();
+                Bitmap picBmp =  Bitmap.createBitmap(60, 60, Bitmap.Config.ARGB_8888);
+                picBmp.copyPixelsFromBuffer(picBuffer);
+                globalPictureFromaeInterface.onGetaPicture(picBmp);
+            }
+            else if(nStatus == 3)
+            {
+                globalPictureFromaeInterface.onEnd();
+                globalPictureFromaeInterface = null;
+            }
+            else if(nStatus<0)
+            {
+                globalPictureFromaeInterface.onError(nStatus);
+                globalPictureFromaeInterface = null;
+            }
+        }
     }
 
 
@@ -1458,5 +1459,20 @@ public class wifination {
     //根据自定义协议来。
     public static  native void naSetCustomData(byte []data_,int nLen);
 
+
+    private  static  void onGetOtaStatus(int nType,int Data) //OTA 状态返回
+    {
+        Integer a = Data;
+        if(nType == 0)
+        {
+            EventBus.getDefault().post(a,"onUpgradeStatus");
+        }
+        if(nType == 1)
+        {
+            EventBus.getDefault().post(a,"onUpgradePercent");
+        }
+    }
+
+    private static native void naStartOta(String sOtaPath);
 
 }
