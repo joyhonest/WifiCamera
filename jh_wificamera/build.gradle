@@ -202,5 +202,7 @@ publish {
 //5.29     bugs fixed
 //5.30     添加 OTA
 //5.31     修正读取Mac是的字符串
+//5.32     fixbugs
+//5.33     修改OTAbugs
 //git commit -m "xxx" -a
 //git push -u origin main
