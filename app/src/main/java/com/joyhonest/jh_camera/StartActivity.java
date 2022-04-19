@@ -14,6 +14,9 @@ import com.joyhonest.wifination.wifination;
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 //import org.simple.eventbus.EventBus;
 //import org.simple.eventbus.Subscriber;
 
@@ -39,6 +42,7 @@ public class  StartActivity extends AppCompatActivity {
         DispImageView = findViewById(R.id.DispImageView);
         button_play.setText("Play");
         button_play.setOnClickListener(view->DoPlay());
+
 
 //        button.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -84,9 +88,6 @@ public class  StartActivity extends AppCompatActivity {
 //        });
 
         //wifination.naSetDebug(true);
-
-
-
         EventBus.getDefault().register(this);
      //   EventBus.getDefault().register(this);
     }
@@ -216,4 +217,16 @@ public class  StartActivity extends AppCompatActivity {
 //        super.onDestroy();
 //        EventBus.getDefault().unregister(this);
 //    }
+
+    @Subscriber(tag = "onUpgradeStatus")
+    private void onUpgradeStatus(Integer i)
+    {
+        Log.e(TAG," OTA status = "+i);
+    }
+
+    @Subscriber(tag = "onUpgradePercent")
+    private void onUpgradePercent(Integer i)
+    {
+        Log.e(TAG," OTA = "+i);
+    }
 }
