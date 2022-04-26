@@ -88,46 +88,46 @@ public class  StartActivity extends AppCompatActivity {
 //        });
 
         //wifination.naSetDebug(true);
-        EventBus.getDefault().register(this);
+//        EventBus.getDefault().register(this);
      //   EventBus.getDefault().register(this);
     }
 
 
     public void DoPlay()
     {
-        if(!bPlaying)
-        {
-            wifination.naSetRevBmp(true);
-            wifination.naStartRead20000_20001();
-
-            wifination.naSetGsensorRotaFillWhite(true);
-            wifination.naInit("");
-            wifination.naSetCameraDataRota(180);
-
-            wifination.naSetGsensorType(2);
-            wifination.naSetMirror(false);
-            //wifination.naSetAdjGsensorData(false);
-            wifination.naSetEnableRotate(true);
-//            wifination.naSetCircul(true);
-            wifination.naSetSensor(true);
-//            wifination.naSetsquare(true);
-            wifination.naSet3DDenoiser(false);
-        }
-        else
-        {
-            wifination.naStopRecord_All();
-            wifination.naStop();
-        }
-        bPlaying = !bPlaying;
-
-        if(bPlaying)
-        {
-            button_play.setText("Stop");
-        }
-        else
-        {
-            button_play.setText("Play");
-        }
+//        if(!bPlaying)
+//        {
+//            wifination.naSetRevBmp(true);
+//            wifination.naStartRead20000_20001();
+//
+//            wifination.naSetGsensorRotaFillWhite(true);
+//            wifination.naInit("");
+//            wifination.naSetCameraDataRota(180);
+//
+//            wifination.naSetGsensorType(2);
+//            wifination.naSetMirror(false);
+//            //wifination.naSetAdjGsensorData(false);
+//            wifination.naSetEnableRotate(true);
+////            wifination.naSetCircul(true);
+//            wifination.naSetSensor(true);
+////            wifination.naSetsquare(true);
+//            wifination.naSet3DDenoiser(false);
+//        }
+//        else
+//        {
+//            wifination.naStopRecord_All();
+//            wifination.naStop();
+//        }
+//        bPlaying = !bPlaying;
+//
+//        if(bPlaying)
+//        {
+//            button_play.setText("Stop");
+//        }
+//        else
+//        {
+//            button_play.setText("Play");
+//        }
 
     }
 

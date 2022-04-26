@@ -205,5 +205,6 @@ publish {
 //5.32     fixbugs
 //5.33     修改OTAbugs
 //5.34     naInit 时，如果之前没有调用 naStop，就强制调用一下naStop()
+//5.35     修正naStartOTA 时的一个内存错误。
 //git commit -m "xxx" -a
 //git push -u origin main
