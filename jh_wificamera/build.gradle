@@ -206,5 +206,6 @@ publish {
 //5.33     修改OTAbugs
 //5.34     naInit 时，如果之前没有调用 naStop，就强制调用一下naStop()
 //5.35     修正naStartOTA 时的一个内存错误。
-//git commit -m "xxx" -a
+//5.36     修正naStartOTA 在有些型号手机上无法升级的问题（主要时每次发送数据的包不能太大)
+//git commit -m "5.36" -a
 //git push -u origin main
