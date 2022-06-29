@@ -208,5 +208,6 @@ publish {
 //5.35     修正naStartOTA 时的一个内存错误。
 //5.36     修正naStartOTA 在有些型号手机上无法升级的问题（主要时每次发送数据的包不能太大)
 //5.37     同一naSETLedPwm 接口
-//git commit -m "5.37" -a
+//5.38     fix  naGetBattery
+//git commit -m "5.38" -a
 //git push -u origin main
