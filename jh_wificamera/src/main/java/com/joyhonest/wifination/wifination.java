@@ -173,7 +173,7 @@ public class wifination {
 
     public static native  void naStartRead20000_20001();
 
-
+    public static native void naSetTimeOsd(int x,int y,int nDateType); //x设置足够大就会不显示
 
 
 
