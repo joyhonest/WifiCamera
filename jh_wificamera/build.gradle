@@ -210,5 +210,6 @@ publish {
 //5.37     同一naSETLedPwm 接口
 //5.38     fix  naGetBattery
 //5.39     添加 时间水印API
-//git commit -m "5.39" -a
+//5.40     优化scal 参数
+//git commit -m "5.40" -a
 //git push -u origin main
