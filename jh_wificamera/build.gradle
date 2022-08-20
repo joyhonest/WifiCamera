@@ -211,6 +211,6 @@ publish {
 //5.38     fix  naGetBattery
 //5.39     添加 时间水印API
 //5.40     优化scal 参数
-//5.41
-//git commit -m "5.41" -a
+//5.42
+//git commit -m "5.42" -a
 //git push -u origin main
