@@ -111,7 +111,7 @@ public class GP4225_Device {
 //    }
 
 
-    byte bytes[] = new byte[32];
+    byte bytes[] = new byte[64];
     int GsensorData[] = new int[3];
 
 
@@ -227,30 +227,38 @@ public class GP4225_Device {
                 nStartInx = (data[10] & 0xFF) + (data[11] & 0xFF) * 0x100;
                 nEndInx = (data[12] & 0xFF) + (data[13] & 0xFF) * 0x100;
 
-                GetFiles FF = new GetFiles();
+//                int ni = nEndInx - nStartInx+1;
+//                int nCLen = data.length-14;
+//
+//                int nC2 = nCLen/ni;  //
+//                int nC3 = 32+nC2-68;
 
+                int nC3 = 32;
+                int nC2 = 68;
+
+                byte[] buffer = new byte[nC3];
+
+                GetFiles FF = new GetFiles();
                 FF.files = new ArrayList<>();
                 for (int ii = 0; ii <= nEndInx - nStartInx; ii++) {
-
-                    inx = 14 + 32 + (ii * 68);
+                    inx = 14 + 24+8 + (ii * nC2);
                     nLen = (data[inx] & 0xFF) + (data[inx + 1] & 0xFF) * 0x100 + (data[inx + 2] & 0xFF) * 0x10000 + (data[inx + 3] & 0xFF) * 0x1000000;
                     inx += 4;
                     int da = 0;
-                    for (int xx = 0; xx < 32; xx++) {
+                    for (int xx = 0; xx < nC3; xx++) {
                         if (data[inx + xx] != 0) {
                             da++;
                         }
                     }
                     sFileName = "";
-                    if (da != 0) {
-                        System.arraycopy(data, inx, bytes, 0, da);
-                        sFileName = new String(bytes, 0, da);
+                    if (da != 0 &da<=nC3) {
+                        System.arraycopy(data, inx, buffer, 0, da);
+                        sFileName = new String(buffer, 0, da);
                     }
                     MyFile file = new MyFile("", sFileName, nLen);
                     file.nInx1 = nStartInx;
                     file.nInx2 = nEndInx;
                     FF.files.add(file);
-                    //EventBus.getDefault().post(file,"GP4225_RevFile");
                 }
                 EventBus.getDefault().post(FF, "GP4225_RevFiles");
             }
@@ -647,6 +655,13 @@ public class GP4225_Device {
                     System.arraycopy(data, 10, da, 0, n_len);
                     EventBus.getDefault().post(da, "onGetSDRecordResolution");
 
+                }
+                break;
+                case 0x002B: //摄像头参数
+                {
+                    byte []da = new byte[n_len];
+                    System.arraycopy(data, 10, da, 0, n_len);
+                    EventBus.getDefault().post(da, "onGetCameraPara");
                 }
                 break;
                 case 0x0050:

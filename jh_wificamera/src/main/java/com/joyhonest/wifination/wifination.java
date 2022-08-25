@@ -1475,4 +1475,10 @@ public class wifination {
 
     public static native void naStartOta(byte[] data,long nLen);
 
+    //读取摄像头参数设定
+
+    public static native void naGetCameraPara();
+    public static native void naSetEV(int nEv);
+    public static native void naSetLightFreq(boolean b50Hz);
+
 }
