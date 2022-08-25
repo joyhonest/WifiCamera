@@ -213,5 +213,6 @@ publish {
 //5.40     优化scal 参数
 //5.43     修复下载或者在线播放时有时失败的问题，（主要是tcp连接OK后，要delay一下再发送 下载或者播放的命令);
 //5.44     添加设置读取  摄像头参数的API
-//git commit -m "5.44" -a
+//5.45     修改设置灯光频率的api
+//git commit -m "5.45" -a
 //git push -u origin main
