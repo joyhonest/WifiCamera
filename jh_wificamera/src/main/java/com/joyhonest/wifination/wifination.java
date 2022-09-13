@@ -69,13 +69,9 @@ public class wifination {
 
     private final static String TAG = "wifination";
     private static final wifination m_Instance = new wifination();
-    private static final int BMP_Len = (((2560 + 3) / 4) * 4) * 4 * 1920 + 2048;
-    //private static final int BMP_Len = (((1920 + 3) / 4) * 4) * 4 * 1080 +1024;
+    private static final int BMP_Len = (((4096 + 3) / 4) * 4) * 4 * 2160 ;
     private  final  static int CmdLen = 2048;
-
-
     public static GP4225_Device gp4225_Device;
-
 
     public static Context appContext = null;
 
@@ -157,6 +153,11 @@ public class wifination {
 
 
 
+    public static int naInit_1(String str)
+    {
+        bEanbelHandle = true;
+        return naInit(str);
+    }
 
     public static native int naInit(String pFileName);
 
@@ -313,7 +314,8 @@ public class wifination {
     */
 
     //同步时间
-    public static native void na4225_SyncTime(byte[] data,int nLen);
+    public static native void naSyncTime();//New ver
+    public static native void na4225_SyncTime(byte[] data,int nLen);  //Old ver
     public static native void na4225_ReadTime();
     //是否显示水印
     public static native void na4225_SetOsd(boolean  b);
@@ -1022,7 +1024,7 @@ public class wifination {
             case 0x1021:
             case 0xFFFE:            //电量
             {
-                Integer nB = nStatus &0x0F;;
+                Integer nB = nStatus &0x0F;
                 EventBus.getDefault().post(nB, "OnGetBatteryLevel");
             }
             break;
@@ -1198,20 +1200,32 @@ public class wifination {
         }
     }
 
-    private  static Bitmap bmp = null;
+
+    public static void  naResetHandle()
+    {
+        bHandle = false;
+    }
+
+    //private  static Bitmap bmp = null;
     // 获取一帧图像
+    private  static  boolean bHandle = false;
+    private  static   boolean bEanbelHandle= false;
     private static void ReceiveBmp(int i) {
         //其中，i:bit00-bit15   为图像宽度
         //      i:bit16-bit31  为图像高度
         // 此函数需要把数据尽快处理和保存。
         // 图像数据保存在mDirectBuffer中，格式为ARGB_8888
-        if(bmp==null)
-            bmp = Bitmap.createBitmap(i & 0xFFFF, ((i >> 16)& 0xFFFF), Bitmap.Config.ARGB_8888);
-        if(bmp.getWidth()!=(i & 0xFFFF) || bmp.getHeight()!=((i >> 16)& 0xFFFF) )
-            bmp = Bitmap.createBitmap(i & 0xFFFF, ((i >> 16)& 0xFFFF), Bitmap.Config.ARGB_8888);
-        mDirectBuffer.rewind();
-        bmp.copyPixelsFromBuffer(mDirectBuffer);    //
+
+        if(bHandle && bEanbelHandle)
+            return;
+        bHandle = true;
         if(bRevBmp) {
+            int w = i & 0xFFFF;
+            int h = ((i >> 16)& 0xFFFF);
+            Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mDirectBuffer.rewind();
+            bmp.copyPixelsFromBuffer(mDirectBuffer);
+
             EventBus.getDefault().post(bmp, "ReviceBMP");
             EventBus.getDefault().post(bmp, "ReceiveBMP");
         }
@@ -1474,6 +1488,7 @@ public class wifination {
     }
 
     public static native void naStartOta(byte[] data,long nLen);
+
 
     //读取摄像头参数设定
 
