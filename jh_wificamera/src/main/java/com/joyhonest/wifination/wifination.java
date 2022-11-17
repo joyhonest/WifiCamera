@@ -174,7 +174,7 @@ public class wifination {
 
     public static native  void naStartRead20000_20001();
 
-    public static native void naSetTimeOsd(int x,int y,int nDateType); //x设置足够大就会不显示
+
 
 
 
@@ -1495,5 +1495,12 @@ public class wifination {
     public static native void naGetCameraPara();
     public static native void naSetEV(int nEv);
     public static native void naSetLightFreq(boolean b50Hz);
+
+    public static native void naSetTimeOsd(int x,int y,int nDateType); //x设置足够大就会不显示
+    public static native  void naSetDeviceWatermark(int nDateType); // bit0-3: 0 off 1 on, bit4-7:  0 Y/M/D  1: D/M/Y 2 M/DY
+    public static native  void naGetDeviceWatermark();  //结果通过 onGetDeviceWatermark 返回
+
+
+
 
 }

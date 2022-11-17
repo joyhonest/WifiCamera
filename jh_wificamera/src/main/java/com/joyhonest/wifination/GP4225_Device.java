@@ -321,6 +321,7 @@ public class GP4225_Device {
                     byte a = data[10];
                     Integer aa = (int) a;
                     EventBus.getDefault().post(aa, "GP4225_GetDeviceOsdStatus");
+                    EventBus.getDefault().post(aa, "onGetDeviceWatermark");
                 }
 
                 break;

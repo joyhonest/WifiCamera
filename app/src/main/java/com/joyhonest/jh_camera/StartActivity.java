@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -37,6 +38,8 @@ public class  StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+
+        EventBus.getDefault().register(this);
         button_play = findViewById(R.id.btn_Play);
         button_stop = findViewById(R.id.btn_Stop);
         DispImageView = findViewById(R.id.DispImageView);
@@ -89,20 +92,21 @@ public class  StartActivity extends AppCompatActivity {
 
         //wifination.naSetDebug(true);
 //        EventBus.getDefault().register(this);
-     //   EventBus.getDefault().register(this);
+
     }
 
 
     public void DoPlay()
     {
-//        if(!bPlaying)
-//        {
-//            wifination.naSetRevBmp(true);
-//            wifination.naStartRead20000_20001();
-//
+        if(!bPlaying)
+        {
+
+            wifination.naStartRead20000_20001();
+
 //            wifination.naSetGsensorRotaFillWhite(true);
-//            wifination.naInit("");
-//            wifination.naSetCameraDataRota(180);
+            wifination.naInit_1("");
+            wifination.naSetRevBmp(true);
+//
 //
 //            wifination.naSetGsensorType(2);
 //            wifination.naSetMirror(false);
@@ -112,22 +116,22 @@ public class  StartActivity extends AppCompatActivity {
 //            wifination.naSetSensor(true);
 ////            wifination.naSetsquare(true);
 //            wifination.naSet3DDenoiser(false);
-//        }
-//        else
-//        {
-//            wifination.naStopRecord_All();
-//            wifination.naStop();
-//        }
-//        bPlaying = !bPlaying;
-//
-//        if(bPlaying)
-//        {
-//            button_play.setText("Stop");
-//        }
-//        else
-//        {
-//            button_play.setText("Play");
-//        }
+        }
+        else
+        {
+            wifination.naStopRecord_All();
+            wifination.naStop();
+        }
+        bPlaying = !bPlaying;
+
+        if(bPlaying)
+        {
+            button_play.setText("Stop");
+        }
+        else
+        {
+            button_play.setText("Play");
+        }
 
     }
 
@@ -193,10 +197,12 @@ public class  StartActivity extends AppCompatActivity {
 
 
 
-    @Subscriber(tag = "ReviceBMP")
+    @Subscriber(tag = "ReceiveBMP")
     private void ReviceBMP(Bitmap bmp) {
 
         DispImageView.setImageBitmap(bmp);
+        SystemClock.sleep(250);
+        wifination.naResetHandle();
     }
 
     //    @Subscriber(tag="Key_Pressed")
@@ -212,11 +218,7 @@ public class  StartActivity extends AppCompatActivity {
 //        Log.e(TAG,"Status = "+nStatus);
 //    }
 //
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        EventBus.getDefault().unregister(this);
-//    }
+
 
     @Subscriber(tag = "onUpgradeStatus")
     private void onUpgradeStatus(Integer i)
