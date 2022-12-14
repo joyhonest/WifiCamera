@@ -216,6 +216,7 @@ publish {
 //5.45     修改设置灯光频率的api
 //5.46     修改传入图片到JaVA层是的消息，bmp临时创建，避免 图像在显示时，又修改了数据导致破图
 //5.47     添加固件端的时间水印格式设定
+//5.48     修改小bug
 
-//git commit -m "5.47" -a
+//git commit -m "5.48" -a
 //git push -u origin main
