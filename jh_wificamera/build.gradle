@@ -218,6 +218,7 @@ publish {
 //5.47     添加固件端的时间水印格式设定
 //5.48     修改小bug
 //5.49     修复在线播放时，如果有声音吗，播放完成后崩溃
+//5.50     添加实时传输PCM声音、
 
-//git commit -m "5.49" -a
+//git commit -m "5.50" -a
 //git push -u origin main

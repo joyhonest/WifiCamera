@@ -1,5 +1,8 @@
 package com.joyhonest.wifination;
 
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.util.Log;
 
 import org.simple.eventbus.EventBus;
@@ -318,6 +321,8 @@ public class GP4225_Device {
                 break;
                 case 0x0002: //水印开关
                 {
+                    //增强版本：
+                    //bit0-3: 0 off 1 on, bit4-7:  0 Y/M/D  1: D/M/Y 2 M/DY
                     byte a = data[10];
                     Integer aa = (int) a;
                     EventBus.getDefault().post(aa, "GP4225_GetDeviceOsdStatus");
@@ -622,26 +627,26 @@ public class GP4225_Device {
                     }
                     break;
                 case 0x0020:
-                {
-                    int a = data[11];
-                    Integer aa = (int)a;
-                    EventBus.getDefault().post(aa, "onGetLedMode");
-                }
-                break;
+                    {
+                        int a = data[11];
+                        Integer aa = (int)a;
+                        EventBus.getDefault().post(aa, "onGetLedMode");
+                    }
+                    break;
                 case 0x0024:  //BK_PARA
-                {
-                    byte []da = new byte[n_len];
-                    System.arraycopy(data, 10, da, 0, n_len);
-                    EventBus.getDefault().post(da, "onGetBK_ParaData");
-                }
-                break;
+                    {
+                        byte []da = new byte[n_len];
+                        System.arraycopy(data, 10, da, 0, n_len);
+                        EventBus.getDefault().post(da, "onGetBK_ParaData");
+                    }
+                    break;
                 case 0x0025: //BK_Macaddres
                 {
                     byte []da = new byte[n_len];
                     System.arraycopy(data, 10, da, 0, n_len);
                     EventBus.getDefault().post(da, "onGetBK_GetMacAddress");
                 }
-                break;
+                    break;
                 case 0x0026:
                 {
                     byte a = data[10];
@@ -777,6 +782,70 @@ public class GP4225_Device {
             XX = x;
             YY = y;
             ZZ = z;
+        }
+    }
+
+
+
+    //2023-02-08 添加实时播放PCM
+    private static AudioTrack audioTrack = null;
+    // audioFormat  AudioFormat.ENCODING_PCM_16BIT or  AudioFormat..ENCODING_PCM_8BIT
+    //  nFreq = 8000,.....
+    public static  void F_StartPlayAudio(int nFreq,int audioFormat)
+    {
+        if(audioTrack!=null)
+        {
+            try {
+                audioTrack.stop();
+                audioTrack.release();
+                audioTrack = null;
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        //int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
+        int channelConfig = AudioFormat.CHANNEL_OUT_STEREO;
+        int mMinBufSize = AudioTrack.getMinBufferSize(nFreq, channelConfig, audioFormat);
+        try {
+            audioTrack = new AudioTrack(AudioManager.USE_DEFAULT_STREAM_TYPE, nFreq, channelConfig,
+                    audioFormat, mMinBufSize, AudioTrack.MODE_STREAM);
+            audioTrack.play();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void F_StopPlayAudio()
+    {
+        if(audioTrack!=null)
+        {
+            try {
+                audioTrack.stop();
+                audioTrack.release();
+                audioTrack = null;
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void WriteAudioData(byte[] data)
+    {
+        if(audioTrack!=null)
+        {
+            try {
+                audioTrack.write(data,0,data.length);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 

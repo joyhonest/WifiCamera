@@ -30,9 +30,14 @@ import java.nio.ByteBuffer;
 
 
 
+
 public class wifination {
 
+    public interface OnReceiveFrame{
+        void OnReceiveFrame(Bitmap bmp);
+    }
 
+    public  static  OnReceiveFrame onReceiveFrame=null;
     public  final   static    int  GP4225_Type_Video = 1;
     public  final   static    int  GP4225_Type_Locked = 2;
     public  final   static    int  GP4225_Type_Photo = 3;
@@ -157,6 +162,11 @@ public class wifination {
     {
         bEanbelHandle = true;
         return naInit(str);
+    }
+    public static int naStart(OnReceiveFrame _onReceiveFrame)
+    {
+        onReceiveFrame = _onReceiveFrame;
+        return naInit("");
     }
 
     public static native int naInit(String pFileName);
@@ -1221,13 +1231,18 @@ public class wifination {
         bHandle = true;
         if(bRevBmp) {
             int w = i & 0xFFFF;
-            int h = ((i >> 16)& 0xFFFF);
+            int h = ((i >> 16) & 0xFFFF);
             Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             mDirectBuffer.rewind();
             bmp.copyPixelsFromBuffer(mDirectBuffer);
-
-            EventBus.getDefault().post(bmp, "ReviceBMP");
-            EventBus.getDefault().post(bmp, "ReceiveBMP");
+            if(onReceiveFrame!=null)
+            {
+                onReceiveFrame.OnReceiveFrame(bmp);
+            }
+            else {
+                EventBus.getDefault().post(bmp, "ReviceBMP");
+                EventBus.getDefault().post(bmp, "ReceiveBMP");
+            }
         }
     }
 
@@ -1327,6 +1342,11 @@ public class wifination {
     {
         Integer  data = n;
         EventBus.getDefault().post(data,"onAdjFocus");
+    }
+
+    private static void onGetSensorRotationAngle(float nAngle)
+    {
+
     }
 
     public  static  native int  naGetUvcCameraCount();
@@ -1501,6 +1521,30 @@ public class wifination {
     public static native  void naGetDeviceWatermark();  //结果通过 onGetDeviceWatermark 返回
 
 
+
+    // audioFormat  AudioFormat.ENCODING_PCM_16BIT or  AudioFormat..ENCODING_PCM_8BIT
+    //  nFreq = 8000,.....
+    private static native  boolean StartPlayAudioNative();
+    private static native  void StopPlayAudioNative();
+    // audioFormat  AudioFormat.ENCODING_PCM_16BIT or  AudioFormat..ENCODING_PCM_8BIT
+    //  nFreq = 8000,.....
+    public static void naStartPlayAudio(int nFreq,int audioFormat)
+    {
+
+        GP4225_Device.F_StartPlayAudio(nFreq,audioFormat);
+        StartPlayAudioNative();
+    }
+    public static void naStopPlayAudio()
+    {
+        StopPlayAudioNative();
+        GP4225_Device.F_StopPlayAudio();
+
+    }
+
+    public static void WriteAudioData(byte[] data)
+    {
+        GP4225_Device.WriteAudioData(data);
+    }
 
 
 }
