@@ -1,6 +1,7 @@
 package com.joyhonest.wifination;
 
 
+import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
@@ -14,6 +15,15 @@ import java.util.WeakHashMap;
 
 public class AudioEncoder implements AudioCodec {
     //private Client mClient;
+
+
+    public int nRecType=0;
+    int KEY_CHANNEL_COUNT = 1;
+    int KEY_SAMPLE_RATE = 32000;
+
+    int CHANNEL_MODE = AudioFormat.CHANNEL_IN_MONO;// (KEY_CHANNEL_COUNT ==1? AudioFormat.CHANNEL_IN_MONO:AudioFormat.CHANNEL_IN_STEREO);
+    int BUFFFER_SIZE = 1024*2*KEY_CHANNEL_COUNT;
+
     private Worker mWorker;
     private final String TAG = "AudioEncoder";
     private byte[] mFrameByte;
@@ -22,12 +32,39 @@ public class AudioEncoder implements AudioCodec {
 
     public AudioEncoder() {
         //  mClient=client;
+        nRecType = 0;
     }
 
+    public void SetDataExt(boolean b)
+    {
+        if(b) {
+            nRecType = 1;
+            KEY_CHANNEL_COUNT = 2;
+            CHANNEL_MODE = AudioFormat.CHANNEL_IN_STEREO;
+            KEY_SAMPLE_RATE = 8000;
+
+        }
+        else {
+            nRecType = 0;
+            KEY_CHANNEL_COUNT = 1;
+            CHANNEL_MODE = AudioFormat.CHANNEL_IN_MONO;
+            KEY_SAMPLE_RATE = 32000;
+        }
+
+    }
+
+    public void WriteExtData(byte[] data)
+    {
+        if(mWorker!=null)
+        {
+            mWorker.WriteExtData(data);
+        }
+    }
 
     public boolean  isCanRecordAudio()
     {
         Worker p = new Worker();
+        p.nRecType = nRecType;
         return p.isCanRecordAudio();
     }
 
@@ -45,18 +82,15 @@ public class AudioEncoder implements AudioCodec {
             }
             mWorker = null;
         }
-        if (mWorker == null)
+        mWorker = new Worker();
+        mWorker.nRecType = nRecType;
+        boolean re = mWorker.prepare();
+        if(re)
         {
-            mWorker = new Worker();
-            boolean re = mWorker.prepare();
-            if(re)
-            {
-                mWorker.setRunning(true);
-                mWorker.start();
-            }
-            return re;
+            mWorker.setRunning(true);
+            mWorker.start();
         }
-        return false;
+        return re;
     }
 
     public void stop() {
@@ -68,9 +102,10 @@ public class AudioEncoder implements AudioCodec {
 
 
     private class Worker extends Thread {
-        private int mFrameSize = 2048;
+        private int mFrameSize = 2048*2;
         private byte[] mBuffer;
         private boolean isRunning = false;
+        public  int nRecType = 0; //0 用mic录音， ！=0 从外部灌数据进来
         private long pts_unit=0;
         private MediaCodec mEncoder;
         private AudioRecord mRecord;
@@ -85,10 +120,26 @@ public class AudioEncoder implements AudioCodec {
             bStart = false;
             pts=0;
             while (isRunning) {
-                re = mRecord.read(mBuffer, 0, mFrameSize);
-                encode(mBuffer);
+                if(nRecType==0) {
+                    re = mRecord.read(mBuffer, 0, mFrameSize);
+                    encode(mBuffer);
+                }
+                else
+                {
+                    byte[] rea = wifination.audioCodecExt.ReadData(mFrameSize);
+
+                    encode(rea);
+                }
             }
             release();
+        }
+
+        public void WriteExtData(byte[] data)
+        {
+            if(data != null)
+            {
+                encode(data);
+            }
         }
 
         public void setRunning(boolean run) {
@@ -113,6 +164,9 @@ public class AudioEncoder implements AudioCodec {
 
         public    boolean isCanRecordAudio()
         {
+            if(nRecType!=0)
+                return true;
+
             boolean re = false;
             try {
                 int minBufferSize = AudioRecord.getMinBufferSize(KEY_SAMPLE_RATE, CHANNEL_MODE,AUDIO_FORMAT);
@@ -123,7 +177,7 @@ public class AudioEncoder implements AudioCodec {
                 mRecord = null;
                 re = true;
             }
-            catch (Exception e)
+            catch (Exception ignored)
             {
                 ;
             }
@@ -141,8 +195,14 @@ public class AudioEncoder implements AudioCodec {
             boolean re = false;
             try {
                 MyMediaMuxer.nFramesAudio=0;
-
-
+                if(nRecType==0)
+                {
+                    KEY_SAMPLE_RATE = 32000;
+                }
+                else
+                {
+                    KEY_SAMPLE_RATE = 8000;
+                }
 
                 mBufferInfo = new MediaCodec.BufferInfo();
                 mEncoder = MediaCodec.createEncoderByType(MIME_TYPE);
@@ -154,7 +214,12 @@ public class AudioEncoder implements AudioCodec {
                 re = true;
             } catch (Exception  e) {
                 e.printStackTrace();
+                mEncoder = null;
                 re =false;
+            }
+            if(nRecType!=0)     //如果是从外部灌数据，就无需mRecord;
+            {
+                return re;
             }
             if(!re)
             {
@@ -162,6 +227,7 @@ public class AudioEncoder implements AudioCodec {
             }
             re = false;
             try {
+
 
                 int minBufferSize = AudioRecord.getMinBufferSize(KEY_SAMPLE_RATE, CHANNEL_MODE,AUDIO_FORMAT);
                 mRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, KEY_SAMPLE_RATE, CHANNEL_MODE, AUDIO_FORMAT, minBufferSize);
@@ -188,6 +254,8 @@ public class AudioEncoder implements AudioCodec {
 
 
         private void encode(byte[] data) {
+            if(data==null)
+                return;
             long ppp = 0;
 
             int inputBufferId = mEncoder.dequeueInputBuffer(1000 * 50);
@@ -216,6 +284,7 @@ public class AudioEncoder implements AudioCodec {
                 byte[] dataA = new byte[aBufferInfo.size];
                 bb.get(dataA, 0, dataA.length);
                 MyMediaMuxer.WritSample(dataA,false,aBufferInfo);
+                Log.e("abcdefg","write a audio");
                 mEncoder.releaseOutputBuffer(outputBufferIndex, false);
             }
         }

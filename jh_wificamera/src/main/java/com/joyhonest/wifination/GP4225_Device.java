@@ -7,6 +7,9 @@ import android.util.Log;
 
 import org.simple.eventbus.EventBus;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -805,7 +808,6 @@ public class GP4225_Device {
                 e.printStackTrace();
             }
         }
-        //int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
         int channelConfig = AudioFormat.CHANNEL_OUT_STEREO;
         int mMinBufSize = AudioTrack.getMinBufferSize(nFreq, channelConfig, audioFormat);
         try {
@@ -835,8 +837,11 @@ public class GP4225_Device {
         }
     }
 
+
+
     public static void WriteAudioData(byte[] data)
     {
+        wifination.audioCodecExt.WriteData(data);
         if(audioTrack!=null)
         {
             try {

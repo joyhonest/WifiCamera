@@ -23,6 +23,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/btn_PCM"
+        android:layout_width="88dp"
+        android:layout_height="48dp"
+        android:text="Play PCM"
+        app:layout_constraintLeft_toRightOf="@+id/btn_Play"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_PCM_Stop"
+        android:layout_width="88dp"
+        android:layout_height="48dp"
+        android:text="Stop PCM"
+        app:layout_constraintLeft_toRightOf="@+id/btn_PCM"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 
 

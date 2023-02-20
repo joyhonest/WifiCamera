@@ -57,6 +57,7 @@ public class wifination {
 
 
     public static AudioEncoder AudioEncoder;
+    public static AudioCodecExt audioCodecExt;
 
     public final static int TYPE_ONLY_PHONE = 0;
     public final static int TYPE_ONLY_SD = 1;
@@ -88,6 +89,7 @@ public class wifination {
             System.loadLibrary("jh_wifi");
             AudioEncoder = new AudioEncoder();
             videoMediaCoder = new VideoMediaCoder();
+            audioCodecExt = new AudioCodecExt();
 
             gp4225_Device = new GP4225_Device();
 
@@ -204,6 +206,7 @@ public class wifination {
     public static  boolean bG_Audio=false;
 
 
+
     public static  native void naSetScaleHighQuality(int nQ);
 
     public static  void naStartRecord(String pFileName, final  int PhoneOrSD)
@@ -271,8 +274,9 @@ public class wifination {
     public static  void naSetRecordAudio(boolean b)
     {
         bG_Audio = b;
-
     }
+
+
     //手机是否在录像
 
     public static native  boolean naIsJoyCamera();  //判断连接的WIFI是否是我司的产品
@@ -372,9 +376,6 @@ public class wifination {
  */
 
     public static native void na4225_GetFileList(int nType, int nStrtinx,int nEndinx);
-
-
-
     public static native void na4225_DeleteFile(String sPath,String sFileName);
     public static native void na4225_DeleteAll(int nType); //  2 videos 3 photos   4 all
 
@@ -1528,6 +1529,12 @@ public class wifination {
     private static native  void StopPlayAudioNative();
     // audioFormat  AudioFormat.ENCODING_PCM_16BIT or  AudioFormat..ENCODING_PCM_8BIT
     //  nFreq = 8000,.....
+
+    private static void WriteAudioData(byte[] data) //SDK 内部调用
+    {
+        GP4225_Device.WriteAudioData(data);
+    }
+
     public static void naStartPlayAudio(int nFreq,int audioFormat)
     {
 
@@ -1541,10 +1548,11 @@ public class wifination {
 
     }
 
-    public static void WriteAudioData(byte[] data)
+    public static void naSetRecordAutioExt(boolean b) //录制的声音是从wifi端传来的
     {
-        GP4225_Device.WriteAudioData(data);
+        AudioEncoder.SetDataExt(b);
     }
+
 
 
 }

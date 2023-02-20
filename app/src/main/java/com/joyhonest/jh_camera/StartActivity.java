@@ -1,6 +1,7 @@
 package com.joyhonest.jh_camera;
 
 import android.graphics.Bitmap;
+import android.media.AudioFormat;
 import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,7 +33,8 @@ public class  StartActivity extends AppCompatActivity {
     ImageView  DispImageView;
     boolean  bPlaying = false;
     Button   button_play;
-    Button   button_stop;
+    Button   button_PCM;
+    Button   button_PCM_Stop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +43,27 @@ public class  StartActivity extends AppCompatActivity {
 
         EventBus.getDefault().register(this);
         button_play = findViewById(R.id.btn_Play);
-        button_stop = findViewById(R.id.btn_Stop);
+        button_PCM = findViewById(R.id.btn_PCM);
+        button_PCM_Stop = findViewById(R.id.btn_PCM_Stop);
+
+        //button_stop = findViewById(R.id.btn_Stop);
         DispImageView = findViewById(R.id.DispImageView);
         button_play.setText("Play");
         button_play.setOnClickListener(view->DoPlay());
+        button_PCM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                wifination.naStartPlayAudio(8000, AudioFormat.ENCODING_PCM_16BIT);
+            }
+        });
+        button_PCM_Stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                wifination.naStopPlayAudio();
+            }
+        });
+
+
 
 
 //        button.setOnClickListener(new View.OnClickListener() {
