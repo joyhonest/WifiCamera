@@ -19,10 +19,10 @@ public class AudioEncoder implements AudioCodec {
 
     public int nRecType=0;
     int KEY_CHANNEL_COUNT = 1;
-    int KEY_SAMPLE_RATE = 32000;
+    int KEY_SAMPLE_RATE = 8000;
 
     int CHANNEL_MODE = AudioFormat.CHANNEL_IN_MONO;// (KEY_CHANNEL_COUNT ==1? AudioFormat.CHANNEL_IN_MONO:AudioFormat.CHANNEL_IN_STEREO);
-    int BUFFFER_SIZE = 1024*2*KEY_CHANNEL_COUNT;
+    int BUFFFER_SIZE = 1024*2;
 
     private Worker mWorker;
     private final String TAG = "AudioEncoder";
@@ -46,9 +46,13 @@ public class AudioEncoder implements AudioCodec {
         }
         else {
             nRecType = 0;
-            KEY_CHANNEL_COUNT = 1;
-            CHANNEL_MODE = AudioFormat.CHANNEL_IN_MONO;
-            KEY_SAMPLE_RATE = 32000;
+//            KEY_CHANNEL_COUNT = 1;
+//            CHANNEL_MODE = AudioFormat.CHANNEL_IN_MONO;
+//            KEY_SAMPLE_RATE = 44100;
+            KEY_CHANNEL_COUNT = 2;
+            CHANNEL_MODE = AudioFormat.CHANNEL_IN_STEREO;
+            KEY_SAMPLE_RATE = 8000;
+
         }
 
     }
@@ -127,7 +131,6 @@ public class AudioEncoder implements AudioCodec {
                 else
                 {
                     byte[] rea = wifination.audioCodecExt.ReadData(mFrameSize);
-
                     encode(rea);
                 }
             }
@@ -193,21 +196,15 @@ public class AudioEncoder implements AudioCodec {
          */
         public boolean prepare() {
             boolean re = false;
+            int a1 = 8;
             try {
                 MyMediaMuxer.nFramesAudio=0;
-                if(nRecType==0)
-                {
-                    KEY_SAMPLE_RATE = 32000;
-                }
-                else
-                {
-                    KEY_SAMPLE_RATE = 8000;
-                }
+
 
                 mBufferInfo = new MediaCodec.BufferInfo();
                 mEncoder = MediaCodec.createEncoderByType(MIME_TYPE);
                 mediaFormat = MediaFormat.createAudioFormat(MIME_TYPE, KEY_SAMPLE_RATE, KEY_CHANNEL_COUNT);
-                mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, 32000);
+                mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, KEY_BIT_RATE);
                 mediaFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, KEY_AAC_PROFILE);
                 mEncoder.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
                 mEncoder.start();
@@ -219,6 +216,9 @@ public class AudioEncoder implements AudioCodec {
             }
             if(nRecType!=0)     //如果是从外部灌数据，就无需mRecord;
             {
+                mFrameSize = 2048;
+                MyMediaMuxer.nCt = (mFrameSize * 1000000) / (KEY_SAMPLE_RATE * 2);
+                pts_unit = (long) (mFrameSize * 1000000L) / (KEY_SAMPLE_RATE * 2L);
                 return re;
             }
             if(!re)
@@ -228,14 +228,13 @@ public class AudioEncoder implements AudioCodec {
             re = false;
             try {
 
-
                 int minBufferSize = AudioRecord.getMinBufferSize(KEY_SAMPLE_RATE, CHANNEL_MODE,AUDIO_FORMAT);
                 mRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, KEY_SAMPLE_RATE, CHANNEL_MODE, AUDIO_FORMAT, minBufferSize);
-                int buffSize = Math.min(BUFFFER_SIZE, minBufferSize);
-                mFrameSize = buffSize;
-                MyMediaMuxer.nCt = (mFrameSize * 1000000) / (KEY_SAMPLE_RATE * 2 * KEY_CHANNEL_COUNT);
+                //int buffSize = Math.min(BUFFFER_SIZE, minBufferSize);
+                mFrameSize = 2048;
+                MyMediaMuxer.nCt = (mFrameSize * 1000000) / (KEY_SAMPLE_RATE * 2);
+                pts_unit = (long) (mFrameSize * 1000000L) / (KEY_SAMPLE_RATE * 2L);
                 mBuffer = new byte[mFrameSize];
-                pts_unit = (long) ((((float)mFrameSize)/(KEY_BIT_RATE/8))*1000000);
                 mRecord.startRecording();
                 re = true;
             }

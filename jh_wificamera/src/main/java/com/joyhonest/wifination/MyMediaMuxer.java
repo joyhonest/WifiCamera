@@ -28,7 +28,7 @@ public class MyMediaMuxer {
 
     public  static long   nFramesAudio=0;
 
-    public static  int nCt = (2048 * 1000000) / (16000 * 2 * 1);
+    public static  int nCt = (2048 * 1000000) / (16000 * 2);
 
 
     public  static int  init(String strNme)

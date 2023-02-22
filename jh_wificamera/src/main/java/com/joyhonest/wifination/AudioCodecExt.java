@@ -3,7 +3,7 @@ package com.joyhonest.wifination;
 import android.util.Log;
 
 public class AudioCodecExt {
-   private byte[] mData;
+   private final byte[] mData;
    private int    mCount;
    private final int SIZE = 2048*20;
    public AudioCodecExt()
@@ -11,10 +11,10 @@ public class AudioCodecExt {
       mData = new byte[SIZE];
       mCount = 0;
    }
-   public int WriteData(byte []data)
+   public void WriteData(byte []data)
    {
         int nLen = data.length;
-        int nRe = nLen;
+        //int nRe = nLen;
           synchronized (mData) {
               if(mCount+nLen<=SIZE) {
                   System.arraycopy(data, 0, mData, mCount, nLen);
@@ -23,10 +23,13 @@ public class AudioCodecExt {
               else
               {
                   mCount=0;
-                  nRe = 0;
+                  if(nLen<=SIZE)
+                  {
+                      System.arraycopy(data, 0, mData, mCount, nLen);
+                      mCount+=nLen;
+                  }
               }
           }
-       return nRe;
    }
    public byte[] ReadData(int nLen)
    {
