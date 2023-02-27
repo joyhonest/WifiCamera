@@ -1535,9 +1535,11 @@ public class wifination {
         GP4225_Device.WriteAudioData(data);
     }
 
+
+    public static native void naGetPcmInfo();
+
     public static void naStartPlayAudio(int nFreq,int audioFormat)
     {
-
         GP4225_Device.F_StartPlayAudio(nFreq,audioFormat);
         StartPlayAudioNative();
     }
@@ -1545,7 +1547,6 @@ public class wifination {
     {
         StopPlayAudioNative();
         GP4225_Device.F_StopPlayAudio();
-
     }
 
     public static void naSetRecordAutioExt(boolean b) //录制的声音是从wifi端传来的
