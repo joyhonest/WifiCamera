@@ -37,6 +37,9 @@ public class wifination {
         void OnReceiveFrame(Bitmap bmp);
     }
 
+    private static int nIx=0;
+
+
     public  static  OnReceiveFrame onReceiveFrame=null;
     public  final   static    int  GP4225_Type_Video = 1;
     public  final   static    int  GP4225_Type_Locked = 2;
@@ -1530,11 +1533,16 @@ public class wifination {
     // audioFormat  AudioFormat.ENCODING_PCM_16BIT or  AudioFormat..ENCODING_PCM_8BIT
     //  nFreq = 8000,.....
 
+
     private static void WriteAudioData(byte[] data) //SDK 内部调用
     {
+        if((nIx % 0x1F) ==0)
+        {
+            EventBus.getDefault().post(data,"onGetPcmData");
+        }
+        nIx++;
         GP4225_Device.WriteAudioData(data);
     }
-
 
     public static native void naGetPcmInfo();
 
