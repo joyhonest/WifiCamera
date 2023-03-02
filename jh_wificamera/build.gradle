@@ -223,7 +223,7 @@ publish {
 //5.52     优化在录像时，录制实时传输PCM声音
 //5.53     添加naGetPcmInf
 //5.54     添加onGetPcmData 回调
-//5.54     添加naPCM2Speaker
+//5.56     添加naPCM2Speaker
 
-//git commit -m "5.55" -a
+//git commit -m "5.56" -a
 //git push -u origin main
