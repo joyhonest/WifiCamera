@@ -834,6 +834,7 @@ public class GP4225_Device {
 
     public static void F_StopPlayAudio()
     {
+
         if(audioTrack!=null)
         {
             try {
@@ -848,11 +849,20 @@ public class GP4225_Device {
         }
     }
 
+    static boolean b2Speaker = true;
+
+    public static void F_Set2Spaker(boolean b)
+    {
+        b2Speaker = b;
+    }
+
 
 
     public static void WriteAudioData(byte[] data)
     {
         wifination.audioCodecExt.WriteData(data);
+        if(!b2Speaker)
+            return;
         if(audioTrack!=null)
         {
             try {

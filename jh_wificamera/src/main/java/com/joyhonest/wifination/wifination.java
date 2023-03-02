@@ -1563,5 +1563,11 @@ public class wifination {
     }
 
 
+    public static void naSetPCM2Speker(boolean b)
+    {
+        GP4225_Device.F_Set2Spaker(b);
+    }
+
+
 
 }
