@@ -224,6 +224,7 @@ publish {
 //5.53     添加naGetPcmInf
 //5.54     添加onGetPcmData 回调
 //5.56     添加naPCM2Speaker
+//5.58     修复bugs
 
-//git commit -m "5.56" -a
+//git commit -m "5.58" -a
 //git push -u origin main

@@ -214,7 +214,8 @@ public class wifination {
 
     public static  void naStartRecord(String pFileName, final  int PhoneOrSD)
     {
-        sVideoName = pFileName;
+        if(PhoneOrSD !=TYPE_ONLY_SD)
+             sVideoName = pFileName;
         String tmpFileName = sVideoName+"_.tmp";
         if(PhoneOrSD == TYPE_BOTH_PHONE_SD || PhoneOrSD == TYPE_ONLY_PHONE)
         {
