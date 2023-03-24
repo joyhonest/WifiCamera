@@ -684,6 +684,13 @@ public class GP4225_Device {
                     EventBus.getDefault().post(da, "onGetPcmInfo");
                 }
                     break;
+                case 0x002D:
+                {
+                    byte []da = new byte[n_len];
+                    System.arraycopy(data, 10, da, 0, n_len);
+                    EventBus.getDefault().post(da, "onGetDeviceCategory");
+                }
+                break;
                 case 0x0050:
                 {
                     byte[] aa = null;

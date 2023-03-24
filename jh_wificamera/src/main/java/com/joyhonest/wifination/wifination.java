@@ -214,8 +214,10 @@ public class wifination {
 
     public static  void naStartRecord(String pFileName, final  int PhoneOrSD)
     {
-        if(PhoneOrSD !=TYPE_ONLY_SD)
-             sVideoName = pFileName;
+
+        if(PhoneOrSD != TYPE_ONLY_SD) {
+            sVideoName = pFileName;
+        }
         String tmpFileName = sVideoName+"_.tmp";
         if(PhoneOrSD == TYPE_BOTH_PHONE_SD || PhoneOrSD == TYPE_ONLY_PHONE)
         {
@@ -1569,6 +1571,8 @@ public class wifination {
         GP4225_Device.F_Set2Spaker(b);
     }
 
+
+    public static native  void naGetDeviceCategory(); //获取设备分类。  2023-03-24 添加
 
 
 }

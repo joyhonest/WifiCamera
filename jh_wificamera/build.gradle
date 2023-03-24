@@ -225,6 +225,7 @@ publish {
 //5.54     添加onGetPcmData 回调
 //5.56     添加naPCM2Speaker
 //5.58     修复bugs
+//5.59     添加naGetDeviceCategory
 
-//git commit -m "5.58" -a
+//git commit -m "5.59" -a
 //git push -u origin main
