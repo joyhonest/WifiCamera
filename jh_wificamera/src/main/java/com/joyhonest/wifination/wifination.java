@@ -182,7 +182,7 @@ public class wifination {
     public static native int naSentCmd(byte[] cmd, int nLen);
 
     //图像是否翻转
-    public static native void naSetFlip(boolean b);
+    public static native void naSetFilp(boolean b);
     // 是否VR显示
     public static native void naSet3D(boolean b);
 

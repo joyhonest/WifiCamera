@@ -226,6 +226,7 @@ publish {
 //5.56     添加naPCM2Speaker
 //5.58     修复bugs
 //5.59     添加naGetDeviceCategory
+//5.60     修复naFilp
 
-//git commit -m "5.59" -a
+//git commit -m "5.60" -a
 //git push -u origin main
