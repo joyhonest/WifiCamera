@@ -634,6 +634,7 @@ public class wifination {
     public static native void naSetSensorA(boolean b);   //GSensor on or off 如果由外部来旋转图片，调用此方法
     public static native void naSetCircul(boolean b);   //GSensor 打开时，是否圆形显示？
     public static native void naSetsquare(boolean b);   //GSensor 打开时，是否圆形显示？
+    public static native void naSetsquare_fit(boolean b);
     //bEnableCircul
 
     public static native void naSetAcdetection(boolean b);  //电流检测 on or off
