@@ -33,8 +33,10 @@ import java.nio.ByteBuffer;
 
 public class wifination {
 
+
+
     public interface OnReceiveFrame{
-        void OnReceiveFrame(Bitmap bmp);
+        void onReceiveFrame(Bitmap bmp);
     }
 
     private static int nIx=0;
@@ -174,10 +176,22 @@ public class wifination {
         return naInit("");
     }
 
-    public static native int naInit(String pFileName);
+    public static native int naInitC(String pFileName);
+    public static  int naInit(String pFileName)
+    {
+        EventBus.getDefault().bHasdo = true;
+        return naInitC(pFileName);
+    }
 
     //停止播放
-    public static native int naStop();
+    private static native int naStopB();
+    public static  native long naGetTime();
+    public static  int naStop()
+    {
+        onReceiveFrame = null;
+        EventBus.getDefault().bHasdo = true;
+        return naStopB();
+    }
     //向飞控发送命令OnGetGP_Status
     public static native int naSentCmd(byte[] cmd, int nLen);
 
@@ -633,8 +647,8 @@ public class wifination {
     public static native void naSetSensor(boolean b);   //GSensor on or off
     public static native void naSetSensorA(boolean b);   //GSensor on or off 如果由外部来旋转图片，调用此方法
     public static native void naSetCircul(boolean b);   //GSensor 打开时，是否圆形显示？
-    public static native void naSetsquare(boolean b);   //GSensor 打开时，是否圆形显示？
-    public static native void naSetsquare_fit(boolean b); //GSensor 打开时，是内切矩形显示
+    public static native void naSetsquare(boolean b);   //GSensor 打开时，是否正方形形显示？
+    public static native void naSetsquare_fit(boolean b);   //GSensor 打开时，是否长方形切并且随gsensor旋转满屏显示？
     //bEnableCircul
 
     public static native void naSetAcdetection(boolean b);  //电流检测 on or off
@@ -677,31 +691,20 @@ public class wifination {
     public  static  native  void naGetUVCA_Inclination();  //倾斜 0-255
     public  static  native  void naGetUVCA_Roll();     //滚动
     //////////
-
-
 /*
     public static  native  void CancelNoiseInit(int frame_size, int sample_rate);
-
     public static  native  int CancelNoisePreprocess(byte[] cmd, int nLen);
-
     public static  native  void CancelNoiseDestroy();
 */
 
     public  static boolean  bGesture = false;
     public  static boolean  bRevBmp = false;
-
-
     private static ObjectDetector sig=null;
-
-
     public  static native int naSetTransferSize(int nWidth,int nHeight);   //宽度必须是8的倍数
-
-
     public static void naSetGesture_vol(float aa)
     {
         ObjectDetector.MINIMUM_CONFIDENCE_TF_OD_API = aa;
     }
-
 
     public static native boolean naSentUdpData(String sIP, int nPort,byte[] data, int nLen);
     public static native boolean naStartReadUdp(int nPort); // 收到数据后，会通过 onUdpRevData 返回
@@ -1224,10 +1227,12 @@ public class wifination {
         bHandle = false;
     }
 
-    //private  static Bitmap bmp = null;
+    private  static Bitmap bmpG = null;
     // 获取一帧图像
     private  static  boolean bHandle = false;
     private  static   boolean bEanbelHandle= false;
+
+    private  static Bitmap bmpPre = null;
     private static void ReceiveBmp(int i) {
         //其中，i:bit00-bit15   为图像宽度
         //      i:bit16-bit31  为图像高度
@@ -1237,19 +1242,71 @@ public class wifination {
         if(bHandle && bEanbelHandle)
             return;
         bHandle = true;
+
         if(bRevBmp) {
             int w = i & 0xFFFF;
             int h = ((i >> 16) & 0xFFFF);
-            Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+
             mDirectBuffer.rewind();
-            bmp.copyPixelsFromBuffer(mDirectBuffer);
             if(onReceiveFrame!=null)
             {
-                onReceiveFrame.OnReceiveFrame(bmp);
+                if(bmpG!=null)
+                {
+                    if(bmpG.getWidth() !=w || bmpG.getHeight()!=h)
+                    {
+                        bmpG = null;
+                    }
+                }
+                if(bmpG==null)
+                {
+                    bmpG = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                }
+                bmpG.copyPixelsFromBuffer(mDirectBuffer);
+                onReceiveFrame.onReceiveFrame(bmpG);
             }
             else {
-                EventBus.getDefault().post(bmp, "ReviceBMP");
-                EventBus.getDefault().post(bmp, "ReceiveBMP");
+//                Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+//                if(bmpPre!=null)
+//                {
+//                    if(!bmpPre.isRecycled()) {
+//                        if(EventBus.getDefault().bHasdo)
+//                            try {
+//                                bmpPre.recycle();
+//                            }
+//                            catch (RuntimeException e)
+//                            {
+//                                e.printStackTrace();
+//                            }
+//
+//
+//                    }
+//                }
+//                bmpPre = bmp;
+//                bmp.copyPixelsFromBuffer(mDirectBuffer);
+
+                if(EventBus.getDefault().bHasdo) {
+                    EventBus.getDefault().bHasdo = false;
+                    if (bmpG != null) {
+                        if (bmpG.getWidth() != w || bmpG.getHeight() != h) {
+                            bmpPre = bmpG;
+                            bmpG = null;
+                            System.gc();
+                        }
+                    }
+                    if (bmpG == null) {
+                        bmpG = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                    }
+                    bmpG.copyPixelsFromBuffer(mDirectBuffer);
+                    EventBus.getDefault().post(bmpG, "ReceiveBMP");
+                    if(bmpPre!=null)
+                    {
+                        if(!bmpPre.isRecycled()) {
+                            bmpPre.recycle();
+                        }
+                        bmpPre = null;
+                    }
+
+                }
             }
         }
     }
