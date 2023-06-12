@@ -203,10 +203,10 @@ public final class EventBus {
 
         mLocalEvents.get().offer(new EventType(event.getClass(), tag));
         mDispatcher.dispatchEvents(event);
-        if(tag.equalsIgnoreCase("ReceiveBMP"))
-        {
-            bHasdo = true;
-        }
+//        if(tag.equalsIgnoreCase("ReceiveBMP"))
+//        {
+//            bHasdo = true;
+//        }
 
     }
 
@@ -408,7 +408,7 @@ public final class EventBus {
                 EventHandler eventHandler = getEventHandler(mode);
                 if(eventType.tag.equalsIgnoreCase("ReceiveBMP"))
                 {
-                    eventHandler = mPostThreadHandler;
+                    eventHandler = mUIThreadEventHandler;
                 }
                 // 处理事件
                 eventHandler.handleEvent(subscription, aEvent);

@@ -1233,6 +1233,11 @@ public class wifination {
     private  static   boolean bEanbelHandle= false;
 
     private  static Bitmap bmpPre = null;
+
+
+    private  static Bitmap bmp1 = null;
+    private  static Bitmap bmp2 = null;
+    private static  boolean  bF1=false;
     private static void ReceiveBmp(int i) {
         //其中，i:bit00-bit15   为图像宽度
         //      i:bit16-bit31  为图像高度
@@ -1246,7 +1251,6 @@ public class wifination {
         if(bRevBmp) {
             int w = i & 0xFFFF;
             int h = ((i >> 16) & 0xFFFF);
-
             mDirectBuffer.rewind();
             if(onReceiveFrame!=null)
             {
@@ -1265,48 +1269,38 @@ public class wifination {
                 onReceiveFrame.onReceiveFrame(bmpG);
             }
             else {
-//                Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-//                if(bmpPre!=null)
-//                {
-//                    if(!bmpPre.isRecycled()) {
-//                        if(EventBus.getDefault().bHasdo)
-//                            try {
-//                                bmpPre.recycle();
-//                            }
-//                            catch (RuntimeException e)
-//                            {
-//                                e.printStackTrace();
-//                            }
+                Bitmap bmp =    Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                bmp.copyPixelsFromBuffer(mDirectBuffer);
+                EventBus.getDefault().post(bmp, "ReceiveBMP");
+
+//                if(EventBus.getDefault().bHasdo) {
+//                    EventBus.getDefault().bHasdo = false;
 //
-//
+//                    if (bmpG != null) {
+//                        if (bmpG.getWidth() != w || bmpG.getHeight() != h)
+//                        {
+//                            bmpPre = bmpG;
+//                            bmpG = null;
+//                        }
+//                    }
+//                    if (bmpG == null) {
+//                        bmpG = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+//                    }
+//                    bmpG.copyPixelsFromBuffer(mDirectBuffer);
+//                    EventBus.getDefault().post(bmpG, "ReceiveBMP");
+//                    if(bmpPre!=null)
+//                    {
+//                        if(!bmpPre.isRecycled()) {
+//                            bmpPre.recycle();
+//                            Log.e(TAG,"recycle");
+//                        }
+//                        bmpPre = null;
 //                    }
 //                }
-//                bmpPre = bmp;
-//                bmp.copyPixelsFromBuffer(mDirectBuffer);
-
-                if(EventBus.getDefault().bHasdo) {
-                    EventBus.getDefault().bHasdo = false;
-                    if (bmpG != null) {
-                        if (bmpG.getWidth() != w || bmpG.getHeight() != h) {
-                            bmpPre = bmpG;
-                            bmpG = null;
-                            System.gc();
-                        }
-                    }
-                    if (bmpG == null) {
-                        bmpG = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-                    }
-                    bmpG.copyPixelsFromBuffer(mDirectBuffer);
-                    EventBus.getDefault().post(bmpG, "ReceiveBMP");
-                    if(bmpPre!=null)
-                    {
-                        if(!bmpPre.isRecycled()) {
-                            bmpPre.recycle();
-                        }
-                        bmpPre = null;
-                    }
-
-                }
+//                else
+//                {
+//                    Log.e(TAG,"lossDrqw");
+//                }
             }
         }
     }

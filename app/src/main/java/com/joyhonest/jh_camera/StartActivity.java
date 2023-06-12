@@ -120,10 +120,10 @@ public class  StartActivity extends AppCompatActivity {
         if(!bPlaying)
         {
 
-            wifination.naStartRead20000_20001();
+            //wifination.naStartRead20000_20001();
 
 //            wifination.naSetGsensorRotaFillWhite(true);
-            wifination.naInit_1("");
+            wifination.naInit("");
             wifination.naSetRevBmp(true);
 //
 //
@@ -220,8 +220,8 @@ public class  StartActivity extends AppCompatActivity {
     private void ReviceBMP(Bitmap bmp) {
 
         DispImageView.setImageBitmap(bmp);
-        SystemClock.sleep(250);
-        wifination.naResetHandle();
+        //SystemClock.sleep(250);
+        //wifination.naResetHandle();
     }
 
     //    @Subscriber(tag="Key_Pressed")
