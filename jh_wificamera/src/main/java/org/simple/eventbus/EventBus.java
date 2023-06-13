@@ -124,7 +124,7 @@ public final class EventBus {
         mDesc = desc;
     }
 
-    public boolean bHasdo = true;
+
 
     /**
      * @return
@@ -203,10 +203,6 @@ public final class EventBus {
 
         mLocalEvents.get().offer(new EventType(event.getClass(), tag));
         mDispatcher.dispatchEvents(event);
-//        if(tag.equalsIgnoreCase("ReceiveBMP"))
-//        {
-//            bHasdo = true;
-//        }
 
     }
 

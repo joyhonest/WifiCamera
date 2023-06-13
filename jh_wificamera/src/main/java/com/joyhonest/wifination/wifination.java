@@ -179,7 +179,6 @@ public class wifination {
     public static native int naInitC(String pFileName);
     public static  int naInit(String pFileName)
     {
-        EventBus.getDefault().bHasdo = true;
         return naInitC(pFileName);
     }
 
@@ -189,7 +188,6 @@ public class wifination {
     public static  int naStop()
     {
         onReceiveFrame = null;
-        EventBus.getDefault().bHasdo = true;
         return naStopB();
     }
     //向飞控发送命令OnGetGP_Status
@@ -1232,12 +1230,6 @@ public class wifination {
     private  static  boolean bHandle = false;
     private  static   boolean bEanbelHandle= false;
 
-    private  static Bitmap bmpPre = null;
-
-
-    private  static Bitmap bmp1 = null;
-    private  static Bitmap bmp2 = null;
-    private static  boolean  bF1=false;
     private static void ReceiveBmp(int i) {
         //其中，i:bit00-bit15   为图像宽度
         //      i:bit16-bit31  为图像高度
