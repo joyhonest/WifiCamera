@@ -1464,6 +1464,7 @@ public class wifination {
     }
 
 
+    public static native void naSetKeepLive(boolean b);
 
     private  static  void onGetVideoData() //读取到了视频数据，不一定是完整的一帧数据，只是接收到了视频数据，就会回调
     {
