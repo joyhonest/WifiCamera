@@ -234,6 +234,7 @@ publish {
 //5.65     优化ReceiveBmo
 //5.66     优化ReceiveBmo
 //5.68     优化Mjpeg 解码后显示，分开为解码线程和显示线程
+//5.69     优化Mjpeg 解码后显示，分开为解码线程和显示线程
 
-//git commit -m "5.68" -a
+//git commit -m "5.69" -a
 //git push -u origin main
