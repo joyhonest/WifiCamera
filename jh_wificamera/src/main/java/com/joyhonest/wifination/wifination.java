@@ -280,9 +280,9 @@ public class wifination {
     }
 
     // 获取录像时间 ms
-    public static  int  naGetRecordTime()
+    public static  long  naGetRecordTime()
     {
-        return (int)videoMediaCoder.getRecordTime();
+        return (long)videoMediaCoder.getRecordTime();
     }
     //停止录像
     public static native void naStopRecord(int PhoneOrSD);

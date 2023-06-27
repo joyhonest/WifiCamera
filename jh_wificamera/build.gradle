@@ -231,11 +231,12 @@ publish {
 //5.62     优化naSetsquare_fit
 //5.63     优化naSetsquare_fit
 //5.64     优化naSetsquare_fit
-//5.65     优化ReceiveBmo
-//5.66     优化ReceiveBmo
+//5.65     优化ReceiveBmP
+//5.66     优化ReceiveBmP
 //5.68     优化Mjpeg 解码后显示，分开为解码线程和显示线程
 //5.69     优化Mjpeg 解码后显示，分开为解码线程和显示线程
 //5.70     优化Mjpeg 解码后显示，分开为解码线程和显示线程
+//5.71     修改 naGetRecordTime 返回为long （int-->long)
 
-//git commit -m "5.70" -a
+//git commit -m "5.71" -a
 //git push -u origin main
