@@ -238,6 +238,7 @@ publish {
 //5.70     优化Mjpeg 解码后显示，分开为解码线程和显示线程
 //5.71     修改 naGetRecordTime 返回为long （int-->long)
 //5.72     修复一些小问题
+//5.73     修复一些小问题
 
-//git commit -m "5.72" -a
+//git commit -m "5.73" -a
 //git push -u origin main
