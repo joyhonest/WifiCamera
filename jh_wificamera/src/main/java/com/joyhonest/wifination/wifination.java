@@ -167,11 +167,13 @@ public class wifination {
 
     public static int naInit_1(String str)
     {
+        bHandle = false;
         bEanbelHandle = true;
         return naInit(str);
     }
     public static int naStart(OnReceiveFrame _onReceiveFrame)
     {
+        bHandle = false;
         onReceiveFrame = _onReceiveFrame;
         return naInit("");
     }
@@ -1261,6 +1263,7 @@ public class wifination {
                 }
                 bmpG.copyPixelsFromBuffer(mDirectBuffer);
                 onReceiveFrame.onReceiveFrame(bmpG);
+                bHandle = false;
             }
             else {
                 Bitmap bmp =    Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
@@ -1604,6 +1607,11 @@ public class wifination {
 
 
     public static native  void naGetDeviceCategory(); //获取设备分类。  2023-03-24 添加
+
+
+    public static  native void naSetCheckDissconnectedTime(int nSecs);
+
+    public static native  void  naSetTest(boolean bTest);
 
 
 }
