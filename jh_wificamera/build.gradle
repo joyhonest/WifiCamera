@@ -239,6 +239,7 @@ publish {
 //5.71     修改 naGetRecordTime 返回为long （int-->long)
 //5.72     修复一些小问题
 //5.73     修复一些小问题
+//5.74     添加在线播放时，如果不支持的文件，状态返回为-1
 
-//git commit -m "5.73" -a
+//git commit -m "5.74" -a
 //git push -u origin main
