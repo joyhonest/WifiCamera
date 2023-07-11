@@ -243,6 +243,7 @@ publish {
 //5.75     修复在线播放时，有可能出现闪退的情况
 //5.76     优化在线播放时，添加超时处理
 //5.77     优化解码为多线程，thread_type = FF_THREAD_SLICE;
+//5.78     优化解码为多线程，thread_type = FF_THREAD_SLICE;
 
-//git commit -m "5.77" -a
+//git commit -m "5.78" -a
 //git push -u origin main
