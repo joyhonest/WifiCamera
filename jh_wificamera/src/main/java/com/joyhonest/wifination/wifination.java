@@ -1588,15 +1588,16 @@ public class wifination {
         GP4225_Device.F_StartPlayAudio(nFreq,audioFormat);
         StartPlayAudioNative();
     }
-    public static void naStopPlayAudio()
-    {
-        StopPlayAudioNative();
-        GP4225_Device.F_StopPlayAudio();
-    }
+
 
     public static void naSetRecordAutioExt(boolean b) //录制的声音是从wifi端传来的
     {
         AudioEncoder.SetDataExt(b);
+    }
+    public static void naStopPlayAudio()
+    {
+        StopPlayAudioNative();
+        GP4225_Device.F_StopPlayAudio();
     }
 
 
