@@ -283,7 +283,7 @@ public class AudioEncoder implements AudioCodec {
                 byte[] dataA = new byte[aBufferInfo.size];
                 bb.get(dataA, 0, dataA.length);
                 MyMediaMuxer.WritSample(dataA,false,aBufferInfo);
-                Log.e("abcdefg","write a audio");
+                //Log.e("abcdefg","write a audio");
                 mEncoder.releaseOutputBuffer(outputBufferIndex, false);
             }
         }

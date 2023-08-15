@@ -244,6 +244,7 @@ publish {
 //5.76     优化在线播放时，添加超时处理
 //5.77     优化解码为多线程，thread_type = FF_THREAD_SLICE;
 //5.78     优化解码为多线程，thread_type = FF_THREAD_SLICE;
+//5.79     优化Socket 连接
 
-//git commit -m "5.78" -a
+//git commit -m "5.79" -a
 //git push -u origin main
