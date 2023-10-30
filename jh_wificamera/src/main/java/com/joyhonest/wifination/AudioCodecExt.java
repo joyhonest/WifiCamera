@@ -14,7 +14,6 @@ public class AudioCodecExt {
    public void WriteData(byte []data)
    {
         int nLen = data.length;
-        //int nRe = nLen;
           synchronized (mData) {
               if(mCount+nLen<=SIZE) {
                   System.arraycopy(data, 0, mData, mCount, nLen);

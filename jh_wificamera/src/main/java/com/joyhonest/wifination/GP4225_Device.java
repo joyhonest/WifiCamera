@@ -158,6 +158,7 @@ public class GP4225_Device {
                 (data[3] & 0xFF) != 'N') {
             return false;
         }
+        //Log.e("TAG","have 20001");
 
         String sFileName = "";
         byte nStatus = 0;
@@ -269,6 +270,42 @@ public class GP4225_Device {
                 EventBus.getDefault().post(FF, "GP4225_RevFiles");
             }
             return true;
+        }
+        if(m_cmd == 0x0003)  //获取缩略图时返回的状态
+        {
+            nStatus = data[10];
+            sFileName = "";
+            if(nStatus!=0) {  //获取缩略图出错
+                if (n_len == 0x45)
+                {
+                    nLen = 0;
+                    for (int xx = 0; xx < 32; xx++) {
+                        if (data[xx + 10 + 24 + 8 + 4] == 0) {
+                            break;
+                        } else {
+                            nLen++;
+                        }
+                    }
+
+                    if (nLen != 0) {
+
+                        sFileName = new String(data, 10 + 24 + 8 + 4, nLen);
+                        MyFile file = new MyFile("", sFileName, (int) 0);
+
+                        file.nLength = data[10 + 24 + 8 + 3];
+                        file.nLength <<= 8;
+                        file.nLength |= data[10 + 24 + 8 + 2];
+                        file.nLength <<= 8;
+                        file.nLength |= data[10 + 24 + 8 + 1];
+                        file.nLength <<= 8;
+                        file.nLength |= data[10 + 24 + 8];
+                        file.nLength &= 0xffffffff;
+                        Log.e("TAG", "file name  =  " + file.sFileName + "  len = " + file.nLength);
+                        EventBus.getDefault().post(file, "na4225_GetSDFleThumbnail_fail");
+                    }
+                }
+            }
+
         }
 
         if (m_cmd == 0x0009)  //Delete File
@@ -631,9 +668,11 @@ public class GP4225_Device {
                     break;
                 case 0x0020:
                     {
-                        int a = data[11];
-                        Integer aa = (int)a;
-                        EventBus.getDefault().post(aa, "onGetLedMode");
+                        if(n_len>=4) {
+                            int a = data[11];
+                            Integer aa = (int) a;
+                            EventBus.getDefault().post(aa, "onGetLedMode");
+                        }
                     }
                     break;
                 case 0x0024:  //BK_PARA
@@ -666,6 +705,16 @@ public class GP4225_Device {
 
                 }
                 break;
+                case 0x002A:
+                {
+                    byte []da = new byte[n_len];
+                    System.arraycopy(data, 10, da, 0, n_len);
+                    EventBus.getDefault().post(da, "onGetBatteryInfo");
+                    //byte0  电池等级
+                    //byte1  电池的等级数
+                    //byte2  电池电量百分比 >>100 表示不支持电池百分比
+                    //byte3  0 未充电 1 充电中  2 充电满
+                }
                 case 0x002B: //摄像头参数  灯频率及EV
                 {
                     byte []da = new byte[n_len];

@@ -246,8 +246,9 @@ publish {
 //5.78     优化解码为多线程，thread_type = FF_THREAD_SLICE;
 //5.82     优化Socket 连接
 //5.83     优化流程，优化H264等摄像头中途改变分辨率时可能出现花屏
+//5.84     添加获取SD卡里面文件的缩略图的api 2023-10-30
 
-//git commit -m "5.83" -a
+//git commit -m "5.84" -a
 //git push -u origin main
 
 //git push origin --delete <tagname>

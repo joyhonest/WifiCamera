@@ -146,6 +146,7 @@ public class wifination {
     public static native  void  naSetLedPWM(byte nPwm);
     public static native  void  naGetLedPWM();
     public static native  void  naGetBattery();
+    public static native  void naGetBatteryInfo(); //获取更详细的电池信息，比如是否在充电以及电池百分比，这个需要有些固件可能不支持
     public static native  void  naGetWifiSSID();
     public static native  void  naSetWifiSSID(String sSSid);
     public static native  void  naSetLedMode(int nMode);
@@ -398,6 +399,7 @@ public class wifination {
     public static native void na4225_GetFileList(int nType, int nStrtinx,int nEndinx);
     public static native void na4225_DeleteFile(String sPath,String sFileName);
     public static native void na4225_DeleteAll(int nType); //  2 videos 3 photos   4 all
+    public static native void na4225_GetSDFleThumbnail(String sPath,String sFileName,int nLen,String sSaveName);
 
 
     public static  int naPlayFlie(String sFileName)
@@ -482,12 +484,12 @@ public class wifination {
     //获取SD卡中视频的的缩略图(针对  IC_GKA),一般建议如果已经下载到手机的视频文件,利用系统函数来获取缩略图,本函数主要是用于获取没有下载到手机
 //的SD卡中的视频文件缩略图,调用次函数后,SDK会回调 GetThumb(byte[] data,String sFilename), data 是缩略图数据,filename是表明是哪个视频文件
 //一般,我们在调用naGetVideoDir()时, 在回调函数GetFiles(byte[] filesname)得到文件名,在调用此函数来获取缩略图
-    public static native int naGetThumb(String filename);
+    public static native int naGetThumb(String filename);  //针对国科模块
 
 
 
 
-    public static native int naCancelGetThumb();
+    public static native int naCancelGetThumb();   //针对国科模块
 
     //获取手机中视频文件的缩略图,添加这个函数是因为有时手机的系统函数兼容性不会，有时无法获取到缩略图。
     private static native int naGetVideoThumbnailB(String filename,Bitmap bmp);
@@ -728,6 +730,8 @@ public class wifination {
         EventBus.getDefault().post(nLed,"onGetLed");
         EventBus.getDefault().post(nLed,"onGetLedPWM");
     }
+
+
 
     private static  void onUdpRevData(byte[] data,int nPort)      // naStartReadUdp，后，读取到的数据从这里返回
     {
@@ -1192,7 +1196,7 @@ public class wifination {
     private static void GetThumb(byte[] data, String sFilename) {
         if (data != null) {
             MyThumb thumb = new MyThumb(data, sFilename);
-            EventBus.getDefault().post(thumb, "GetThumb");      //调用第三方库来发送消息。
+            EventBus.getDefault().post(thumb, "GetThumb");      //调用第三方库来发送消息。  //针对国科模块
         }
     }
 
@@ -1588,16 +1592,15 @@ public class wifination {
         GP4225_Device.F_StartPlayAudio(nFreq,audioFormat);
         StartPlayAudioNative();
     }
-
-
-    public static void naSetRecordAutioExt(boolean b) //录制的声音是从wifi端传来的
-    {
-        AudioEncoder.SetDataExt(b);
-    }
     public static void naStopPlayAudio()
     {
         StopPlayAudioNative();
         GP4225_Device.F_StopPlayAudio();
+    }
+
+    public static void naSetRecordAutioExt(boolean b) //录制的声音是从wifi端传来的
+    {
+        AudioEncoder.SetDataExt(b);
     }
 
 
