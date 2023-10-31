@@ -1271,7 +1271,8 @@ public class wifination {
                 bHandle = false;
             }
             else {
-                if(gp4225_Device.nMode == 0) {
+                //if(gp4225_Device.nMode == 0)
+                {
                     Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
                     bmp.copyPixelsFromBuffer(mDirectBuffer);
                     EventBus.getDefault().post(bmp, "ReceiveBMP");

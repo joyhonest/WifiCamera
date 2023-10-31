@@ -280,7 +280,7 @@ public class GP4225_Device {
                 {
                     nLen = 0;
                     for (int xx = 0; xx < 32; xx++) {
-                        if (data[xx + 10 + 24 + 8 + 4] == 0) {
+                        if (data[xx + 10 + 24 + 8 + 4 + 1] == 0) {
                             break;
                         } else {
                             nLen++;
@@ -289,22 +289,23 @@ public class GP4225_Device {
 
                     if (nLen != 0) {
 
-                        sFileName = new String(data, 10 + 24 + 8 + 4, nLen);
+                        sFileName = new String(data, 10 + 24 + 8 + 4 + 1, nLen);
                         MyFile file = new MyFile("", sFileName, (int) 0);
 
-                        file.nLength = data[10 + 24 + 8 + 3];
+                        file.nLength = data[11 + 24 + 8 + 3] & 0xff;
                         file.nLength <<= 8;
-                        file.nLength |= data[10 + 24 + 8 + 2];
+                        file.nLength |= data[11 + 24 + 8 + 2] & 0xff;
                         file.nLength <<= 8;
-                        file.nLength |= data[10 + 24 + 8 + 1];
+                        file.nLength |= data[11 + 24 + 8 + 1] & 0xff;
                         file.nLength <<= 8;
-                        file.nLength |= data[10 + 24 + 8];
+                        file.nLength |= data[11 + 24 + 8] & 0xff;
                         file.nLength &= 0xffffffff;
-                        Log.e("TAG", "file name  =  " + file.sFileName + "  len = " + file.nLength);
-                        EventBus.getDefault().post(file, "na4225_GetSDFleThumbnail_fail");
+                    //    Log.e("TAG", "file name  =  " + file.sFileName + "  len = " + file.nLength);
+                        EventBus.getDefault().post(file, "GetSDFleThumbnail_fail");
                     }
                 }
             }
+            return true;
 
         }
 
