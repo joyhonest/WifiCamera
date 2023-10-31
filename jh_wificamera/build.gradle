@@ -247,8 +247,9 @@ publish {
 //5.82     优化Socket 连接
 //5.83     优化流程，优化H264等摄像头中途改变分辨率时可能出现花屏
 //5.84     添加获取SD卡里面文件的缩略图的api 2023-10-30
+//5.85     优化SD卡里面文件的缩略图的api 2023-10-31
 
-//git commit -m "5.84" -a
+//git commit -m "5.85" -a
 //git push -u origin main
 
 //git push origin --delete <tagname>

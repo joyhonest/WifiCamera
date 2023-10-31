@@ -401,6 +401,7 @@ public class wifination {
     public static native void na4225_DeleteAll(int nType); //  2 videos 3 photos   4 all
     public static native void na4225_GetSDFleThumbnail(String sPath,String sFileName,int nLen,String sSaveName);
 
+    public static native void na4225_SetTcpReadDelay(int nMs);
 
     public static  int naPlayFlie(String sFileName)
     {
@@ -1270,9 +1271,10 @@ public class wifination {
                 bHandle = false;
             }
             else {
-                Bitmap bmp =    Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-                bmp.copyPixelsFromBuffer(mDirectBuffer);
-                EventBus.getDefault().post(bmp, "ReceiveBMP");
+                if(gp4225_Device.nMode == 0) {
+                    Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                    bmp.copyPixelsFromBuffer(mDirectBuffer);
+                    EventBus.getDefault().post(bmp, "ReceiveBMP");
 //                if(bmpG!=null)
 //                {
 //                    if(bmpG.getWidth() !=w || bmpG.getHeight()!=h)
@@ -1286,6 +1288,7 @@ public class wifination {
 //                }
 //                bmpG.copyPixelsFromBuffer(mDirectBuffer);
 //                EventBus.getDefault().post(bmpG, "ReceiveBMP");
+                }
             }
         }
     }
