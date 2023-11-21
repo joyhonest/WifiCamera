@@ -34,8 +34,9 @@ public class GP4225_Device {
 
 
     public int nMode;
-    public boolean bSD;
-    public boolean bSDRecording;
+    public boolean bSD=false;
+    public boolean bFastTcp = false;
+    public boolean bSDRecording=false;
 
 
     public byte[] MacAddress = new byte[6];
@@ -176,6 +177,7 @@ public class GP4225_Device {
             bSD = ((data[11] & 0x01) == 0); // 0 have SD  1 NoSD
             bSDRecording = ((data[11] & 0x02) != 0);
 
+            bFastTcp = ((data[11] & 0x04) != 0);
             VideosCount = ((data[12] & 0xFF) + (data[13] & 0xFF) * 0x100 + (data[14] & 0xFF) * 0x10000 + (data[15] & 0xFF) * 0x1000000);
             LockedCount = ((data[16] & 0xFF) + (data[17] & 0xFF) * 0x100 + (data[18] & 0xFF) * 0x10000 + (data[19] & 0xFF) * 0x1000000);
             PhotoCount = ((data[20] & 0xFF) + (data[21] & 0xFF) * 0x100 + (data[22] & 0xFF) * 0x10000 + (data[23] & 0xFF) * 0x1000000);
@@ -300,7 +302,7 @@ public class GP4225_Device {
                         file.nLength <<= 8;
                         file.nLength |= data[11 + 24 + 8] & 0xff;
                         file.nLength &= 0xffffffff;
-                    //    Log.e("TAG", "file name  =  " + file.sFileName + "  len = " + file.nLength);
+                        //    Log.e("TAG", "file name  =  " + file.sFileName + "  len = " + file.nLength);
                         EventBus.getDefault().post(file, "GetSDFleThumbnail_fail");
                     }
                 }
@@ -668,28 +670,28 @@ public class GP4225_Device {
                     }
                     break;
                 case 0x0020:
-                    {
-                        if(n_len>=4) {
-                            int a = data[11];
-                            Integer aa = (int) a;
-                            EventBus.getDefault().post(aa, "onGetLedMode");
-                        }
+                {
+                    if(n_len>=4) {
+                        int a = data[11];
+                        Integer aa = (int) a;
+                        EventBus.getDefault().post(aa, "onGetLedMode");
                     }
-                    break;
+                }
+                break;
                 case 0x0024:  //BK_PARA
-                    {
-                        byte []da = new byte[n_len];
-                        System.arraycopy(data, 10, da, 0, n_len);
-                        EventBus.getDefault().post(da, "onGetBK_ParaData");
-                    }
-                    break;
+                {
+                    byte []da = new byte[n_len];
+                    System.arraycopy(data, 10, da, 0, n_len);
+                    EventBus.getDefault().post(da, "onGetBK_ParaData");
+                }
+                break;
                 case 0x0025: //BK_Macaddres
                 {
                     byte []da = new byte[n_len];
                     System.arraycopy(data, 10, da, 0, n_len);
                     EventBus.getDefault().post(da, "onGetBK_GetMacAddress");
                 }
-                    break;
+                break;
                 case 0x0026:
                 {
                     byte a = data[10];
@@ -733,7 +735,7 @@ public class GP4225_Device {
                     System.arraycopy(data, 10, da, 0, n_len);
                     EventBus.getDefault().post(da, "onGetPcmInfo");
                 }
-                    break;
+                break;
                 case 0x002D:
                 {
                     byte []da = new byte[n_len];
