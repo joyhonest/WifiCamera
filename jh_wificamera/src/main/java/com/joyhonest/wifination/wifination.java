@@ -381,8 +381,9 @@ public class wifination {
 
     /*
             APP设定工作模式
-            0  实时图像
+            0  实时图像  录像模式
             1  文件操作
+
      */
 
     public static native void na4225_SetMode(byte nMode);
@@ -399,7 +400,9 @@ public class wifination {
     public static native void na4225_GetFileList(int nType, int nStrtinx,int nEndinx);
     public static native void na4225_DeleteFile(String sPath,String sFileName);
     public static native void na4225_DeleteAll(int nType); //  2 videos 3 photos   4 all
-    public static native void na4225_GetSDFleThumbnail(String sPath,String sFileName,int nLen,String sSaveName);
+    public static native void na4225_GetSDFileThumbnail(String sPath,String sFileName,int nLen,String sSaveName);
+    public static native int na4225_CreateThumbnailTcp(boolean b);
+
 
     public static native void na4225_SetTcpReadDelay(int nMs);
 

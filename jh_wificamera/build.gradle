@@ -252,8 +252,9 @@ publish {
 //5.87     添加 bFastTcp,来区分固件是否修复了tcp连接后要delay的bug 2023-11-21
 //5.88     屏蔽不是用H264编码来在线播放大尺寸视频。
 //5.89     添加 bFastTcp,来区分固件是否修复了tcp连接后要delay的bug 2023-11-22
+//5.90     优化读取缩略图流程，先建立tcp，然后在一起读取 2023-11-22
 
-//git commit -m "5.89" -a
+//git commit -m "5.90" -a
 //git push -u origin main
 
 //git push origin --delete <tagname>
