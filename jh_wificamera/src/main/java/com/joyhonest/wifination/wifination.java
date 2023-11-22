@@ -1621,5 +1621,7 @@ public class wifination {
 
     public static native  void  naSetTest(boolean bTest);
 
+    public static native void naSetOnLinePlayHeighResolution(boolean b);
+
 
 }
