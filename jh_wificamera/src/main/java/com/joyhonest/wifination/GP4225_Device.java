@@ -177,7 +177,7 @@ public class GP4225_Device {
             bSD = ((data[11] & 0x01) == 0); // 0 have SD  1 NoSD
             bSDRecording = ((data[11] & 0x02) != 0);
 
-            bFastTcp = ((data[11] & 0x04) != 0);
+            bFastTcp = ((data[11] & 0x08) != 0);
             VideosCount = ((data[12] & 0xFF) + (data[13] & 0xFF) * 0x100 + (data[14] & 0xFF) * 0x10000 + (data[15] & 0xFF) * 0x1000000);
             LockedCount = ((data[16] & 0xFF) + (data[17] & 0xFF) * 0x100 + (data[18] & 0xFF) * 0x10000 + (data[19] & 0xFF) * 0x1000000);
             PhotoCount = ((data[20] & 0xFF) + (data[21] & 0xFF) * 0x100 + (data[22] & 0xFF) * 0x10000 + (data[23] & 0xFF) * 0x1000000);
