@@ -278,6 +278,7 @@ public class GP4225_Device {
             nStatus = data[10];
             sFileName = "";
             if(nStatus!=0) {  //获取缩略图出错
+                MyFile file = new MyFile("", "", (int) 0);
                 if (n_len == 0x45)
                 {
                     nLen = 0;
@@ -292,8 +293,9 @@ public class GP4225_Device {
                     if (nLen != 0) {
 
                         sFileName = new String(data, 10 + 24 + 8 + 4 + 1, nLen);
-                        MyFile file = new MyFile("", sFileName, (int) 0);
 
+                        //MyFile file = new MyFile("", sFileName, (int) 0);
+                        file.sFileName = sFileName;
                         file.nLength = data[11 + 24 + 8 + 3] & 0xff;
                         file.nLength <<= 8;
                         file.nLength |= data[11 + 24 + 8 + 2] & 0xff;
@@ -302,10 +304,11 @@ public class GP4225_Device {
                         file.nLength <<= 8;
                         file.nLength |= data[11 + 24 + 8] & 0xff;
                         file.nLength &= 0xffffffff;
-                        //    Log.e("TAG", "file name  =  " + file.sFileName + "  len = " + file.nLength);
-                        EventBus.getDefault().post(file, "GetSDFleThumbnail_fail");
+
                     }
                 }
+                file.nInx1 = nStatus;
+                EventBus.getDefault().post(file, "GetSDFleThumbnail_fail");
             }
             return true;
 
