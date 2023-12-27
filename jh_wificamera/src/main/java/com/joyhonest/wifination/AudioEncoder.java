@@ -1,12 +1,16 @@
 package com.joyhonest.wifination;
 
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.media.MediaRecorder;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -17,12 +21,12 @@ public class AudioEncoder implements AudioCodec {
     //private Client mClient;
 
 
-    public int nRecType=0;
+    public int nRecType = 0;
     int KEY_CHANNEL_COUNT = 1;
     int KEY_SAMPLE_RATE = 8000;
 
     int CHANNEL_MODE = AudioFormat.CHANNEL_IN_MONO;// (KEY_CHANNEL_COUNT ==1? AudioFormat.CHANNEL_IN_MONO:AudioFormat.CHANNEL_IN_STEREO);
-    int BUFFFER_SIZE = 1024*2;
+    int BUFFFER_SIZE = 1024 * 2;
 
     private Worker mWorker;
     private final String TAG = "AudioEncoder";
@@ -35,16 +39,14 @@ public class AudioEncoder implements AudioCodec {
         nRecType = 0;
     }
 
-    public void SetDataExt(boolean b)
-    {
-        if(b) {
+    public void SetDataExt(boolean b) {
+        if (b) {
             nRecType = 1;
             KEY_CHANNEL_COUNT = 2;
             CHANNEL_MODE = AudioFormat.CHANNEL_IN_STEREO;
             KEY_SAMPLE_RATE = 8000;
 
-        }
-        else {
+        } else {
             nRecType = 0;
 //            KEY_CHANNEL_COUNT = 1;
 //            CHANNEL_MODE = AudioFormat.CHANNEL_IN_MONO;
@@ -57,31 +59,25 @@ public class AudioEncoder implements AudioCodec {
 
     }
 
-    public void WriteExtData(byte[] data)
-    {
-        if(mWorker!=null)
-        {
+    public void WriteExtData(byte[] data) {
+        if (mWorker != null) {
             mWorker.WriteExtData(data);
         }
     }
 
-    public boolean  isCanRecordAudio()
-    {
+    public boolean isCanRecordAudio() {
         Worker p = new Worker();
         p.nRecType = nRecType;
         return p.isCanRecordAudio();
     }
 
 
-    public boolean  start() {
-        if(mWorker !=null)
-        {
+    public boolean start() {
+        if (mWorker != null) {
             mWorker.setRunning(false);
             try {
                 mWorker.join(100);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             mWorker = null;
@@ -89,8 +85,7 @@ public class AudioEncoder implements AudioCodec {
         mWorker = new Worker();
         mWorker.nRecType = nRecType;
         boolean re = mWorker.prepare();
-        if(re)
-        {
+        if (re) {
             mWorker.setRunning(true);
             mWorker.start();
         }
@@ -106,11 +101,11 @@ public class AudioEncoder implements AudioCodec {
 
 
     private class Worker extends Thread {
-        private int mFrameSize = 2048*2;
+        private int mFrameSize = 2048 * 2;
         private byte[] mBuffer;
         private boolean isRunning = false;
-        public  int nRecType = 0; //0 用mic录音， ！=0 从外部灌数据进来
-        private long pts_unit=0;
+        public int nRecType = 0; //0 用mic录音， ！=0 从外部灌数据进来
+        private long pts_unit = 0;
         private MediaCodec mEncoder;
         private AudioRecord mRecord;
         MediaCodec.BufferInfo mBufferInfo;
@@ -118,18 +113,17 @@ public class AudioEncoder implements AudioCodec {
         long pts;
 
         boolean bStart = false;
+
         @Override
         public void run() {
             int re = 0;
             bStart = false;
-            pts=0;
+            pts = 0;
             while (isRunning) {
-                if(nRecType==0) {
+                if (nRecType == 0) {
                     re = mRecord.read(mBuffer, 0, mFrameSize);
                     encode(mBuffer);
-                }
-                else
-                {
+                } else {
                     byte[] rea = wifination.audioCodecExt.ReadData(mFrameSize);
                     encode(rea);
                 }
@@ -137,10 +131,8 @@ public class AudioEncoder implements AudioCodec {
             release();
         }
 
-        public void WriteExtData(byte[] data)
-        {
-            if(data != null)
-            {
+        public void WriteExtData(byte[] data) {
+            if (data != null) {
                 encode(data);
             }
         }
@@ -165,14 +157,23 @@ public class AudioEncoder implements AudioCodec {
         }
 
 
-        public    boolean isCanRecordAudio()
-        {
-            if(nRecType!=0)
+        public boolean isCanRecordAudio() {
+            if (nRecType != 0)
                 return true;
 
             boolean re = false;
             try {
-                int minBufferSize = AudioRecord.getMinBufferSize(KEY_SAMPLE_RATE, CHANNEL_MODE,AUDIO_FORMAT);
+                int minBufferSize = AudioRecord.getMinBufferSize(KEY_SAMPLE_RATE, CHANNEL_MODE, AUDIO_FORMAT);
+//                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+//                    // TODO: Consider calling
+//                    //    ActivityCompat#requestPermissions
+//                    // here to request the missing permissions, and then overriding
+//                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                    //                                          int[] grantResults)
+//                    // to handle the case where the user grants the permission. See the documentation
+//                    // for ActivityCompat#requestPermissions for more details.
+//                    return TODO;
+//                }
                 mRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, KEY_SAMPLE_RATE, CHANNEL_MODE, AUDIO_FORMAT, minBufferSize);
                 mRecord.startRecording();
                 mRecord.stop();
@@ -199,8 +200,6 @@ public class AudioEncoder implements AudioCodec {
             int a1 = 8;
             try {
                 MyMediaMuxer.nFramesAudio=0;
-
-
                 mBufferInfo = new MediaCodec.BufferInfo();
                 mEncoder = MediaCodec.createEncoderByType(MIME_TYPE);
                 mediaFormat = MediaFormat.createAudioFormat(MIME_TYPE, KEY_SAMPLE_RATE, KEY_CHANNEL_COUNT);
