@@ -10,11 +10,7 @@ import android.media.MediaFormat;
 import android.media.MediaRecorder;
 import android.util.Log;
 
-<<<<<<< HEAD
 //import androidx.core.app.ActivityCompat;
-=======
-import androidx.core.app.ActivityCompat;
->>>>>>> 08627a33ae3579ba028c5c2e901e5d405740d724
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

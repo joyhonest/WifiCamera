@@ -253,7 +253,7 @@ publish {
 //5.92     优化读取缩略图流程，先建立tcp，然后在一起读取 ,添加获取出错时的错误码
 
 
-//git commit -m "5.92" -a
+//git commit -m "5.95" -a
 //git push -u origin main
 
 
