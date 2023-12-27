@@ -41,7 +41,6 @@ public class AudioCodecExt {
                System.arraycopy(mData,0,reArray,0,nLen);
                mCount-=nLen;
                System.arraycopy(mData,nLen,mData,0,mCount);
-               Log.e("abcde","read extdata");
            }
            return reArray;
        }

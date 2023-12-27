@@ -1,10 +1,9 @@
 apply plugin: 'com.android.library'
-//apply plugin: 'com.github.panpf.bintray-publish'
 apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.joyhonest'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 32
     //buildToolsVersion '28.0.3'
     defaultConfig {
         minSdkVersion 21
@@ -43,9 +42,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    //implementation files('libs/androideventbus-1.0.5.1.jar')
-    //compileOnly 'com.android.support:appcompat-v7:28.0.0'
-    //implementation 'org.simple:androideventbus:1.0.5.1'
     compileOnly 'org.tensorflow:tensorflow-android:1.13.1'
 }
 
@@ -254,9 +250,10 @@ publish {
 //5.89     添加 bFastTcp,来区分固件是否修复了tcp连接后要delay的bug 2023-11-22
 //5.90     优化读取缩略图流程，先建立tcp，然后在一起读取 2023-11-22
 //5.91     优化读取缩略图流程，先建立tcp，然后在一起读取 ,添加获取出错时的错误码
+//5.92     优化读取缩略图流程，先建立tcp，然后在一起读取 ,添加获取出错时的错误码
 
 
-//git commit -m "5.91" -a
+//git commit -m "5.92" -a
 //git push -u origin main
 
 //git push origin --delete <tagname>

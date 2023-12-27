@@ -43,6 +43,12 @@ android {
 
     }
 
+    lintOptions {
+
+        checkReleaseBuilds false
+
+    }
+
 }
 //
 //git branch -M main

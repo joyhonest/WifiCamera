@@ -1,5 +1,7 @@
 package com.joyhonest.wifination;
 
+import static android.app.PendingIntent.FLAG_MUTABLE;
+
 import android.app.Application;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -83,7 +85,7 @@ public class MyUsbCamera {
             final Context context = mWeakContext.get();
             if (context != null)
             {
-                mPermissionIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, new Intent(ACTION_USB_PERMISSION), 0);
+                mPermissionIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, new Intent(ACTION_USB_PERMISSION), FLAG_MUTABLE);
                 final IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
                 // ACTION_USB_DEVICE_ATTACHED never comes on some devices so it should not be added here
                 filter.addAction(ACTION_USB_DEVICE_ATTACHED);

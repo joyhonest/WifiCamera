@@ -36,6 +36,7 @@ public class GP4225_Device {
     public int nMode;
     public boolean bSD=false;
     public boolean bFastTcp = false;
+    public boolean bNewOnlinePlay = false;
     public boolean bSDRecording=false;
 
 
@@ -178,6 +179,8 @@ public class GP4225_Device {
             bSDRecording = ((data[11] & 0x02) != 0);
 
             bFastTcp = ((data[11] & 0x08) != 0);
+            bNewOnlinePlay = ((data[11] & 0x10) != 0);
+
             VideosCount = ((data[12] & 0xFF) + (data[13] & 0xFF) * 0x100 + (data[14] & 0xFF) * 0x10000 + (data[15] & 0xFF) * 0x1000000);
             LockedCount = ((data[16] & 0xFF) + (data[17] & 0xFF) * 0x100 + (data[18] & 0xFF) * 0x10000 + (data[19] & 0xFF) * 0x1000000);
             PhotoCount = ((data[20] & 0xFF) + (data[21] & 0xFF) * 0x100 + (data[22] & 0xFF) * 0x10000 + (data[23] & 0xFF) * 0x1000000);
@@ -312,6 +315,32 @@ public class GP4225_Device {
             }
             return true;
 
+        }
+        if(m_cmd == 0x0004)   //新版在线播放状态
+        {
+             if(s_cmd == 0x0001)
+             {
+                 nStatus = data[10];  //0 OK  1 文件错误 2 当前模式不支持  4 忙，正在播放
+                 EventBus.getDefault().post(nStatus, "OnStartOnLinePlayStatus");
+                 return true;
+             }
+
+            if(s_cmd == 0x0003)
+            {
+//                PLAY_STATUS
+//                1 byte =  0:空闲，1: 正在播放， 2:播放暂停，3:文件 异常无法播放，4:文件不存在
+//                播放速度   1byte U8 速度 x10, 例如 1.5 倍对应 15
+//                文件时长   4Byte U32 单位秒
+//                已播放时长 4Byte U32 单位秒
+
+                OnLinePlayStatus onLinePlayStatus = new OnLinePlayStatus();
+                onLinePlayStatus.nStatus = data[10];
+                onLinePlayStatus.nPlaySpeed = data[11];
+                onLinePlayStatus.nTotalTime = data[12] & 0xff + (data[13] & 0xff)*0x100 + (data[14] & 0xff)*0x10000 + (data[15] & 0xff)*0x1000000;
+                onLinePlayStatus.nPlayedTime = data[16] & 0xff + (data[17] & 0xff)*0x100 + (data[18] & 0xff)*0x10000 + (data[19] & 0xff)*0x1000000;
+                EventBus.getDefault().post(onLinePlayStatus, "OnGetOnLinePlayStatus");
+                return true;
+            }
         }
 
         if (m_cmd == 0x0009)  //Delete File
@@ -718,7 +747,7 @@ public class GP4225_Device {
                     EventBus.getDefault().post(da, "onGetBatteryInfo");
                     //byte0  电池等级
                     //byte1  电池的等级数
-                    //byte2  电池电量百分比 >>100 表示不支持电池百分比
+                    //byte2  电池电量百分比  >100  表示不支持电池百分比
                     //byte3  0 未充电 1 充电中  2 充电满
                 }
                 case 0x002B: //摄像头参数  灯频率及EV
@@ -846,6 +875,27 @@ public class GP4225_Device {
 
     }
 
+    public class OnLinePlayStatus
+    {
+//                1byte = 0: 空闲，1: 正在播放， 2:播放暂停，3:文件 异常无法播放，4:文件不存在
+//                播放速度    1byte U8 速度 x10, 例如 1.5 倍对应 15
+//                文件时长 4Byte U32 单位秒
+//                已播放时长 4Byte U32 单位秒
+        public int  nStatus;
+        public int  nPlaySpeed;
+        public int  nTotalTime;
+        public int  nPlayedTime;
+
+        public OnLinePlayStatus() {
+            nStatus = 0;
+            nPlaySpeed = 0;
+            nTotalTime = 0;
+            nPlayedTime = 0;
+
+        }
+
+    }
+
 
     public class G_SensorData {
         public int nStatus;
@@ -882,6 +932,9 @@ public class GP4225_Device {
             }
         }
         int channelConfig = AudioFormat.CHANNEL_OUT_STEREO;
+        if(audioFormat == AudioFormat.ENCODING_PCM_8BIT) {
+            channelConfig = AudioFormat.CHANNEL_OUT_MONO;
+        }
         int mMinBufSize = AudioTrack.getMinBufferSize(nFreq, channelConfig, audioFormat);
         try {
             audioTrack = new AudioTrack(AudioManager.USE_DEFAULT_STREAM_TYPE, nFreq, channelConfig,
@@ -913,6 +966,7 @@ public class GP4225_Device {
 
     static boolean b2Speaker = true;
 
+
     public static void F_Set2Spaker(boolean b)
     {
         b2Speaker = b;
@@ -920,8 +974,14 @@ public class GP4225_Device {
 
 
 
+    public static boolean bWifiPcm= true;
     public static void WriteAudioData(byte[] data)
     {
+       // Log.e("tag","get pcm data");
+
+        if(!bWifiPcm) {
+            return;
+        }
         wifination.audioCodecExt.WriteData(data);
         if(!b2Speaker)
             return;

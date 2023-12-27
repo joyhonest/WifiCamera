@@ -19,8 +19,7 @@ import org.simple.eventbus.EventBus;
 
 import java.io.File;
 import java.nio.ByteBuffer;
-
-
+import java.nio.LongBuffer;
 
 
 /**
@@ -46,6 +45,19 @@ public class wifination {
     public  final   static    int  GP4225_Type_Video = 1;
     public  final   static    int  GP4225_Type_Locked = 2;
     public  final   static    int  GP4225_Type_Photo = 3;
+
+
+    public final    static   int   OnLine_Cmd_Pause = 1;
+    public final    static   int   OnLine_Cmd_Resume = 2;
+    public final    static   int   OnLine_Cmd_Pre = 3;
+    public final    static   int   OnLine_Cmd_Next = 4;
+    public final    static   int   OnLine_Cmd_Stop = 5;
+
+
+    public final    static   int   OnLine_Status_Idl = 0;
+    public final    static   int   OnLine_Status_Playing = 1;
+    public final    static   int   OnLine_Status_Pause = 2;
+
 
     public final static int IC_NO = -1;
     public final static int IC_GK = 0;
@@ -73,7 +85,7 @@ public class wifination {
     //public static ByteBuffer mDirectBufferYUV;
     public static boolean bDisping = false;
 
-
+    public static boolean bSupportPcmAudio = false;
     private  static VideoMediaCoder  videoMediaCoder;
 
     //private static  Context  mContext=null;
@@ -191,6 +203,7 @@ public class wifination {
     public static  int naStop()
     {
         onReceiveFrame = null;
+        bSupportPcmAudio = false;
         return naStopB();
     }
     //向飞控发送命令OnGetGP_Status
@@ -255,6 +268,7 @@ public class wifination {
 
             if(bG_Audio)
             {
+                GP4225_Device.bWifiPcm = true;
                 boolean re = G_StartAudio(1);
                 if(!re) //录音权限被拒绝
                 {
@@ -383,7 +397,6 @@ public class wifination {
             APP设定工作模式
             0  实时图像  录像模式
             1  文件操作
-
      */
 
     public static native void na4225_SetMode(byte nMode);
@@ -446,15 +459,16 @@ public class wifination {
     */
 
     public static native boolean na4225StartDonwLoad(String sPath,String sFileName,int nLen,String sSaveName);
-    public static native boolean  na4225StartPlay(String sPath,String sFileName,int nLen);
+    public static native boolean  na4225StartPlay(String sPath,String sFileName,int nLen); //旧版本
+
+    //在线播放新版本，只有新版固件支持 bFastTcp = true 支持
+    public static native boolean  na4225StartPlay_newVer(String sPath,String sFileName,int nLen);   //新版本播放
+    public static native boolean  na4225OnLinePlaySetStatus(int nCmd);
+    public static native boolean  na4225OnLinePlayGetStatus();
     public static native boolean naDisConnectedTCP();
     ///////// 4225 end --------------
 
-
-
-
     private static native void naSetRevBmpA(boolean b);
-
 
     //设定是否手势识别， True，每一帧也会由 ReceiveBmp 返回，不同的是 SDK内部还是会显示视频。 如果APP 自己来实现手势识别和显示，
     // 可以用 naSetRevBmp 来替代
@@ -1578,18 +1592,24 @@ public class wifination {
     //  nFreq = 8000,.....
     private static native  boolean StartPlayAudioNative();
     private static native  void StopPlayAudioNative();
-    // audioFormat  AudioFormat.ENCODING_PCM_16BIT or  AudioFormat..ENCODING_PCM_8BIT
-    //  nFreq = 8000,.....
+    //audioFormat  AudioFormat.ENCODING_PCM_16BIT or  AudioFormat..ENCODING_PCM_8BIT
+    //nFreq = 8000,.....
 
 
     private static void WriteAudioData(byte[] data) //SDK 内部调用
     {
+        bSupportPcmAudio = true;
         if((nIx % 0x1F) ==0)
         {
             EventBus.getDefault().post(data,"onGetPcmData");
         }
         nIx++;
-        GP4225_Device.WriteAudioData(data);
+        GP4225_Device.WriteAudioData(data);     //播放
+    }
+
+    private static void ConvertWriteAudiData(byte[] data)
+    {
+        audioCodecExt.WriteData(data);
     }
 
     public static native void naGetPcmInfo();
@@ -1625,6 +1645,30 @@ public class wifination {
     public static native  void  naSetTest(boolean bTest);
 
     public static native void naSetOnLinePlayHeighResolution(boolean b);
+
+    private static  native  int naConvertA(String sPath,String sOutPath);
+    public static   native void naCancelConvert();
+
+    public static native int naIsSupportAudioAndMJ(String sPath);
+    private static  void onConverntEvent(int nStatus)
+    {
+        Integer ia = nStatus;
+        EventBus.getDefault().post(ia,"onConverntEvent");
+    }
+
+    public static native boolean naIsNeedConvert(String sPath);
+
+    public static int naCovert(String sPath,String sOutPath) {
+        MyMediaMuxer.init(sOutPath);
+        int re =naIsSupportAudioAndMJ(sPath);
+        if(re >=0 && (re & 0x01 ) !=0)  {  //有声音
+            GP4225_Device.bWifiPcm = false;
+            wifination.naSetRecordAudio(true);
+            wifination.naSetRecordAutioExt(true);
+            G_StartAudio(1);
+        }
+        return naConvertA(sPath,sOutPath);
+    };
 
 
 }
