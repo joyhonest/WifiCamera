@@ -376,14 +376,14 @@ public class wifination {
     public static native void na4225_FormatSD();
     //读取固件版本信息
     public static native void na4225_ReadFireWareVer();
+
+    //恢复出厂设置
+    public static native void na4225_ResetDevice();
+
     public static   void  naGetFirmwareVersion()
     {
         na4225_ReadFireWareVer();
     }
-    //恢复出厂设置
-    public static native void na4225_ResetDevice();
-
-
 
 
 
