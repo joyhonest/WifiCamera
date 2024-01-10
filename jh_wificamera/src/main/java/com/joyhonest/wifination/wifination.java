@@ -719,7 +719,7 @@ public class wifination {
 */
 
     public  static boolean  bGesture = false;
-    public  static boolean  bRevBmp = false;
+    public  static boolean  bRevBmp = true;
     private static ObjectDetector sig=null;
     public  static native int naSetTransferSize(int nWidth,int nHeight);   //宽度必须是8的倍数
     public static void naSetGesture_vol(float aa)
@@ -1186,6 +1186,7 @@ public class wifination {
     private static void OnStatusChamnge(int nStatus) {
         Integer n = nStatus;
         EventBus.getDefault().post(n, "SDStatus_Changed");      //调用第三方库来发送消图片显示消息。
+        EventBus.getDefault().post(n, "onCameraStatusChange");      //调用第三方库来发送消图片显示消息。
 
         //#define  bit0_OnLine            1
         //#define  bit1_LocalRecording    2
@@ -1294,6 +1295,7 @@ public class wifination {
                     Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
                     bmp.copyPixelsFromBuffer(mDirectBuffer);
                     EventBus.getDefault().post(bmp, "ReceiveBMP");
+                    EventBus.getDefault().post(bmp, "onGetFrame");
 //                if(bmpG!=null)
 //                {
 //                    if(bmpG.getWidth() !=w || bmpG.getHeight()!=h)
@@ -1671,5 +1673,9 @@ public class wifination {
         return naConvertA(sPath,sOutPath);
     };
 
+
+    public static native void  naSetSystemControlData(byte []data);
+    //设定 比如 自动关机时间参数。。。。。
+    public static native void  naGetSystemControlData();
 
 }

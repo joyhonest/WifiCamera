@@ -37,6 +37,7 @@ public class GP4225_Device {
     public boolean bSD=false;
     public boolean bFastTcp = false;
     public boolean bNewOnlinePlay = false;
+    //public boolean bNewOnlinePlayByTcpH264 = false;
     public boolean bSDRecording=false;
 
 
@@ -180,6 +181,7 @@ public class GP4225_Device {
 
             bFastTcp = ((data[11] & 0x08) != 0);
             bNewOnlinePlay = ((data[11] & 0x10) != 0);
+           // bNewOnlinePlayByTcpH264 = ((data[11] & 0x20) != 0);
 
             VideosCount = ((data[12] & 0xFF) + (data[13] & 0xFF) * 0x100 + (data[14] & 0xFF) * 0x10000 + (data[15] & 0xFF) * 0x1000000);
             LockedCount = ((data[16] & 0xFF) + (data[17] & 0xFF) * 0x100 + (data[18] & 0xFF) * 0x10000 + (data[19] & 0xFF) * 0x1000000);
@@ -649,8 +651,6 @@ public class GP4225_Device {
                                 } else {
                                     wifination.naSetGsensor2SDK(xx, yy, zz);
                                 }
-
-
                             }
                         }
                     }
