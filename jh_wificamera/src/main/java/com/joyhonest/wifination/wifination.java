@@ -1683,10 +1683,10 @@ public class wifination {
         Integer n = nBw;
         EventBus.getDefault().post(n,"onChangeBWMode");
     }
-
-    public static native void naSetEnableEQ(boolean b);
     public static native void naSetBrightness(float fBrightness); //
     public static native void naSetContrast(float fContrast);
     public static native void naSetSaturation(float fSaturation);
+    public static native void naSetEnableEQ(boolean b);
+
 
 }

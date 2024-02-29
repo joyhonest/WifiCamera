@@ -254,11 +254,10 @@ publish {
 //5.97     fixed bugs
 
 //5.98      添加黑白图传判断。。。 添加对比度，亮度调节  、、2024-02-29
+//5.99     添加新版的时间同步函数
 
-//5.98     添加新版的时间同步函数
 
-
-//git commit -m "5.98" -a
+//git commit -m "5.99" -a
 //git push -u origin main
 
 
