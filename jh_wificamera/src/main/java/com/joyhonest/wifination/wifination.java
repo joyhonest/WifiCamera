@@ -1688,4 +1688,5 @@ public class wifination {
     public static native void naSetBrightness(float fBrightness); //
     public static native void naSetContrast(float fContrast);
     public static native void naSetSaturation(float fSaturation);
+
 }
