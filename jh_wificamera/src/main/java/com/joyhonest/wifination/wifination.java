@@ -660,6 +660,7 @@ public class wifination {
     }
     public static  native  void naSetAngle(float  Angle);
 
+    public  static native void naSet3DDenoiserPara(String sPara);
     public static native void naSet3DDenoiser(boolean b); //视频是否3D降噪
     public static native void naSetEnableRotate(boolean b); //视频是否可以旋转任意角度。
 
