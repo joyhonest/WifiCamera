@@ -4,7 +4,7 @@ import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.os.SystemClock;
-import android.util.Log;
+//import android.util.Log;
 
 import java.nio.ByteBuffer;
 
@@ -33,6 +33,9 @@ public class MyMediaMuxer {
 
     public  static int  init(String strNme)
     {
+
+
+        int nResult = 0;
         if(bRecording)
         {
 
@@ -44,13 +47,14 @@ public class MyMediaMuxer {
             formatV = null;
             formatA = null;
             mediaMuxer = new MediaMuxer(strNme, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
-
+            nResult = 1;
 
         }catch (Exception e)
         {
+            nResult = -1;
             e.printStackTrace();
         }
-        return 0;
+        return nResult;
     }
 
 
@@ -61,7 +65,6 @@ public class MyMediaMuxer {
         if(!bStartWrite && bVideo && (info.flags & MediaCodec.BUFFER_FLAG_KEY_FRAME)!=0)
         {
             bStartWrite = true;
-            Log.e("media","firset key Framne");
         }
         if(!bStartWrite)
             return -2;
@@ -71,12 +74,8 @@ public class MyMediaMuxer {
             if (data != null && mediaMuxer != null)
             {
 
-              //  Log.e("TAG","offset = "+info.offset + " size = "+info.size+" size1 = "+data.length);
-                if((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) !=0 )
+                if ((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) == 0)
                 {
-                    ;
-                }
-                else {
                     try {
                         long  us =nCountFrame*1000000/fps ;
                         info.presentationTimeUs = us;
@@ -84,9 +83,13 @@ public class MyMediaMuxer {
                         nCountFrame++;
                         re = 0;
                     } catch (Exception e) {
-                        Log.e("TAG", "write data eror");
                         e.printStackTrace();
                     }
+                }
+                else
+                {
+                    re = 0;
+
                 }
             }
         }
@@ -141,7 +144,7 @@ public class MyMediaMuxer {
                         MyMediaMuxer.nFramesAudio=0;
                         MyMediaMuxer.nCountFrame=0;
                         mediaMuxer.start();
-                        Log.e("media","Start 111");
+                       // Log.e("media","Start 111");
                     }
                 }
                 else
@@ -152,7 +155,7 @@ public class MyMediaMuxer {
                         MyMediaMuxer.nFramesAudio=0;
                         MyMediaMuxer.nCountFrame=0;
                         mediaMuxer.start();
-                        Log.e("media","Start 222");
+                        //Log.e("media","Start 222");
                     }
                     catch (Exception e)
                     {
@@ -186,11 +189,11 @@ public class MyMediaMuxer {
                         MyMediaMuxer.nFramesAudio=0;
                         MyMediaMuxer.nCountFrame=0;
                         mediaMuxer.start();
-                        Log.e("media","Start 333");
+                      //  Log.e("media","Start 333");
                     }
                     else
                     {
-                        Log.e("media","Start 444");
+                       // Log.e("media","Start 444");
                     }
             }
         }

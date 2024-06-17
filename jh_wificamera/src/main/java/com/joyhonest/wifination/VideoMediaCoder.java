@@ -77,15 +77,6 @@ public class VideoMediaCoder {
         mediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, fps);//帧率，一般在15至30之内，太小容易造成视频卡顿。
         mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, color);//色彩格式，具体查看相关API，不同设备支持的色彩格式不尽相同
 
-//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-//        {
-//            mediaFormat.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR);
-//            mediaFormat.setInteger(MediaFormat.KEY_PROFILE, MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline);
-//            mediaFormat.setInteger(MediaFormat.KEY_CAPTURE_RATE, fps);
-//            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-//                mediaFormat.setInteger(MediaFormat.KEY_LEVEL,MediaCodecInfo.CodecProfileLevel.AVCLevel1);
-//            //mediaFormat.setInteger(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, 1000000 / fps);
-//        }
         try {
             mMediaCodec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         }
@@ -155,7 +146,7 @@ public class VideoMediaCoder {
         mMediaCodec=null;
         bGetPPS = false;
         MyMediaMuxer.nCountFrame = 0;
-        Log.e(TAG,"Close MediaCodec!!!---");
+       // Log.e(TAG,"Close MediaCodec!!!---");
     }
 
     public  long getRecordTime()

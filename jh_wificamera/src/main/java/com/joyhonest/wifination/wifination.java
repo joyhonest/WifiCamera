@@ -17,7 +17,10 @@ import android.util.Log;
 
 import org.simple.eventbus.EventBus;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 
@@ -237,7 +240,7 @@ public class wifination {
 
     public static  native void naSetScaleHighQuality(int nQ);
 
-    public static  void naStartRecord(String pFileName, final  int PhoneOrSD)
+    public static  int naStartRecord(String pFileName, final  int PhoneOrSD)
     {
 
         if(PhoneOrSD != TYPE_ONLY_SD) {
@@ -247,15 +250,15 @@ public class wifination {
         if(PhoneOrSD == TYPE_BOTH_PHONE_SD || PhoneOrSD == TYPE_ONLY_PHONE)
         {
             if(isPhoneRecording()) {
-                return;
+                return 0;
             }
 
             if(tmpFileName.length()>10)
             {
-                MyMediaMuxer.init(tmpFileName);
+                int i = MyMediaMuxer.init(tmpFileName);
             }
 
-            if(bG_Audio)
+            if(bG_Audio && AudioEncoder.nRecType != 1)
             {
                 if(!AudioEncoder.isCanRecordAudio())  //判读是否可以录音，因为有时录音权限没有打开就无法录音
                 {
@@ -265,7 +268,6 @@ public class wifination {
 
             if(bG_Audio)
             {
-                GP4225_Device.bWifiPcm = true;
                 boolean re = G_StartAudio(1);
                 if(!re) //录音权限被拒绝
                 {
@@ -291,6 +293,7 @@ public class wifination {
         }
 
         naStartRecordA(tmpFileName,PhoneOrSD);
+        return 0;
     }
 
     // 获取录像时间 ms
@@ -753,11 +756,12 @@ public class wifination {
 
 
 
-    private static  void onUdpRevData(byte[] data,int nPort)      // naStartReadUdp，后，读取到的数据从这里返回
+    private static  void onUdpRevData(byte[] data,int nPort,int nIP)      // naStartReadUdp，后，读取到的数据从这里返回
     {
         UpdData  udp_data = new UpdData(data,nPort);
         if(nPort == 20001) {
             if (bProgressGP4225UDP) {
+                gp4225_Device.nCameraIP = nIP;
                 if (!gp4225_Device.GP4225_PressData(data)) {
                     EventBus.getDefault().post(data, "onUdpRevData");
                     EventBus.getDefault().post(udp_data, "onUdpRevData_NewVer");
@@ -811,34 +815,6 @@ public class wifination {
     }
 
 
-/*
-    private static String intToIp(int i) {
-        return (i & 0xFF) + "." + ((i >> 8) & 0xFF) + "." + ((i >> 16) & 0xFF) + "." + ((i >> 24) & 0xFF);
-    }
-
-    private static int G_getIP()
-    {
-          if(appContext==null)
-            return IC_NO;
-        WifiManager wifi_service = (WifiManager) appContext.getSystemService(WIFI_SERVICE);
-
-        WifiInfo info = wifi_service.getConnectionInfo();
-
-        String wifiId;
-        wifiId = (info != null ? info.getSSID() : null);
-        if (wifiId != null) {
-            wifiId = wifiId.replace("\"", "");
-            if (wifiId.length() > 4)
-                wifiId = wifiId.substring(wifiId.length() - 4);
-        } else {
-            wifiId = "nowifi";
-        }
-
-        int ip = info.getIpAddress();
-        return ip;
-
-    }
-    */
 
     public static void F_AdjBackGround(Context context, int bakid) {
 
@@ -1595,6 +1571,7 @@ public class wifination {
     // audioFormat  AudioFormat.ENCODING_PCM_16BIT or  AudioFormat..ENCODING_PCM_8BIT
     //  nFreq = 8000,.....
     private static native  boolean StartPlayAudioNative();
+    private static native  boolean StartPlayAudioNative_online();
     private static native  void StopPlayAudioNative();
     //audioFormat  AudioFormat.ENCODING_PCM_16BIT or  AudioFormat..ENCODING_PCM_8BIT
     //nFreq = 8000,.....
@@ -1623,6 +1600,11 @@ public class wifination {
         GP4225_Device.F_StartPlayAudio(nFreq,audioFormat);
         StartPlayAudioNative();
     }
+    public static void naStartPlayAudio_for_online(int nFreq,int audioFormat)
+    {
+        GP4225_Device.F_StartPlayAudio(nFreq,audioFormat);
+        StartPlayAudioNative_online();
+    }
     public static void naStopPlayAudio()
     {
         StopPlayAudioNative();
@@ -1631,6 +1613,7 @@ public class wifination {
 
     public static void naSetRecordAutioExt(boolean b) //录制的声音是从wifi端传来的
     {
+        GP4225_Device.bWifiPcm = true;
         AudioEncoder.SetDataExt(b);
     }
 
@@ -1688,6 +1671,12 @@ public class wifination {
     public static native void naSetContrast(float fContrast);
     public static native void naSetSaturation(float fSaturation);
     public static native void naSetEnableEQ(boolean b);
+
+
+    //2024-0508 增加 局域网内摄像头
+
+    public static native int naSetCameraIPandType(String sIP ,int nType);
+
 
 
 }

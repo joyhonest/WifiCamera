@@ -51,7 +51,7 @@ public class JH_GLSurfaceView extends GLSurfaceView  implements GLSurfaceView.Re
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         wifination.changeLayout(width, height);
-        Log.e("TAG","www ="+width+" h= "+height);
+       // Log.e("TAG","www ="+width+" h= "+height);
     }
 
     @Override

@@ -12,6 +12,8 @@ import android.util.Log;
 
 //import androidx.core.app.ActivityCompat;
 
+//import androidx.core.app.ActivityCompat;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.WeakHashMap;
@@ -164,16 +166,7 @@ public class AudioEncoder implements AudioCodec {
             boolean re = false;
             try {
                 int minBufferSize = AudioRecord.getMinBufferSize(KEY_SAMPLE_RATE, CHANNEL_MODE, AUDIO_FORMAT);
-//                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-//                    // TODO: Consider calling
-//                    //    ActivityCompat#requestPermissions
-//                    // here to request the missing permissions, and then overriding
-//                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                    //                                          int[] grantResults)
-//                    // to handle the case where the user grants the permission. See the documentation
-//                    // for ActivityCompat#requestPermissions for more details.
-//                    return TODO;
-//                }
+
                 mRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, KEY_SAMPLE_RATE, CHANNEL_MODE, AUDIO_FORMAT, minBufferSize);
                 mRecord.startRecording();
                 mRecord.stop();
@@ -181,9 +174,9 @@ public class AudioEncoder implements AudioCodec {
                 mRecord = null;
                 re = true;
             }
-            catch (Exception ignored)
+            catch (Exception e)
             {
-                ;
+                e.printStackTrace();
             }
 
             return re;

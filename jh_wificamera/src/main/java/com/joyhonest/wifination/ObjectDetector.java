@@ -207,7 +207,7 @@ public class ObjectDetector
                                 nFindD2++;
                              if(nFindD2==1) {
                                  nNoFind = 0;
-                                 Log.e("GGG", id_ + " confidence  D2");
+                               //  Log.e("GGG", id_ + " confidence  D2");
                                  EventBus.getDefault().post("D2", "GetGueset");
                                  break;
                              }
@@ -223,7 +223,7 @@ public class ObjectDetector
                 nNoFind++;
             if(nNoFind==2) {
                 nFindD2 = 0;
-                Log.e("GGG", id_ + " confidence-------");
+             //   Log.e("GGG", id_ + " confidence-------");
                 EventBus.getDefault().post("", "GetGueset");
             }
         }

@@ -26,6 +26,8 @@ public class GP4225_Device {
     int[] nCountY = new int[10];
     int[] nCountZ = new int[10];
 
+    public int nCameraIP = 0;
+
 
     public boolean bProcessesGsensorDataByApp = false;
 
@@ -415,7 +417,7 @@ public class GP4225_Device {
                 {
                     byte a = data[10];
                     Integer aa = (int) a;
-                    Log.e("图像", a + "");
+                   // Log.e("图像", a + "");
                     EventBus.getDefault().post(aa, "GP4225_GetDeviceReversaltatus");
                 }
 
@@ -424,7 +426,7 @@ public class GP4225_Device {
                 {
                     byte a = data[10];
                     Integer aa = (int) a;
-                    Log.e("录像时间", a + "");
+                  //  Log.e("录像时间", a + "");
                     EventBus.getDefault().post(aa, "GP4225_GetDeviceRecordTime");
                 }
                 break;
@@ -451,7 +453,7 @@ public class GP4225_Device {
                 {
                     byte a = data[10];
                     Integer aa = (int) a;
-                    Log.e("Format", a + "");
+                  //  Log.e("Format", a + "");
                     EventBus.getDefault().post(aa, "GP4225_WifiChannel");
                 }
                 break;
@@ -459,7 +461,7 @@ public class GP4225_Device {
                 {
                     byte a = data[10];
                     Integer aa = (int) a;
-                    Log.e("Format", a + "");
+                 //   Log.e("Format", a + "");
                     EventBus.getDefault().post(aa, "GP4225_FormatSD_Status");
                 }
                 break;
@@ -982,7 +984,6 @@ public class GP4225_Device {
     public static void WriteAudioData(byte[] data)
     {
        // Log.e("tag","get pcm data");
-
         if(!bWifiPcm) {
             return;
         }
