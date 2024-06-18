@@ -42,17 +42,23 @@ public class MyMediaMuxer {
         }
 
         bRecording = false;
+        nResult = 1;
         try {
             bStartWrite = false;
             formatV = null;
             formatA = null;
             mediaMuxer = new MediaMuxer(strNme, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
-            nResult = 1;
+
 
         }catch (Exception e)
         {
+            mediaMuxer = null;
             nResult = -1;
             e.printStackTrace();
+        }
+        if(mediaMuxer!=null)
+        {
+            nResult = 1;
         }
         return nResult;
     }

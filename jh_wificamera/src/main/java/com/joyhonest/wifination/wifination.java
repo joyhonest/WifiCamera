@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
+import java.util.Locale;
 
 
 /**
@@ -256,8 +257,12 @@ public class wifination {
             if(tmpFileName.length()>10)
             {
                 int i = MyMediaMuxer.init(tmpFileName);
+                if(i<0)
+                {
+                    SystemClock.sleep(500);
+                    MyMediaMuxer.init(tmpFileName);
+                }
             }
-
             if(bG_Audio && AudioEncoder.nRecType != 1)
             {
                 if(!AudioEncoder.isCanRecordAudio())  //判读是否可以录音，因为有时录音权限没有打开就无法录音
@@ -907,6 +912,7 @@ public class wifination {
     private static void OnSave2ToGallery(String sName, int nPhoto)     //拍照或者录像完成。可以把它加入到系统图库中去
     {
         String Sn = String.format("%02d%s", nPhoto, sName);
+        EventBus.getDefault().post(sName, "onSnapPhotoFinish");
         EventBus.getDefault().post(Sn, "SavePhotoOK");
     }
 
@@ -1163,7 +1169,7 @@ public class wifination {
     private static void OnStatusChamnge(int nStatus) {
         Integer n = nStatus;
         EventBus.getDefault().post(n, "SDStatus_Changed");      //调用第三方库来发送消图片显示消息。
-        EventBus.getDefault().post(n, "onCameraStatusChange");      //调用第三方库来发送消图片显示消息。
+        EventBus.getDefault().post(n, "onCameraStatusChanged");      //调用第三方库来发送消图片显示消息。
 
         //#define  bit0_OnLine            1
         //#define  bit1_LocalRecording    2
@@ -1332,25 +1338,24 @@ public class wifination {
             try {
                 newFile.delete();
             }
-            catch (Exception e)
+            catch (Exception ignored)
             {
 
             }
         }
         if (oldFile.exists() && oldFile.isFile()) {
             oldFile.renameTo(newFile);
-            String Sn = String.format("%02d%s", 1, sVideoName);
+            String Sn = String.format(Locale.getDefault(),"%02d%s", 1, sVideoName);
+            EventBus.getDefault().post(sVideoName, "onRecordFinish");
             sVideoName="";
             EventBus.getDefault().post(Sn, "SavePhotoOK");
+
         }
         else
         {
             sVideoName="";
             EventBus.getDefault().post(sVideoName, "SavePhotoOK");
         }
-
-
-
     }
 
     private static void onReadRtlData(byte[]data)

@@ -12,6 +12,7 @@ android {
 //        versionName "1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         ndk {
+            //noinspection ChromeOsAbiSupport
             abiFilters 'armeabi-v7a','arm64-v8a'
         }
     }
@@ -259,8 +260,9 @@ publish {
 //6.01      修改3D降噪的参数以及添加一个设定3D降噪参数的API  2024-0407
 //6.03      在192.168.34.1 时，主动调用一下读取模块参数的命令  2024-0411
 //6.04      修改获取ip地址的方法，兼容ChromeOS  1024-06-17
+//6.05      添加当拍照或者录像完成时，分别Eventbus发生消息
 
-//git commit -m "6.04" -a
+//git commit -m "6.05" -a
 //git push -u origin main
 
 
