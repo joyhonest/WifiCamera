@@ -1564,8 +1564,17 @@ public class wifination {
     //读取摄像头参数设定
 
     public static native void naGetCameraPara();
-    public static native void naSetEV(int nEv);
-    public static native void naSetLightFreq(boolean b50Hz);
+    public static native void naSetDeviceEV(int nEv);   //曝光
+    public static native void naSetDeviceAutoEV(boolean nEv);   //自动曝光
+    public static native void naSetLightFreq(boolean b50Hz);  //平率
+    public static native void naSetDeviceBrightness(int nBrightness);// 亮度
+    public static native void naSetDeviceContrast(int nContrast);// 对比度
+
+    public static native void naSetDeviceSaturation(int nSaturation);// 饱和度
+    public static native void naSetDeviceImageQuality(int nQuality);// 图像质量
+
+    //public static native void naSetDeviceSharpness(int nSharpness);// 锐度
+
 
     public static native void naSetTimeOsd(int x,int y,int nDateType); //x设置足够大就会不显示
     public static native  void naSetDeviceWatermark(int nDateType); // bit0-3: 0 off 1 on, bit4-7:  0 Y/M/D  1: D/M/Y 2 M/DY
@@ -1681,6 +1690,8 @@ public class wifination {
     //2024-0508 增加 局域网内摄像头
 
     public static native int naSetCameraIPandType(String sIP ,int nType);
+
+    public static native int naSetCameraPara(int flag,int nSet1,int nSet2,int nSet3,int nSet4,int nSet5,int nSet6,int nSet7,int nSet8);
 
 
 
