@@ -1573,7 +1573,7 @@ public class wifination {
     public static native void naSetDeviceSaturation(int nSaturation);// 饱和度
     public static native void naSetDeviceImageQuality(int nQuality);// 图像质量
 
-    //public static native void naSetDeviceSharpness(int nSharpness);// 锐度
+    public static native void naSetDeviceSharpness(int nSharpness);// 锐度
 
 
     public static native void naSetTimeOsd(int x,int y,int nDateType); //x设置足够大就会不显示
