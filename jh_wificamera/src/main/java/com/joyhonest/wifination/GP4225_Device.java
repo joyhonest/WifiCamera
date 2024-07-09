@@ -781,6 +781,25 @@ public class GP4225_Device {
                     EventBus.getDefault().post(da, "onGetDeviceCategory");
                 }
                 break;
+
+                case 0x0030:
+                {
+                    if(n_len>=10) {
+                        byte flag = data[10];
+                        byte status = data[11];
+                        byte percentage =  data[12];
+
+                        Integer nStatus1 = (int)status;
+                        EventBus.getDefault().post(nStatus1,"onPrinterStatus");
+                        if(status == 0)
+                        {
+                            Integer errNo = (int) flag;
+                            EventBus.getDefault().post(errNo,"onPrinterStatusErrorNo");
+                        }
+                    }
+                }
+                break;
+
                 case 0x0050:
                 {
                     byte[] aa = null;

@@ -107,7 +107,7 @@ public class wifination {
 
     static {
         try {
-            System.loadLibrary("jh_wifi");
+            System.loadLibrary("JoyCamera");    //2024-07-09 //名称改为JoyCamera
             AudioEncoder = new AudioEncoder();
             videoMediaCoder = new VideoMediaCoder();
             audioCodecExt = new AudioCodecExt();
@@ -1694,6 +1694,29 @@ public class wifination {
 
     public static native int naSetCameraPara(int flag,int nSet1,int nSet2,int nSet3,int nSet4,int nSet5,int nSet6,int nSet7,int nSet8);
 
+//  2024-07-09 添加 打印功能
 
+    private static  void onSentPercent(int nPercent)
+    {
+
+    }
+    public static native  int naSetPrinter(Bitmap bmp);
+    public static native  int naInitPrinter();
+    public static native  int naReleasePrinter();
+    public static native  int naCreateTCP();
+    public static native  void naReleaseTCP();
+    public static native  int naSetPrintDataFormat(int nSet1,int nSet2);
+    //nSet1 点阵，灰度  nSet2 打印浓度
+    public static  native  int naStartSendData();
+    public static native  int naCancelPrint();
+    //1 naInitPrinter
+    //2 naCreateTCP
+    //3 naSetPrinter
+    //4 naSetPrintDataFormat
+    //5 等待返回状态
+    //6  naStartSendData;
+    //7 等待返回状态
+    //8  naReleaseTCP
+    //9 naReleasePrinter
 
 }
