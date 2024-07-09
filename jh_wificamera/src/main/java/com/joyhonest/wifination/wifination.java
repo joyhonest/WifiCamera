@@ -121,7 +121,7 @@ public class wifination {
 
 
         } catch (UnsatisfiedLinkError Ule) {
-            Log.e(TAG, "Cannot load jh_wifi.so ...");
+            Log.e(TAG, "Cannot load JoyCamera.so ...");
             Ule.printStackTrace();
         } finally {
 
