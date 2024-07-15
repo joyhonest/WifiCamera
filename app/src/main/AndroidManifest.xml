@@ -13,6 +13,7 @@
             android:screenOrientation="landscape"/>
         <activity
             android:name=".StartActivity"
+            android:exported="true"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

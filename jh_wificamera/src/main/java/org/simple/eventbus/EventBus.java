@@ -160,7 +160,7 @@ public final class EventBus {
      * @deprecated 建议使用 {{@link #getStickyEvents()}} 获取sticky 事件
      * @param subscriber
      */
-    //@Deprecated
+   // @Deprecated
     public void registerSticky(Object subscriber) {
         this.register(subscriber);
         // 处理sticky事件

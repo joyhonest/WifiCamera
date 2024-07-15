@@ -3,11 +3,13 @@ apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.joyhonest'
 
 android {
+    //compileSdkVersion 32
     compileSdkVersion 32
     //buildToolsVersion '28.0.3'
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
+
 //        versionCode 2
 //        versionName "1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -39,6 +41,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
 }
 
 dependencies {
@@ -264,8 +267,9 @@ publish {
 //6.06      添加设定 摄像头 亮度，对比度等参数调整
 //6.09      添加设定 摄像头 亮度，对比度等参数调整（修改设定的错误（比如设定字段顺序搞错） 2024-07-04
 //6.13      添加连接乐信打印协议 2024-07-09
+//6.14      优化缩略图下载流程
 
-//git commit -m "6.13" -a
+//git commit -m "6.14" -a
 //git push -u origin main
 
 
