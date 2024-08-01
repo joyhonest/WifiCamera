@@ -62,7 +62,7 @@ public class GP4225_Device {
     public int nFuncMask = 0;
 
 
-    public int nSDRecordTime = 0;
+    public int nSDRecordTime = -1;
 
     public String sVer = "";
 
@@ -208,7 +208,7 @@ public class GP4225_Device {
                 if (data.length >= 40) {
                     nSDRecordTime = (data[36] & 0xFF) + (data[37] & 0xFF) * 0x100 + (data[38] & 0xFF) * 0x10000 + (data[39] & 0xFF) * 0x1000000;
                 } else {
-                    nSDRecordTime = 0;
+                    nSDRecordTime = -1;
                 }
                 if(data.length>=48)
                 {
@@ -744,6 +744,13 @@ public class GP4225_Device {
                     System.arraycopy(data, 10, da, 0, n_len);
                     EventBus.getDefault().post(da, "onGetSDRecordResolution");
 
+                }
+                break;
+                case 0x0028:   //摄像头温度报警，固件每2sec回传一次
+                {
+                    byte[] da = new byte[0x08];
+                    System.arraycopy(data, 10, da, 0, 0x08);
+                    EventBus.getDefault().post(da, "onSensorWarn_res");
                 }
                 break;
                 case 0x002A:

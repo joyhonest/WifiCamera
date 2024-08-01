@@ -1719,4 +1719,6 @@ public class wifination {
     //8  naReleaseTCP
     //9 naReleasePrinter
 
+    public static native void naSetRota90Disp(boolean b);
+
 }
