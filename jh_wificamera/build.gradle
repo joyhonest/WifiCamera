@@ -271,7 +271,7 @@ publish {
 //6.15      添加 naSetRota90Disp ，只是显示旋转90度。
 //6.18      添加 naSetPicWaterMark 2024-08-17
 
-//git commit -m "6.18" -a
+//git commit -m "6.19" -a
 //git push -u origin main
 
 
