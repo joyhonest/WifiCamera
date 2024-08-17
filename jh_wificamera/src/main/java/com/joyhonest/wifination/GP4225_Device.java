@@ -513,11 +513,21 @@ public class GP4225_Device {
                 break;
                 case 0x0012:    //G-Sensor 数据
                 {
-                    if (n_len == 8) {
-                        int status = data[10] & 0xFF + (data[11] &0xFF ) * 0x100;
-                        int yy = (data[12] & 0xFF) | ((data[13] ) * 0x100);
-                        int xx = (data[14] & 0xFF) | ((data[15] ) * 0x100);
-                        int zz = (data[16] & 0xFF) | ((data[17] ) * 0x100);
+                    if (n_len >=0x08)
+                    {
+                        if(n_len>=0x18)
+                        {
+                            byte[] da = new byte[n_len];
+                            System.arraycopy(data, 10, da, 0, n_len);
+                            EventBus.getDefault().post(da, "onGetSensorData");
+                        }
+
+                    //if (n_len == 8)
+                    {
+                        int status = data[10] & 0xFF + (data[11] & 0xFF) * 0x100;
+                        int yy = (data[12] & 0xFF) | ((data[13]) * 0x100);
+                        int xx = (data[14] & 0xFF) | ((data[15]) * 0x100);
+                        int zz = (data[16] & 0xFF) | ((data[17]) * 0x100);
                         zz = -zz;
 //                        if(nG_inx<10)
 //                        {
@@ -558,12 +568,11 @@ public class GP4225_Device {
                         boolean bStatus = ((status & 0x1) == 0);
                         boolean bAdj = (((status >> 1) & 0x01) == 1);
                         int nType = (status >> 8) & 0xFF;
-                        if(nGsensorType>=0)
-                        {
+                        if (nGsensorType >= 0) {
                             nType = nGsensorType;
                         }
-                        int nNoesieSet=20;
-                        int nNoesieSetNo=20;
+                        int nNoesieSet = 20;
+                        int nNoesieSetNo = 20;
                         int nCount = 1;
 //                        xx = 0;
 //                        yy = 0;
@@ -571,39 +580,31 @@ public class GP4225_Device {
                         //nType = 1;
 //                        Log.e("TTT2","XX = "+xx+"  YY = "+yy+" zz ="+zz);
 //                        Log.e("TTT0"," zz ="+zz);
-                        if (bStatus)
-                        {
-                            if (nType == 0)
-                            {
+                        if (bStatus) {
+                            if (nType == 0) {
                                 nLevelMax = 210;
                                 nLevelMin = 60;
                                 nCount = 1;
                                 xx /= 4;
                                 yy /= 4;
                                 zz /= 4;
-                            }
-                            else if (nType == 1)
-                            {
+                            } else if (nType == 1) {
                                 nLevelMax = 200;
                                 nLevelMin = 50;
                                 nCount = 2;
                                 xx /= 2;        //4
                                 yy /= 2;
                                 zz /= 2;
-                            }
-                            else if (nType == 2)
-                            {
-                                nNoesieSet=20;
-                                nNoesieSetNo=15;
+                            } else if (nType == 2) {
+                                nNoesieSet = 20;
+                                nNoesieSetNo = 15;
                                 nLevelMax = 200;
                                 nLevelMin = 50;
                                 nCount = 1;
                                 xx /= 4;        //4
                                 yy /= 4;
                                 zz /= 4;
-                            }
-                            else
-                            {
+                            } else {
                                 nLevelMax = 180;
                                 nLevelMin = 40;
                                 xx /= 2;        //4
@@ -633,8 +634,7 @@ public class GP4225_Device {
                                             }
                                         }
                                     } else {
-                                        if (bFlash)
-                                        {
+                                        if (bFlash) {
                                             if (daV < nLevelMin) //60
                                             {
                                                 if (nNoesie_No < nNoesieSetNo) {
@@ -643,7 +643,7 @@ public class GP4225_Device {
                                                     bFlash = false;
                                                     nNoesie = 0;
                                                 }
-                                            } else{
+                                            } else {
                                                 nNoesie_No = 0;
                                             }
                                         }
@@ -659,6 +659,7 @@ public class GP4225_Device {
                                 }
                             }
                         }
+                    }
                     }
                 }
                 break;

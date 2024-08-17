@@ -107,7 +107,7 @@ public class wifination {
 
     static {
         try {
-            System.loadLibrary("JoyCamera");    //2024-07-09 //名称改为JoyCamera
+            System.loadLibrary("JoyWifiCamera");    //2024-07-09 //名称改为JoyCamera
             AudioEncoder = new AudioEncoder();
             videoMediaCoder = new VideoMediaCoder();
             audioCodecExt = new AudioCodecExt();
@@ -189,10 +189,14 @@ public class wifination {
     {
         bHandle = false;
         onReceiveFrame = _onReceiveFrame;
-        return naInit("");
+        return naInitC("");
     }
 
     public static native int naInitC(String pFileName);
+    public static  int naInit()
+    {
+        return naInitC("");
+    }
     public static  int naInit(String pFileName)
     {
         return naInitC(pFileName);
@@ -1581,7 +1585,7 @@ public class wifination {
     public static native  void naSetDeviceWatermark(int nDateType); // bit0-3: 0 off 1 on, bit4-7:  0 Y/M/D  1: D/M/Y 2 M/DY
     public static native  void naGetDeviceWatermark();  //结果通过 onGetDeviceWatermark 返回
 
-
+    public static  native void naSaveSetparaSave2Flash();
 
     // audioFormat  AudioFormat.ENCODING_PCM_16BIT or  AudioFormat..ENCODING_PCM_8BIT
     //  nFreq = 8000,.....
@@ -1720,5 +1724,28 @@ public class wifination {
     //9 naReleasePrinter
 
     public static native void naSetRota90Disp(boolean b);
+
+
+    public static native int naSetPicWaterMark(String sPath,boolean b,float para1,float para2); //设定水印贴图
+    // para1 //水印图片占 图片的宽度比分比
+    //para2 //s水印图片的高宽比
+
+    public static native void naSetOsdFontFilePath(String fontFilePath);
+    public static native void naSetTimeOsd_new(int nPos,int nDateType);
+    /*nPos
+        <0 no disp
+        0 up-left
+        1 up-right
+        2 bottom-left
+        3 bottom-right
+      */
+
+    //nDateType 0  Y-M-D  1 M-D-Y  2 = D-M-Y
+
+    public static  native  void naSetOsdTextSize(int nSize);
+    public static native   void naSetOsdTextColor(int nColor);
+
+    public static native void naSetSensorSensitivity(int n); //0 = 失效 n =1 low; n = 2 med;n = 3 hight  //2024-08-14 新版本的设定函数，小邱项目需要用旧版的，在另外一个SDK
+    public static native int naGetSensorSensitivity();
 
 }
