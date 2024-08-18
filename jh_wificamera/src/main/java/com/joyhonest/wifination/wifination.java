@@ -1748,4 +1748,6 @@ public class wifination {
     public static native void naSetSensorSensitivity(int n); //0 = 失效 n =1 low; n = 2 med;n = 3 hight  //2024-08-14 新版本的设定函数，小邱项目需要用旧版的，在另外一个SDK
     public static native int naGetSensorSensitivity();
 
+
+
 }

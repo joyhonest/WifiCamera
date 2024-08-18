@@ -270,8 +270,9 @@ publish {
 //6.14      优化缩略图下载流程
 //6.15      添加 naSetRota90Disp ，只是显示旋转90度。
 //6.21      添加 naSetPicWaterMark 2024-08-17
+//6.22      修改F_GetServerIP,不改变nICType.
 
-//git commit -m "6.21" -a
+//git commit -m "6.22" -a
 //git push -u origin main
 
 
