@@ -212,15 +212,36 @@ public class GP4225_Device {
                 }
                 if(data.length>=48)
                 {
-
                     for(int i=0;i<6;i++)
                     {
                         MacAddress[i]=data[40+i];
                     }
 
-                    String str = String.format(Locale.getDefault(),"%02X%02X%02X%02X%02X%02X",
+                    String strMac = String.format(Locale.getDefault(),"%02X%02X%02X%02X%02X%02X",
                             MacAddress[0],MacAddress[1],MacAddress[2],MacAddress[3],MacAddress[4],MacAddress[5]);
-                    EventBus.getDefault().post(str,"onMacAddress");
+                    String strIP = String.format(Locale.getDefault(),"%d.%d.%d.%d",
+                            nCameraIP&0xff,(nCameraIP>>8)&0xff,(nCameraIP>>16)&0xff,(nCameraIP>>24)&0xff);
+                    CameraInfo camera = new CameraInfo();
+                    camera.sIp = strIP;
+                    camera.sMac = strMac;
+
+                    if(!strMac.equalsIgnoreCase("000000000000")) {
+                        EventBus.getDefault().post(camera, "onFindCamera");
+                        EventBus.getDefault().post(strMac,"onMacAddress");
+                    }
+                    else
+                    {
+                        camera.sMac = "";
+                        EventBus.getDefault().post(camera, "onFindCamera");
+                        EventBus.getDefault().post(camera.sMac,"onMacAddress");
+                    }
+                }
+                else
+                {
+                    for(int i=0;i<6;i++)
+                    {
+                        MacAddress[i]=0;
+                    }
                 }
 
             } else {
@@ -807,6 +828,42 @@ public class GP4225_Device {
                     }
                 }
                 break;
+//                case 0x0031:
+//                {
+//                    byte []da = new byte[n_len];
+//                    System.arraycopy(data, 10, da, 0, n_len);
+//                    EventBus.getDefault().post(da, "onGetDeviceStaInfo");
+//                }
+//                break;
+//                case 0x8031:
+//                {
+//                    byte []da = new byte[n_len];
+//                    System.arraycopy(data, 10, da, 0, n_len);
+//                    EventBus.getDefault().post(da, "onGetDeviceStaInfo");
+//                }
+//                break;
+                case 0x0032:
+                {
+                    byte []da = new byte[n_len];
+                    System.arraycopy(data, 10, da, 0, n_len);
+                    StaConnectedInfo staConnectedInfo = new StaConnectedInfo();
+                    staConnectedInfo.nPwdTpye = da[0];
+                    int passlen = da[1];
+                    byte []pass = new byte[passlen];
+                    System.arraycopy(da, 2, pass, 0, passlen);
+                    staConnectedInfo.spasswrod = new String(pass);
+                    int ssidlen = da[34];
+                    byte []ssid = new byte[ssidlen];
+                    System.arraycopy(da, 35, ssid, 0, ssidlen);
+                    staConnectedInfo.ssid = new String(ssid);
+                    String strIP = String.format(Locale.getDefault(),"%d.%d.%d.%d",
+                            nCameraIP&0xff,(nCameraIP>>8)&0xff,(nCameraIP>>16)&0xff,(nCameraIP>>24)&0xff);
+                    staConnectedInfo.sIp = strIP;
+                    EventBus.getDefault().post(staConnectedInfo, "onGetDeviceStaInfo");
+
+                    EventBus.getDefault().post(strIP, "onGetDeviceStaOnline");
+                }
+                break;
 
                 case 0x0050:
                 {
@@ -876,6 +933,17 @@ public class GP4225_Device {
 
     public class GetFiles {
         public List<MyFile> files;
+    }
+
+    public class CameraInfo {
+        public String sIp;
+        public String sMac;
+    }
+    public class StaConnectedInfo {
+        public String ssid;
+        public String spasswrod;
+        public int    nPwdTpye;
+        public String  sIp;
     }
 
     public class GsensorData {

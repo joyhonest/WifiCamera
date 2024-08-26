@@ -42,10 +42,14 @@ public class wifination {
         void onReceiveFrame(Bitmap bmp);
     }
 
+
+
     private static int nIx=0;
 
 
     public  static  OnReceiveFrame onReceiveFrame=null;
+
+
     public  final   static    int  GP4225_Type_Video = 1;
     public  final   static    int  GP4225_Type_Locked = 2;
     public  final   static    int  GP4225_Type_Photo = 3;
@@ -405,6 +409,10 @@ public class wifination {
         APP读取状态信息
     */
     public static native void na4225_ReadStatus();
+    public static void naGetStatus()
+    {
+        na4225_ReadStatus();
+    }
 
     /*
             APP设定工作模式
@@ -1747,6 +1755,25 @@ public class wifination {
 
     public static native void naSetSensorSensitivity(int n); //0 = 失效 n =1 low; n = 2 med;n = 3 hight  //2024-08-14 新版本的设定函数，小邱项目需要用旧版的，在另外一个SDK
     public static native int naGetSensorSensitivity();
+
+    //2024-08-20
+    public static native  void naSetSuportSTA(boolean b);
+    // AP 模式下，发送wifi连接 设置 ssid 和 password
+    public static final int WiFIPass_noPass = 0;
+    public static final int WiFIPass_wdp = 1;
+    public static final int WiFIPass_wpa2 = 2;
+    public static final int WiFIPass_wpa3 = 3;
+    //naSetWifiConnectedInfo
+    public static native  boolean naSetStaConnectedInfo(String ssid,String sPass,int passType); // 0:no pwd, 1:wep, 2:wpa2, 3:wpa3
+    public static native  void naSetCameraIP(String sIP,int nType);
+    //JH_Guset  84682002
+    public static native  boolean naGetStaConnectedInfo(); // 0:no pwd, 1:wep, 2:wpa2, 3:wpa3
+    public static  native boolean naStartScanCamera();
+
+
+
+
+
 
 
 
