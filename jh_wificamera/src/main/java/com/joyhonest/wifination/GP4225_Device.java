@@ -936,11 +936,7 @@ public class GP4225_Device {
         public List<MyFile> files;
     }
 
-    public class CameraInfo implements Serializable {
-        private static final long serialVersionUID = 1L;
-        public String sIp;
-        public String sMac;
-    }
+
     public class StaConnectedInfo {
         public String ssid;
         public String spasswrod;
