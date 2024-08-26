@@ -272,9 +272,9 @@ publish {
 //6.21      添加 naSetPicWaterMark 2024-08-17
 //6.22      修改F_GetServerIP,不改变nICType.
 
-//7.03      添加支持STA 局域网 caemra
+//7.04      添加支持STA 局域网 caemra
 
-//git commit -m "7.03" -a
+//git commit -m "7.04" -a
 //git push -u origin main
 
 

@@ -78,6 +78,9 @@ public class wifination {
     public final static int IC_GPH264A = 7;
     public final static int IC_GPRTPB = 8;
     public final static int IC_GK_UDP = 9;
+    public final static int IC_GPRTPC  =    10;
+    public final static int IC_RTLH264  =   11;
+    public final static int IC_GPH264_34 =    12;
 
 
 
