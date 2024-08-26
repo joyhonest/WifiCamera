@@ -9,6 +9,7 @@ import org.simple.eventbus.EventBus;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
@@ -935,7 +936,8 @@ public class GP4225_Device {
         public List<MyFile> files;
     }
 
-    public class CameraInfo {
+    public class CameraInfo implements Serializable {
+        private static final long serialVersionUID = 1L;
         public String sIp;
         public String sMac;
     }
