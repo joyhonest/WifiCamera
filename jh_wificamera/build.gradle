@@ -274,8 +274,9 @@ publish {
 
 //7.04      添加支持STA 局域网 caemra
 //7.05      添加支持STA 修改获取wifi地址
+//7.06      添加支持STA 修改获取wifi地址
 
-//git commit -m "7.05" -a
+//git commit -m "7.06" -a
 //git push -u origin main
 
 
