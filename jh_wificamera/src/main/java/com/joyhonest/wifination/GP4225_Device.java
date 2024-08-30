@@ -859,9 +859,12 @@ public class GP4225_Device {
                     staConnectedInfo.ssid = new String(ssid);
                     String strIP = String.format(Locale.getDefault(),"%d.%d.%d.%d",
                             nCameraIP&0xff,(nCameraIP>>8)&0xff,(nCameraIP>>16)&0xff,(nCameraIP>>24)&0xff);
+//                    String strIP = String.format(Locale.getDefault(),"%d.%d.%d.%d",
+//                            da[68],da[69],da[70],da[71]);
                     staConnectedInfo.sIp = strIP;
+                    staConnectedInfo.sMac =  String.format(Locale.getDefault(),"%02X%02X%02X%02X%02X%02X",
+                        da[71],da[72],da[73],da[74],da[75],da[76]);
                     EventBus.getDefault().post(staConnectedInfo, "onGetDeviceStaInfo");
-
                     EventBus.getDefault().post(strIP, "onGetDeviceStaOnline");
                 }
                 break;
@@ -942,6 +945,8 @@ public class GP4225_Device {
         public String spasswrod;
         public int    nPwdTpye;
         public String  sIp;
+
+        public String  sMac;
     }
 
     public class GsensorData {
