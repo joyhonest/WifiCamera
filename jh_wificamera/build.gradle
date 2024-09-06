@@ -276,8 +276,9 @@ publish {
 //7.05      添加支持STA 修改获取wifi地址
 //7.06      添加支持STA 修改获取wifi地址
 //7.07      添加支持STA 修改获取wifi地址  修改STA时获取ip地址，添加对 chrome 支持
+//7.07      修复一个小bug
 
-//git commit -m "7.07" -a
+//git commit -m "7.08" -a
 //git push -u origin main
 
 
