@@ -278,8 +278,9 @@ publish {
 //7.07      添加支持STA 修改获取wifi地址  修改STA时获取ip地址，添加对 chrome 支持
 //7.07      修复一个小bug
 //7.09      修复  29.1 无法调焦。
+//7.10      优化调焦调焦。
 
-//git commit -m "7.09" -a
+//git commit -m "7.10" -a
 //git push -u origin main
 
 
