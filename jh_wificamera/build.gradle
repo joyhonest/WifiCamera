@@ -280,9 +280,9 @@ publish {
 //7.09      修复  29.1 无法调焦。
 //7.10      优化调焦调焦。
 //7.12      优化调焦调焦。  //2024-09-11
-//7.13      优化chromeOS下获取ip。  //2024-09-13
+//7.14      优化chromeOS下获取ip。  //2024-09-13
 
-//git commit -m "7.13" -a
+//git commit -m "7.14" -a
 //git push -u origin main
 
 
