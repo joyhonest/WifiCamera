@@ -1756,7 +1756,9 @@ public class wifination {
     public static  native  void naSetOsdTextSize(int nSize);
     public static native   void naSetOsdTextColor(int nColor);
 
-    public static native void naSetSensorSensitivity(int n); //0 = 失效 n =1 low; n = 2 med;n = 3 hight  //2024-08-14 新版本的设定函数，小邱项目需要用旧版的，在另外一个SDK
+    public static native void naSetSensorSensitivity(int n);
+    //低4bit 0 = 失效 n =1 low; n = 2 med;n = 3 hight  //2024-08-14 新版本的设定函数，小邱项目需要用旧版的，在另外一个SDK
+    //高4bit 具体的灵敏度设定。 此时，低4bit失效。
     public static native int naGetSensorSensitivity();
 
     //2024-08-20
