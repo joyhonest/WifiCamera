@@ -283,8 +283,9 @@ publish {
 //7.14      优化chromeOS下获取ip。  //2024-09-13
 //7.15      优化chromeOS下获取ip。  //2024-09-13
 //7.16      优化offerEncoder ,添加 Try处理
+//7.18      naGetVideoThumbnail ,添加 w，h设置
 
-//git commit -m "7.16" -a
+//git commit -m "7.18" -a
 //git push -u origin main
 
 

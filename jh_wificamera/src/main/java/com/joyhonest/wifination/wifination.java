@@ -792,9 +792,9 @@ public class wifination {
         }
     }
 
-    public static Bitmap naGetVideoThumbnail(String filename)
+    public static Bitmap naGetVideoThumbnail(String filename,int w,int h)
     {
-        Bitmap bitmap = Bitmap.createBitmap(100,100, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(w,h, Bitmap.Config.ARGB_8888);
         int re = naGetVideoThumbnailB(filename,bitmap);
         if(re == 0)
             return bitmap;
