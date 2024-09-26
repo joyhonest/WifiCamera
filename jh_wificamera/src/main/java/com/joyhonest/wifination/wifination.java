@@ -6,10 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.media.AudioRecord;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
-import android.media.MediaRecorder;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.SystemClock;
@@ -17,12 +15,8 @@ import android.util.Log;
 
 import org.simple.eventbus.EventBus;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
-import java.nio.LongBuffer;
 import java.util.Locale;
 
 
@@ -1325,9 +1319,14 @@ public class wifination {
 
     public   static  void offerEncoder(byte[] data,int nLen)
     {
-        if(videoMediaCoder!=null)
-        {
-            videoMediaCoder.offerEncoder(data,nLen);
+        if(videoMediaCoder!=null) {
+            try {
+                videoMediaCoder.offerEncoder(data, nLen);
+            }
+            catch ( Exception ignored)
+            {
+
+            }
         }
     }
 

@@ -282,8 +282,9 @@ publish {
 //7.12      优化调焦调焦。  //2024-09-11
 //7.14      优化chromeOS下获取ip。  //2024-09-13
 //7.15      优化chromeOS下获取ip。  //2024-09-13
+//7.16      优化offerEncoder ,添加 Try处理
 
-//git commit -m "7.15" -a
+//git commit -m "7.16" -a
 //git push -u origin main
 
 
