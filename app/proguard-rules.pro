@@ -26,6 +26,7 @@
 }
 
 -keep class com.joyhonest.wifination.GP4225_Device { *; }
+-keep class com.joyhonest.wifination.GP4225_Device.** { *; }
 -keep class com.joyhonest.wifination.jh_dowload_callback { *; }
 
 -keep class com.joyhonest.wifination.wifination { *; }
