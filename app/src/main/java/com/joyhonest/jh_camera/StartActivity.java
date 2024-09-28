@@ -125,6 +125,8 @@ public class  StartActivity extends AppCompatActivity {
 //            wifination.naSetGsensorRotaFillWhite(true);
             wifination.naInit("");
             wifination.naSetRevBmp(true);
+            wifination.naGetStatus();
+            wifination.naGetStatus();
 //
 //
 //            wifination.naSetGsensorType(2);
@@ -214,7 +216,11 @@ public class  StartActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
-
+    @Subscriber(tag = "onGetBattery")
+    private void onGetBattery(Integer n)
+    {
+        Log.e(TAG,"battery = "+n);
+    }
 
     @Subscriber(tag = "ReceiveBMP")
     private void ReviceBMP(Bitmap bmp) {
