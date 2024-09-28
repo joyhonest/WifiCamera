@@ -291,9 +291,9 @@ publish {
 //7.16      优化offerEncoder ,添加 Try处理
 //7.18      naGetVideoThumbnail ,添加 w，h设置
 
-//7.19      添加 naInit中自动同步时间。 添加混淆
+//7.20      添加 naInit中自动同步时间。 添加混淆
 
-//git commit -m "7.19" -a
+//git commit -m "7.20" -a
 //git push -u origin main
 
 
