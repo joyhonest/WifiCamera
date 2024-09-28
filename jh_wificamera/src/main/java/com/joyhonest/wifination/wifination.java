@@ -1257,6 +1257,8 @@ public class wifination {
         // 此函数需要把数据尽快处理和保存。
         // 图像数据保存在mDirectBuffer中，格式为ARGB_8888
 
+        Log.e(TAG,"get framne");
+
         if(bHandle && bEanbelHandle)
             return;
         bHandle = true;
