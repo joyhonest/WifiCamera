@@ -7,7 +7,7 @@ android {
         //applicationId "com.joyhonest.jh_camera_a_no_adj"
         applicationId "com.joyhonest.jh_camera_b"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 32
 
         versionCode 2
         versionName "1.0"

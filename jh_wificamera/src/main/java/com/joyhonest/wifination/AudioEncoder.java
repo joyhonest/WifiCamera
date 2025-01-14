@@ -23,6 +23,8 @@ public class AudioEncoder implements AudioCodec {
     //private Client mClient;
 
 
+    private float fVolAdj = 0.5f;
+    private boolean bVolAdj = false;
     public int nRecType = 0;
     int KEY_CHANNEL_COUNT = 1;
     int KEY_SAMPLE_RATE = 8000;
@@ -35,6 +37,15 @@ public class AudioEncoder implements AudioCodec {
     private byte[] mFrameByte;
 
     public MediaFormat mediaFormat;
+
+
+    public void setfVolAdj(float fVolAdj) {
+        this.fVolAdj = fVolAdj;
+    }
+    public void setbVolAdj(boolean bVolAdj)
+    {
+        this.bVolAdj = bVolAdj;
+    }
 
     public AudioEncoder() {
         //  mClient=client;
@@ -124,10 +135,32 @@ public class AudioEncoder implements AudioCodec {
             while (isRunning) {
                 if (nRecType == 0) {
                     re = mRecord.read(mBuffer, 0, mFrameSize);
+
                     encode(mBuffer);
                 } else {
-                    byte[] rea = wifination.audioCodecExt.ReadData(mFrameSize);
-                    encode(rea);
+                    byte[] bytes = wifination.audioCodecExt.ReadData(mFrameSize);
+                    if(bytes !=null) {
+                        if(bVolAdj) {
+                            short[] shorts = new short[mFrameSize / 2];
+                            for (int i = 0, j = 0; i < shorts.length; i++, j += 2) {
+                                shorts[i] = (short) ((bytes[j + 1] << 8) | (bytes[j + 0] & 0xFF));
+                                int da = (int) (shorts[i] * fVolAdj);
+                                if (da > 32767) {
+                                    da = 32767;
+                                }
+                                if (da < -32768)
+                                    da = -32768;
+                                shorts[i] = (short) da;
+                            }
+                            for (int i = 0; i < shorts.length; i++) {
+                                bytes[i * 2 + 1] = (byte) (shorts[i] >> 8);
+                                bytes[i * 2] = (byte) (shorts[i] & 0xFF);
+                            }
+                        }
+
+                        encode(bytes);
+                    }
+
                 }
             }
             release();
@@ -251,7 +284,6 @@ public class AudioEncoder implements AudioCodec {
 
             int inputBufferId = mEncoder.dequeueInputBuffer(1000 * 50);
             if (inputBufferId >= 0) {
-
                 ByteBuffer bb = mEncoder.getInputBuffer(inputBufferId);// inputBuffers[inputBufferId];
                 bb.put(data, 0, data.length);
                 ppp = pts*pts_unit;

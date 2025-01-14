@@ -194,7 +194,7 @@ public class GP4225_Device {
             LockedCount = ((data[16] & 0xFF) + (data[17] & 0xFF) * 0x100 + (data[18] & 0xFF) * 0x10000 + (data[19] & 0xFF) * 0x1000000);
             PhotoCount = ((data[20] & 0xFF) + (data[21] & 0xFF) * 0x100 + (data[22] & 0xFF) * 0x10000 + (data[23] & 0xFF) * 0x1000000);
 
-            if (n_len >= 0x1A) {
+            if (n_len >= 0x36) {
                 nSDAllSize = ((data[24] & 0xFF) + (data[25] & 0xFF) * 0x100 + (data[26] & 0xFF) * 0x10000 + (data[27] & 0xFF) * 0x1000000L + (data[34] & 0xFF) * 0x100000000L);
                 nSDAvaildSize = ((data[28] & 0xFF) + (data[29] & 0xFF) * 0x100 + (data[30] & 0xFF) * 0x10000 + (data[31] & 0xFF) * 0x1000000L + (data[35] & 0xFF) * 0x100000000L);
             }
@@ -763,7 +763,7 @@ public class GP4225_Device {
                 break;
                 case 0x0027: //SD Record Resolution
                 {
-                    byte []da = new byte[8];
+                    byte []da = new byte[n_len];
                     System.arraycopy(data, 10, da, 0, n_len);
                     EventBus.getDefault().post(da, "onGetSDRecordResolution");
 
@@ -1043,6 +1043,7 @@ public class GP4225_Device {
         try {
             audioTrack = new AudioTrack(AudioManager.USE_DEFAULT_STREAM_TYPE, nFreq, channelConfig,
                     audioFormat, mMinBufSize, AudioTrack.MODE_STREAM);
+            audioTrack.setVolume(0.3f);
             audioTrack.play();
         }
         catch (Exception e)

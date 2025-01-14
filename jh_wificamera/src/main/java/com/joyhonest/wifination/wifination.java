@@ -196,6 +196,7 @@ public class wifination {
     public static native int naInitC(String pFileName);
     public static  int naInit()
     {
+        bSupportPcmAudio = false;
         return naInitC("");
     }
     public static  int naInit(String pFileName)
@@ -331,6 +332,10 @@ public class wifination {
     public static native int naSetRecordWH(int ww, int hh);
 
     //2022-03-31
+    //Bit0 VGA（640x480) 0: 不支持， 1：支持
+    //Bit1 720P(1280x720) 0: 不支持， 1：支持
+    //Bit2 1080P(1920x1080) 0: 不支持， 1：支持
+    //Bit3~31 暂时保留 0: 不支持， 1：支持
     public static native void naSetSDRecordResolution(int nResolution);
     public static  native void naGetSDRecordResolution();
 
@@ -1257,7 +1262,7 @@ public class wifination {
         // 此函数需要把数据尽快处理和保存。
         // 图像数据保存在mDirectBuffer中，格式为ARGB_8888
 
-        Log.e(TAG,"get framne");
+        //Log.e(TAG,"get framne");
 
         if(bHandle && bEanbelHandle)
             return;
@@ -1757,9 +1762,11 @@ public class wifination {
     public static  native  void naSetOsdTextSize(int nSize);
     public static native   void naSetOsdTextColor(int nColor);
 
-    public static native void naSetSensorSensitivity(int n);
-    //低4bit 0 = 失效 n =1 low; n = 2 med;n = 3 hight  //2024-08-14 新版本的设定函数，小邱项目需要用旧版的，在另外一个SDK
+    public static native void naSetSensorSensitivity(int n,int n2);
+    //低4bit 0 = 失效 n =1 low; n = 2 med;n = 3 hight
+    // 2024-08-14 新版本的设定函数，小邱项目需要用旧版的，在另外一个SDK
     //高4bit 具体的灵敏度设定。 此时，低4bit失效。
+    //n2 >=0 设定测试用灵敏度
     public static native int naGetSensorSensitivity();
 
     //2024-08-20
@@ -1775,6 +1782,22 @@ public class wifination {
     //JH_Guset  84682002
     public static native  boolean naGetStaConnectedInfo(); // 0:no pwd, 1:wep, 2:wpa2, 3:wpa3
     public static  native boolean naStartScanCamera();
+
+
+    public static void  naSetVolAdj(boolean b)
+    {
+        AudioEncoder.setbVolAdj(b);
+    }
+    public static void naSetVolAdjValue(float f)
+    {
+        AudioEncoder.setfVolAdj(f);
+    }
+
+
+
+    public static native void naSetRedChannel(int nRedCh);
+    public static native void naSetGreenChannel(int nGreenCh);
+    public static native void naSetBlueChannel(int nBlueCh);
 
 
 

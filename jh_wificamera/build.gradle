@@ -292,8 +292,9 @@ publish {
 //7.18      naGetVideoThumbnail ,添加 w，h设置
 
 //7.22      添加 naInit中自动同步时间
+//7.23      添加 调整RGB通道
 
-//git commit -m "7.22" -a
+//git commit -m "7.23" -a
 //git push -u origin main
 
 
