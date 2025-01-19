@@ -1223,6 +1223,7 @@ public class wifination {
         Log.v("GKey","Key = "+nStatus);
         EventBus.getDefault().post(n, "key_Press");
         EventBus.getDefault().post(n, "Key_Pressed");
+        EventBus.getDefault().post(n, "onGetKey");
     }
 
     //返回手势识别的300*300 图像，用 C来处理缩放用来提供效率
