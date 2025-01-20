@@ -293,9 +293,9 @@ publish {
 
 //7.22      添加 naInit中自动同步时间
 //7.23      添加 调整RGB通道
+//7.25      添加 调整RGB通道
 
-
-//git commit -m "7.24" -a
+//git commit -m "7.25" -a
 //git push -u origin main
 
 

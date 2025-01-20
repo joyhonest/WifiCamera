@@ -617,7 +617,7 @@ public class wifination {
     public static native void naSetLedOnOff(boolean bOpenLed);
 
 
-    public static native void naSetScal(float fScal); //设定放大显示倍数
+    public static native void naSetScale(float fScal); //设定放大显示倍数
 
     public static void naSetCmdResType(int nType)
     {
