@@ -1,5 +1,6 @@
 package com.joyhonest.wifination;
 
+import android.media.Image;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
@@ -26,15 +27,9 @@ public class VideoMediaCoder {
     private final  static String VCODEC="video/avc";
     private final  static String TAG="MediaCoder";
     private  boolean  bGetPPS=false;
-
-
-
-
-
     public VideoMediaCoder() {
         mMediaCodec=null;
     }
-
     private  MediaFormat F_GetMediaFormat(int width,int height,int bitrate,int fps,int color)
     {
         if (mMediaCodec != null) {
@@ -57,7 +52,7 @@ public class VideoMediaCoder {
         try {
             mMediaCodec = MediaCodec.createEncoderByType(VCODEC);
         } catch (IOException | IllegalArgumentException | NullPointerException e) {
-            e.printStackTrace();
+           // e.printStackTrace();
             bOK = false;
         }
         if (!bOK) {
@@ -76,17 +71,15 @@ public class VideoMediaCoder {
         //描述视频格式的帧速率（以帧/秒为单位）的键。
         mediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, fps);//帧率，一般在15至30之内，太小容易造成视频卡顿。
         mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, color);//色彩格式，具体查看相关API，不同设备支持的色彩格式不尽相同
-
         try {
             mMediaCodec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+           // e.printStackTrace();
             mediaFormat = null;
         }
         return mediaFormat;
-
     }
 
 
@@ -112,19 +105,36 @@ public class VideoMediaCoder {
     public int initMediaCodec(int width,int height,int bitrate,int fps) {
 
 
-        int nColor;
-        nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar;
+        int nColor = 0;
+//        nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar;
+
+//        nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible;
+
+
+
+        //F_GetMediaFormat(width,height,bitrate,fps,nColor);
+        nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar;   //Y UVUV
         if(F_GetMediaFormat(width,height,bitrate,fps,nColor) ==null)
         {
-            nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar;
+            nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar;  // yyyy UUUU   VVVV
             if(F_GetMediaFormat(width,height,bitrate,fps,nColor) ==null)
             {
-                nColor = 0;
+//                nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420PackedSemiPlanar;  // yyyy VUVU
+//                if(F_GetMediaFormat(width,height,bitrate,fps,nColor) ==null)
+//                {
+//                    nColor = 0;
+//                }
+
             }
         }
 
+//        MediaFormat format = mMediaCodec.getInputFormat();
+//        nColor = format.getInteger(MediaFormat.KEY_COLOR_FORMAT);
+        //nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar;
+
         if(nColor!=0)
         {
+         //   nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar;
             mMediaCodec.start();
         }
         else
@@ -146,7 +156,6 @@ public class VideoMediaCoder {
         mMediaCodec=null;
         bGetPPS = false;
         MyMediaMuxer.nCountFrame = 0;
-       // Log.e(TAG,"Close MediaCodec!!!---");
     }
 
     public  long getRecordTime()
@@ -180,6 +189,37 @@ public class VideoMediaCoder {
 */
 
 
+    private void fillYuvDataToImage(Image image, byte[] yuvData) {
+        Image.Plane[] planes = image.getPlanes();
+        // 根据 planes 的 stride 和 pixelStride 拷贝数据
+        ByteBuffer yBuffer = planes[0].getBuffer();
+        ByteBuffer uBuffer = planes[1].getBuffer();
+        ByteBuffer vBuffer = planes[2].getBuffer();
+
+        // 示例：拷贝 Y 分量（需处理 stride）
+        int yStride = planes[0].getRowStride();
+        int uStride = planes[1].getRowStride();
+        int vStride = planes[2].getRowStride();
+        int yWidth = image.getWidth();
+        int yHeight = image.getHeight();
+        int len1 = yHeight*yWidth;
+        int len2 = len1/4;
+        copyPlane(yBuffer, yuvData, 0, yWidth, yHeight, yStride);
+        copyPlane(uBuffer, yuvData, len1, yWidth/2, yHeight/2, uStride);
+        copyPlane(vBuffer, yuvData, len1+len2, yWidth/2, yHeight/2, vStride);
+
+        // 类似处理 U/V 分量（注意子采样）
+    }
+
+    private void copyPlane(ByteBuffer dst, byte[] src, int offset, int width, int height, int stride) {
+        dst.position(0);
+        for (int row = 0; row < height; row++) {
+            dst.put(src, offset + row * width, width);
+            dst.position(dst.position() + stride - width); // 跳过 padding
+        }
+    }
+
+
         int  ddd=0;
     public  void  offerEncoder(byte[] data,int nLen)
     {
@@ -192,43 +232,42 @@ public class VideoMediaCoder {
         if (inputBufferIndex >= 0) {//当输入缓冲区有效时,就是>=0
             pts_ = (pts * (1000000 / MyMediaMuxer.fps));
             pts++;
-            ByteBuffer inputBuffer = mMediaCodec.getInputBuffer(inputBufferIndex);
-            inputBuffer.clear();
-            inputBuffer.put(data);//往输入缓冲区写入数据,
-            ////五个参数，第一个是输入缓冲区的索引，第二个数据是输入缓冲区起始索引，第三个是放入的数据大小，第四个是时间戳，保证递增就是
-            mMediaCodec.queueInputBuffer(inputBufferIndex, 0, data.length, pts_, 0);
-            MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
-            int outputBufferIndex = mMediaCodec.dequeueOutputBuffer(bufferInfo, 10000);//拿到输出缓冲区的索引  10ms
-            if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                MediaFormat newFormat = mMediaCodec.getOutputFormat();
+//            Image inputImage = mMediaCodec.getInputImage(inputBufferIndex);
+//            if (inputImage != null)
+            {
+                // 写入 YUV 数据到 Image
+//                fillYuvDataToImage(inputImage, data);
+                ByteBuffer inputBuffer = mMediaCodec.getInputBuffer(inputBufferIndex);
+                inputBuffer.put(data);//往输入缓冲区写入数据,
+                ////五个参数，第一个是输入缓冲区的索引，第二个数据是输入缓冲区起始索引，第三个是放入的数据大小，第四个是时间戳，保证递增就是
+                mMediaCodec.queueInputBuffer(inputBufferIndex, 0, data.length, pts_, 0);
+                MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
+                int outputBufferIndex = mMediaCodec.dequeueOutputBuffer(bufferInfo, 10000);//拿到输出缓冲区的索引  10ms
+                if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                    MediaFormat newFormat = mMediaCodec.getOutputFormat();
 //                ByteBuffer csd0 =  newFormat.getByteBuffer("csd-0");
 //                ByteBuffer csd1 =  newFormat.getByteBuffer("csd-1");
-                MyMediaMuxer.AddVideoTrack(newFormat);
-            }
-            if(outputBufferIndex >= 0)
-            {
-                ByteBuffer outputBuffer = mMediaCodec.getOutputBuffer(outputBufferIndex);
-                byte[] outData = new byte[bufferInfo.size];
-                outputBuffer.get(outData);
-                boolean bKeyframe = false;
-                if(bufferInfo.flags == MediaCodec.BUFFER_FLAG_CODEC_CONFIG)
-                {
-                    if(!bGetPPS)
-                    {
-                        bGetPPS = true;
-                    }
+                    MyMediaMuxer.AddVideoTrack(newFormat);
                 }
-                else
-                {
-                    if(MyMediaMuxer.videoInx<0)
-                    {
-                        MediaFormat newFormat = mMediaCodec.getOutputFormat();
-                        MyMediaMuxer.AddVideoTrack(newFormat);
-                    }
-                    MyMediaMuxer.WritSample(outData,true,bufferInfo);
+                if (outputBufferIndex >= 0) {
+                    ByteBuffer outputBuffer = mMediaCodec.getOutputBuffer(outputBufferIndex);
+                    byte[] outData = new byte[bufferInfo.size];
+                    outputBuffer.get(outData);
+                    boolean bKeyframe = false;
+                    if (bufferInfo.flags == MediaCodec.BUFFER_FLAG_CODEC_CONFIG) {
+                        if (!bGetPPS) {
+                            bGetPPS = true;
+                        }
+                    } else {
+                        if (MyMediaMuxer.videoInx < 0) {
+                            MediaFormat newFormat = mMediaCodec.getOutputFormat();
+                            MyMediaMuxer.AddVideoTrack(newFormat);
+                        }
+                        MyMediaMuxer.WritSample(outData, true, bufferInfo);
 
+                    }
+                    mMediaCodec.releaseOutputBuffer(outputBufferIndex, false);
                 }
-                mMediaCodec.releaseOutputBuffer(outputBufferIndex, false);
             }
         }
     }

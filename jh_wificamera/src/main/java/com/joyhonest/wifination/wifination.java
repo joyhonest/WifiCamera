@@ -925,7 +925,7 @@ public class wifination {
 
     private static void OnSave2ToGallery(String sName, int nPhoto)     //拍照或者录像完成。可以把它加入到系统图库中去
     {
-        String Sn = String.format("%02d%s", nPhoto, sName);
+        String Sn = String.format(Locale.ENGLISH,"%02d%s", nPhoto, sName);
         EventBus.getDefault().post(sName, "onSnapPhotoFinish");
         EventBus.getDefault().post(Sn, "SavePhotoOK");
     }
@@ -1367,7 +1367,7 @@ public class wifination {
         }
         if (oldFile.exists() && oldFile.isFile()) {
             oldFile.renameTo(newFile);
-            String Sn = String.format(Locale.getDefault(),"%02d%s", 1, sVideoName);
+            String Sn = String.format(Locale.ENGLISH,"%02d%s", 1, sVideoName);
             EventBus.getDefault().post(sVideoName, "onRecordFinish");
             sVideoName="";
             EventBus.getDefault().post(Sn, "SavePhotoOK");
@@ -1534,7 +1534,33 @@ public class wifination {
 
     public static boolean CheckResolutionSupport(int width, int height)
     {
-        int numCodecs = MediaCodecList.getCodecCount();
+    //    int numCodecs = MediaCodecList.getCodecCount();
+        MediaCodecList mediaCodecList = new MediaCodecList(0);
+        MediaCodecInfo[] arraya = mediaCodecList.getCodecInfos();
+        if(arraya!=null)
+        {
+            for(MediaCodecInfo codecInfo :arraya)
+            {
+                if (!codecInfo.isEncoder()) {
+                    continue;
+                }
+                String VCODEC="video/avc";
+                String[] types = codecInfo.getSupportedTypes();
+                for (int j = 0; j < types.length; j++) {
+                    if (types[j].equalsIgnoreCase(VCODEC)) {
+                        MediaCodecInfo.CodecCapabilities codecCapabilities = codecInfo.getCapabilitiesForType(VCODEC);
+                        if (codecCapabilities != null) {
+                            MediaCodecInfo.VideoCapabilities videoCapabilities = codecCapabilities.getVideoCapabilities();
+                            if (videoCapabilities != null) {
+                                return videoCapabilities.isSizeSupported(width, height);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return  false;
+        /*
         for (int i = 0; i < numCodecs; i++) {
             MediaCodecInfo codecInfo = MediaCodecList.getCodecInfoAt(i);
 
@@ -1556,6 +1582,8 @@ public class wifination {
             }
         }
         return false;
+
+         */
     }
 
 
@@ -1803,7 +1831,16 @@ public class wifination {
 
 
 
+    //2025-06-27 和凡昆讨论确定
+    public static native  void naSetTftOrientation(int n);
+    public static native  void naGetTftOrientation();
 
+
+
+    public  static native void naGetAPP_Special_Function();//用于和 APP 特殊功能交互，比如 APP 是否要支持和显示 WIFI 密码设置 UI、热点设置 UI 等、图像 EV 调节等等。
+
+    public static native boolean naSetWifiPasswordNewVer(String sPassword);
+    public static native void naGetWifiPasswordNewVer();
 
 
 

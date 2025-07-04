@@ -1,8 +1,12 @@
 package com.joyhonest.wifination;
 
+import android.annotation.SuppressLint;
 import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioRecord;
 import android.media.AudioTrack;
+import android.media.MediaRecorder;
+import android.media.audiofx.AcousticEchoCanceler;
 import android.util.Log;
 
 import org.simple.eventbus.EventBus;
@@ -187,6 +191,7 @@ public class GP4225_Device {
             bFastTcp = ((data[11] & 0x08) != 0);
             bNewOnlinePlay = ((data[11] & 0x10) != 0);
 
+
             //bNewOnlinePlayByTcpH264 = ((data[11] & 0x20) != 0);
             //bNewOnlinePlayByTcpH264 = ((data[11] & 0x20) != 0);
 
@@ -218,9 +223,9 @@ public class GP4225_Device {
                         MacAddress[i]=data[40+i];
                     }
 
-                    String strMac = String.format(Locale.getDefault(),"%02X%02X%02X%02X%02X%02X",
+                    String strMac = String.format(Locale.ENGLISH,"%02X%02X%02X%02X%02X%02X",
                             MacAddress[0],MacAddress[1],MacAddress[2],MacAddress[3],MacAddress[4],MacAddress[5]);
-                    String strIP = String.format(Locale.getDefault(),"%d.%d.%d.%d",
+                    String strIP = String.format(Locale.ENGLISH,"%d.%d.%d.%d",
                             nCameraIP&0xff,(nCameraIP>>8)&0xff,(nCameraIP>>16)&0xff,(nCameraIP>>24)&0xff);
                     CameraInfo camera = new CameraInfo();
                     camera.sIp = strIP;
@@ -455,8 +460,8 @@ public class GP4225_Device {
                 case 0x0005:  //返回SSID
                     if(n_len>0)
                     {
-                        byte da[] = new byte[n_len+1];
-                        da[n_len]=0;
+                        byte[] da = new byte[n_len];
+                        //da[n_len]=0;
                         System.arraycopy(data, 10, da, 0,n_len);
                         try {
                             String str = new String(da);
@@ -469,8 +474,24 @@ public class GP4225_Device {
 
                     }
                     break;
-//                case 0x0006:
-//                    break;
+                case 0x0006:   //新版获取wifiPassword
+                {
+                     {
+                        byte[]  da = new byte[n_len];
+                        //da[n_len]=0;
+                        System.arraycopy(data, 10, da, 0,n_len);
+                        try {
+                            String str = new String(da);
+                            EventBus.getDefault().post(str,"onGetWiFiPassword");
+                        }
+                        catch (Exception ignored) {
+                            ;
+                        }
+
+                    }
+
+                }
+                    break;
                 case 0x0007: //WifiChannel
                 {
                     byte a = data[10];
@@ -857,7 +878,7 @@ public class GP4225_Device {
                     byte []ssid = new byte[ssidlen];
                     System.arraycopy(da, 35, ssid, 0, ssidlen);
                     staConnectedInfo.ssid = new String(ssid);
-                    String strIP = String.format(Locale.getDefault(),"%d.%d.%d.%d",
+                    String strIP = String.format(Locale.ENGLISH,"%d.%d.%d.%d",
                             nCameraIP&0xff,(nCameraIP>>8)&0xff,(nCameraIP>>16)&0xff,(nCameraIP>>24)&0xff);
 //                    String strIP = String.format(Locale.getDefault(),"%d.%d.%d.%d",
 //                            da[68],da[69],da[70],da[71]);
@@ -866,6 +887,14 @@ public class GP4225_Device {
                         da[71],da[72],da[73],da[74],da[75],da[76]);
                     EventBus.getDefault().post(staConnectedInfo, "onGetDeviceStaInfo");
                     EventBus.getDefault().post(strIP, "onGetDeviceStaOnline");
+                }
+                break;
+
+
+                case 0x0033:
+                {
+                    Integer n = data[10]+(data[11]<<8);  //data[10]=密码设置 UI 显示 data[11]=热点设置 UI 显示
+                    EventBus.getDefault().post(n, "onGetAPP_Special_Function");
                 }
                 break;
 
@@ -879,6 +908,14 @@ public class GP4225_Device {
                     }
                 }
                 break;
+                case 0x0055:  //TFT是否横竖屏显示。2025-0627 和凡昆讨论确定
+                {
+                    byte a = data[10];
+                    Integer aa = (int) a;  //0 横屏， 1 竖屏
+                    EventBus.getDefault().post(aa, "onGetTftOrientation");
+                }
+                break;
+
                 default:
                     bOK = false;
                     break;
@@ -1019,9 +1056,19 @@ public class GP4225_Device {
 
     //2023-02-08 添加实时播放PCM
     private static AudioTrack audioTrack = null;
+    private static AcousticEchoCanceler aec = null;
+    private static AudioRecord audioRecord;
     // audioFormat  AudioFormat.ENCODING_PCM_16BIT or  AudioFormat..ENCODING_PCM_8BIT
     //  nFreq = 8000,.....
-    public static  void F_StartPlayAudio(int nFreq,int audioFormat)
+
+
+    private static final int SAMPLE_RATE = 44100;
+    private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_OUT_MONO;
+    private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+    private static final int BUFFER_SIZE = AudioTrack.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
+
+    @SuppressLint("MissingPermission")
+    public static  void F_StartPlayAudio(int nFreq, int audioFormat)
     {
         if(audioTrack!=null)
         {
@@ -1029,22 +1076,53 @@ public class GP4225_Device {
                 audioTrack.stop();
                 audioTrack.release();
                 audioTrack = null;
+
+                audioRecord.stop();
+                audioRecord.release();
+                if (aec != null) {
+                    aec.release(); // 释放资源
+                }
+
             }
             catch (Exception e)
             {
                 e.printStackTrace();
             }
         }
+
+
         int channelConfig = AudioFormat.CHANNEL_OUT_STEREO;
         if(audioFormat == AudioFormat.ENCODING_PCM_8BIT) {
             channelConfig = AudioFormat.CHANNEL_OUT_MONO;
         }
         int mMinBufSize = AudioTrack.getMinBufferSize(nFreq, channelConfig, audioFormat);
         try {
-            audioTrack = new AudioTrack(AudioManager.USE_DEFAULT_STREAM_TYPE, nFreq, channelConfig,
+
+            int bufferSize = AudioRecord.getMinBufferSize(nFreq, channelConfig, audioFormat);
+       //     audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, nFreq, channelConfig, audioFormat, bufferSize);
+
+
+            audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, nFreq, channelConfig,
                     audioFormat, mMinBufSize, AudioTrack.MODE_STREAM);
+
+
             audioTrack.setVolume(0.3f);
             audioTrack.play();
+
+         //   audioRecord.startRecording();
+            if (AcousticEchoCanceler.isAvailable()) {
+                // 获取 AudioTrack 的音频会话 ID
+                int audioSessionId = audioTrack.getAudioSessionId();
+                // 创建 AcousticEchoCanceler 实例
+                aec = AcousticEchoCanceler.create(audioSessionId);
+                if (aec != null) {
+                    // 启用 AEC
+                    aec.setEnabled(true);
+                }
+            }
+
+
+
         }
         catch (Exception e)
         {
@@ -1061,6 +1139,12 @@ public class GP4225_Device {
                 audioTrack.stop();
                 audioTrack.release();
                 audioTrack = null;
+
+                audioRecord.stop();
+                audioRecord.release();
+                if (aec != null) {
+                    aec.release(); // 释放资源
+                }
             }
             catch (Exception e)
             {
