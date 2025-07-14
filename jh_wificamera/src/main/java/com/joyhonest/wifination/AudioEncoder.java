@@ -61,13 +61,9 @@ public class AudioEncoder implements AudioCodec {
 
         } else {
             nRecType = 0;
-//            KEY_CHANNEL_COUNT = 1;
-//            CHANNEL_MODE = AudioFormat.CHANNEL_IN_MONO;
-//            KEY_SAMPLE_RATE = 44100;
             KEY_CHANNEL_COUNT = 2;
             CHANNEL_MODE = AudioFormat.CHANNEL_IN_STEREO;
             KEY_SAMPLE_RATE = 8000;
-
         }
 
     }
@@ -235,7 +231,7 @@ public class AudioEncoder implements AudioCodec {
                 mEncoder.start();
                 re = true;
             } catch (Exception  e) {
-                e.printStackTrace();
+              // e.printStackTrace();
                 mEncoder = null;
                 re =false;
             }

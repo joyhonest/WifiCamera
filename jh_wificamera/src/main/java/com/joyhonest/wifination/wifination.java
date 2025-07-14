@@ -269,7 +269,7 @@ public class wifination {
                     MyMediaMuxer.init(tmpFileName);
                 }
             }
-            if(bG_Audio && AudioEncoder.nRecType != 1)
+            if(bG_Audio && AudioEncoder.nRecType == 0)
             {
                 if(!AudioEncoder.isCanRecordAudio())  //判读是否可以录音，因为有时录音权限没有打开就无法录音
                 {

@@ -44,6 +44,8 @@ public class GP4225_Device {
     public boolean bSD=false;
     public boolean bFastTcp = false;
     public boolean bNewOnlinePlay = false;
+    public boolean bh264OnlinePlay = false;  //海思的在线播放，通过直接发送H264流
+
     //public boolean bNewOnlinePlayByTcpH264 = false;
 
     //后来这个功能没有使用
@@ -189,7 +191,10 @@ public class GP4225_Device {
             bSD = ((data[11] & 0x01) == 0); // 0 have SD  1 NoSD
             bSDRecording = ((data[11] & 0x02) != 0);
             bFastTcp = ((data[11] & 0x08) != 0);
+
             bNewOnlinePlay = ((data[11] & 0x10) != 0);
+
+            bh264OnlinePlay = ((data[11] & 0x40) != 0); //2025-07-09
 
 
             //bNewOnlinePlayByTcpH264 = ((data[11] & 0x20) != 0);
@@ -285,13 +290,33 @@ public class GP4225_Device {
 
                 byte[] buffer = new byte[nC3];
 
+
                 GetFiles FF = new GetFiles();
                 FF.files = new ArrayList<>();
+                int  nPaInx = 0;
+                String sPath = "";
                 for (int ii = 0; ii <= nEndInx - nStartInx; ii++) {
+                    int da = 0;
+                    sPath = "";
+                    nPaInx = (10+4)+(ii*nC2);
+                    for(int xx = 0;xx<24;xx++)
+                    {
+                        if (data[nPaInx + xx] != 0) {
+                            da++;
+                        }
+                    }
+
+                    if(da!=0 && da <=24)
+                    {
+                        System.arraycopy(data, nPaInx, buffer, 0, da);
+                        sPath = new String(buffer, 0, da);
+                    }
+
+
                     inx = 14 + 24+8 + (ii * nC2);
                     nLen = (data[inx] & 0xFF) + (data[inx + 1] & 0xFF) * 0x100 + (data[inx + 2] & 0xFF) * 0x10000 + (data[inx + 3] & 0xFF) * 0x1000000;
                     inx += 4;
-                    int da = 0;
+                    da = 0;
                     for (int xx = 0; xx < nC3; xx++) {
                         if (data[inx + xx] != 0) {
                             da++;
@@ -302,7 +327,7 @@ public class GP4225_Device {
                         System.arraycopy(data, inx, buffer, 0, da);
                         sFileName = new String(buffer, 0, da);
                     }
-                    MyFile file = new MyFile("", sFileName, nLen);
+                    MyFile file = new MyFile(sPath, sFileName, nLen);
                     file.nInx1 = nStartInx;
                     file.nInx2 = nEndInx;
                     FF.files.add(file);
@@ -1166,7 +1191,6 @@ public class GP4225_Device {
     public static boolean bWifiPcm= true;
     public static void WriteAudioData(byte[] data)
     {
-       // Log.e("tag","get pcm data");
         if(!bWifiPcm) {
             return;
         }
