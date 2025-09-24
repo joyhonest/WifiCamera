@@ -132,7 +132,7 @@ public class MyUsbCamera {
             try {
                 logFile.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                ;
             }
         }
         FileWriter fw = null;
@@ -140,7 +140,7 @@ public class MyUsbCamera {
         try {
             fw = new FileWriter(logFile, true);
         } catch (IOException e) {
-            e.printStackTrace();
+            ;
         }
         if(fw != null) {
             pw = new PrintWriter(fw);
@@ -178,7 +178,7 @@ public class MyUsbCamera {
                                     fw.flush();
                                 }
                             }catch (IOException e) {
-                                e.printStackTrace();
+                                ;
                             }
                         }
                     }
@@ -192,7 +192,7 @@ public class MyUsbCamera {
             try {
                 fw.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                ;
             }
         }
         return result;

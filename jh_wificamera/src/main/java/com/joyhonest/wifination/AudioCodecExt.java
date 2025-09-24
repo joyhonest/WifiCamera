@@ -5,11 +5,16 @@ import android.util.Log;
 public class AudioCodecExt {
    private final byte[] mData;
    private int    mCount;
-   private final int SIZE = 2048*20;
+   private final int SIZE = 2048*100;
    public AudioCodecExt()
    {
       mData = new byte[SIZE];
       mCount = 0;
+   }
+   public void Reset()
+   {
+       mCount = 0;
+
    }
    public void WriteData(byte []data)
    {

@@ -296,8 +296,9 @@ publish {
 //7.25      添加 调整RGB通道
 //7.26      添加 读取是否支持ssid pass等设定
 //7.28      so改为16kb对齐
+//7.29      lib支持H265    2025-09-22
 
-//git commit -m "7.28" -a
+//git commit -m "7.29" -a
 //git push -u origin main
 
 

@@ -52,7 +52,7 @@ public class VideoMediaCoder {
         try {
             mMediaCodec = MediaCodec.createEncoderByType(VCODEC);
         } catch (IOException | IllegalArgumentException | NullPointerException e) {
-           // e.printStackTrace();
+           // ;
             bOK = false;
         }
         if (!bOK) {
@@ -71,12 +71,15 @@ public class VideoMediaCoder {
         //描述视频格式的帧速率（以帧/秒为单位）的键。
         mediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, fps);//帧率，一般在15至30之内，太小容易造成视频卡顿。
         mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, color);//色彩格式，具体查看相关API，不同设备支持的色彩格式不尽相同
+        mediaFormat.setInteger(MediaFormat.KEY_COLOR_STANDARD, MediaFormat.COLOR_STANDARD_BT709);
+        mediaFormat.setInteger(MediaFormat.KEY_COLOR_RANGE, MediaFormat.COLOR_RANGE_LIMITED);
+        mediaFormat.setInteger(MediaFormat.KEY_COLOR_TRANSFER, MediaFormat.COLOR_TRANSFER_SDR_VIDEO);
         try {
             mMediaCodec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         }
         catch (Exception e)
         {
-           // e.printStackTrace();
+           // ;
             mediaFormat = null;
         }
         return mediaFormat;
@@ -106,35 +109,18 @@ public class VideoMediaCoder {
 
 
         int nColor = 0;
-//        nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar;
-
-//        nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible;
-
-
-
-        //F_GetMediaFormat(width,height,bitrate,fps,nColor);
         nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar;   //Y UVUV
+
         if(F_GetMediaFormat(width,height,bitrate,fps,nColor) ==null)
         {
             nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar;  // yyyy UUUU   VVVV
             if(F_GetMediaFormat(width,height,bitrate,fps,nColor) ==null)
             {
-//                nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420PackedSemiPlanar;  // yyyy VUVU
-//                if(F_GetMediaFormat(width,height,bitrate,fps,nColor) ==null)
-//                {
-//                    nColor = 0;
-//                }
-
+                 nColor = 0;
             }
         }
-
-//        MediaFormat format = mMediaCodec.getInputFormat();
-//        nColor = format.getInteger(MediaFormat.KEY_COLOR_FORMAT);
-        //nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar;
-
         if(nColor!=0)
         {
-         //   nColor = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar;
             mMediaCodec.start();
         }
         else
@@ -221,7 +207,7 @@ public class VideoMediaCoder {
 
 
         int  ddd=0;
-    public  void  offerEncoder(byte[] data,int nLen)
+    public  void  offerEncoder(byte[] data,int nLen,double timePts)
     {
         if(mMediaCodec==null)
         {
@@ -230,17 +216,22 @@ public class VideoMediaCoder {
 
         int inputBufferIndex = mMediaCodec.dequeueInputBuffer(5000);
         if (inputBufferIndex >= 0) {//当输入缓冲区有效时,就是>=0
-            pts_ = (pts * (1000000 / MyMediaMuxer.fps));
-            pts++;
-//            Image inputImage = mMediaCodec.getInputImage(inputBufferIndex);
-//            if (inputImage != null)
+            if(timePts < 0.0)          //当需要自动计算时间戳
             {
-                // 写入 YUV 数据到 Image
-//                fillYuvDataToImage(inputImage, data);
+                pts_ = (pts * 1000000) / MyMediaMuxer.fps;
+            }
+            else
+            {
+                pts_ = (long)(timePts*1000000);      //如果是转换视频格式，就把原来时间戳传过来。
+            }
+
+            pts++;
+            {
                 ByteBuffer inputBuffer = mMediaCodec.getInputBuffer(inputBufferIndex);
                 inputBuffer.put(data);//往输入缓冲区写入数据,
                 ////五个参数，第一个是输入缓冲区的索引，第二个数据是输入缓冲区起始索引，第三个是放入的数据大小，第四个是时间戳，保证递增就是
                 mMediaCodec.queueInputBuffer(inputBufferIndex, 0, data.length, pts_, 0);
+                Log.e(TAG,"video pts = "+pts_);
                 MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
                 int outputBufferIndex = mMediaCodec.dequeueOutputBuffer(bufferInfo, 10000);//拿到输出缓冲区的索引  10ms
                 if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
@@ -259,11 +250,16 @@ public class VideoMediaCoder {
                             bGetPPS = true;
                         }
                     } else {
-                        if (MyMediaMuxer.videoInx < 0) {
+                        if (MyMediaMuxer.videoInx < 0)
+                        {
                             MediaFormat newFormat = mMediaCodec.getOutputFormat();
                             MyMediaMuxer.AddVideoTrack(newFormat);
+//                            Log.e(TAG,"add Video track2");
+
                         }
                         MyMediaMuxer.WritSample(outData, true, bufferInfo);
+
+
 
                     }
                     mMediaCodec.releaseOutputBuffer(outputBufferIndex, false);

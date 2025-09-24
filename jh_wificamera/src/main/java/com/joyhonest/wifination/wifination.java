@@ -10,6 +10,8 @@ import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -115,6 +117,8 @@ public class wifination {
 
             gp4225_Device = new GP4225_Device();
 
+
+
             mDirectBuffer = ByteBuffer.allocateDirect(BMP_Len + CmdLen);     //获取每帧数据，主要根据实际情况，分配足够的空间。
 
             naSetDirectBuffer(mDirectBuffer, BMP_Len + CmdLen);
@@ -123,14 +127,14 @@ public class wifination {
 
         } catch (UnsatisfiedLinkError Ule) {
             Log.e(TAG, "Cannot load JoyCamera.so ...");
-            Ule.printStackTrace();
+            //Ule.();
         } finally {
 
 
         }
     }
 
-//    public static void   naSetMaxResolution(int nWidth,int nHeight)
+//    public static void   naSetMaxSolution(int nWidth,int nHeight)
 //    {
 //        int len = (((nWidth + 3) / 4) * 4) * 4 * nHeight + 2048;
 //        mDirectBuffer = ByteBuffer.allocateDirect(len + CmdLen);     //获取每帧数据，主要根据实际情况，分配足够的空间。
@@ -209,12 +213,22 @@ public class wifination {
     public static  native long naGetTime();
     public static  int naStop()
     {
+
         onReceiveFrame = null;
         bSupportPcmAudio = false;
         return naStopB();
+
+
     }
-    //向飞控发送命令OnGetGP_Status
+    //向飞控发送命令
     public static native int naSentCmd(byte[] cmd, int nLen);
+    //飞控返回的数据通过 udp 25000 返回
+    public static  void onReadPort25000(byte[]data)
+    {
+          byte []dat = new byte[data.length];
+          System.arraycopy(data,0,dat,0,data.length);
+          EventBus.getDefault().post(dat,"onReadPort25000");
+    }
 
     //图像是否翻转
     public static native void naSetFilp(boolean b);
@@ -223,6 +237,7 @@ public class wifination {
 
 
     public static native  void naStartRead20000_20001();
+    public static native  void naEnableWBmode(boolean b);  //有一个项目，需要判断 图片全白全黑的判断
 
 
 
@@ -238,7 +253,8 @@ public class wifination {
     //拍照
     public static native int naSnapPhoto(String pFileName, int PhoneOrSD);
     //录像
-    private static native int naStartRecordA(String pFileName, int PhoneOrSD);
+    //bExitPcm 表示要从wifi传声音过来，一般会延迟个100ms，就把图像之前的4帧不录制。
+    private static native int naStartRecordA(String pFileName, int PhoneOrSD,boolean bExitPcm);
 
     private static  String sVideoName="";
     public static  boolean bG_Audio=false;
@@ -247,7 +263,7 @@ public class wifination {
 
     public static  native void naSetScaleHighQuality(int nQ);
 
-    public static  int naStartRecord(String pFileName, final  int PhoneOrSD)
+    public static void naStartRecord(String pFileName, final  int PhoneOrSD)
     {
 
         if(PhoneOrSD != TYPE_ONLY_SD) {
@@ -257,7 +273,7 @@ public class wifination {
         if(PhoneOrSD == TYPE_BOTH_PHONE_SD || PhoneOrSD == TYPE_ONLY_PHONE)
         {
             if(isPhoneRecording()) {
-                return 0;
+                return;
             }
 
             if(tmpFileName.length()>10)
@@ -265,7 +281,7 @@ public class wifination {
                 int i = MyMediaMuxer.init(tmpFileName);
                 if(i<0)
                 {
-                    SystemClock.sleep(500);
+                    SystemClock.sleep(5);
                     MyMediaMuxer.init(tmpFileName);
                 }
             }
@@ -284,27 +300,13 @@ public class wifination {
                 {
                     bG_Audio=false;
                 }
-                else
-                {
-                    int nn = 0;
-                    while(MyMediaMuxer.audioInx<0)
-                    {
-                        SystemClock.sleep(10);
-                        nn++;
-                        if(nn>50)
-                            break;
-                    }
-
-                }
             }
             if(!bG_Audio)
             {
                 G_StartAudio(0);
             }
         }
-
-        naStartRecordA(tmpFileName,PhoneOrSD);
-        return 0;
+        naStartRecordA(tmpFileName,PhoneOrSD,(AudioEncoder.nRecType != 0));
     }
 
     // 获取录像时间 ms
@@ -313,13 +315,20 @@ public class wifination {
         return (int)videoMediaCoder.getRecordTime();
     }
     //停止录像
-    public static native void naStopRecord(int PhoneOrSD);
+    public static native void naStopRecordA(int PhoneOrSD);
     //停止所有录像
     public static native int naStopRecord_All();
     //录像到手机时，是否录音
     public static  void naSetRecordAudio(boolean b)
     {
+
         bG_Audio = b;
+    }
+
+    public static  void naStopRecord(int PhoneOrSD)
+    {
+        G_StartAudio(0);
+        naStopRecordA(PhoneOrSD);
     }
 
 
@@ -332,10 +341,22 @@ public class wifination {
     public static native int naSetRecordWH(int ww, int hh);
 
     //2022-03-31
-    //Bit0 VGA（640x480) 0: 不支持， 1：支持
-    //Bit1 720P(1280x720) 0: 不支持， 1：支持
-    //Bit2 1080P(1920x1080) 0: 不支持， 1：支持
-    //Bit3~31 暂时保留 0: 不支持， 1：支持
+    /*
+    1 bytes SD_REC_RES 录像分辨率 1Byte U8 0：VGA， 1：720P， 2：1080P, 3 2K  4 = 4K
+    2 SUPPORT_RESOLU 支持的分辨率 4Bytes U32 见下列分辨率表
+    3 Reserved 保留 3Byte U8
+    备注： 支持的分辨率 APP 设置时不关心，APP 读取时，上报 WIFI 板支持的录像分辨率
+    SD 卡录像分辨率列表
+    bit 位序 录像分辨率 说明
+    Bit0 VGA（640x480) 0: 不支持， 1：支持
+    Bit1 720P(1280x720) 0: 不支持， 1：支持
+    Bit2 1080P(1920x1080) 0: 不支持， 1：支持
+    Bit3 2K 0: 不支持， 1：支持
+    Bit4 4K 0: 不支持， 1：支持
+    Bit3~31 暂时保留 0: 不支持， 1：支持
+*/
+
+
     public static native void naSetSDRecordResolution(int nResolution);
     public static  native void naGetSDRecordResolution();
 
@@ -407,6 +428,7 @@ public class wifination {
 
 
 
+
     /*
         APP读取状态信息
     */
@@ -442,35 +464,9 @@ public class wifination {
 
     public static native void na4225_SetTcpReadDelay(int nMs);
 
-    public static  int naPlayFlie(String sFileName)
-    {
-        return naPlayFlieB(sFileName, new PlayerInterface() {
-            @Override
-            public void Playduration(int i) {
-                //Log.e("AABB","Len = "+i);
-                Integer a = i;
-                EventBus.getDefault().post(a,"Playduration");
 
-            }
 
-            @Override
-            public void PlayStatus(int nStatyus) {
-                //Log.e("AABB","Status = "+nStatyus);
-                Integer a = nStatyus;
-                EventBus.getDefault().post(a,"PlayStatus");
-            }
-
-            @Override
-            public void PlayTime(int da) {
-                //  Log.e("AABB","time = "+da);
-                Integer a = da;
-                EventBus.getDefault().post(a,"PlayTime");
-            }
-        });
-
-    }
-
-    private static native int naPlayFlieB(String sFileName,PlayerInterface backCalled);
+    public static native int naPlayFile(String sFileName, PlayerInterface backCalled);
     public static native void naStopPlay();
     public static native void naPause();
     public static native void naSeek(float nSec);
@@ -482,7 +478,7 @@ public class wifination {
     */
 
     public static native boolean na4225StartDonwLoad(String sPath,String sFileName,int nLen,String sSaveName);
-    public static native boolean  na4225StartPlay(String sPath,String sFileName,int nLen); //旧版本
+    public static native boolean  na4225StartPlay(String sPath,String sFileName,int nLen, PlayerInterface backCalled); //旧版本
 
     //在线播放新版本，只有新版固件支持 bFastTcp = true 支持
     public static native boolean  na4225StartPlay_newVer(String sPath,String sFileName,int nLen);   //新版本播放
@@ -817,6 +813,7 @@ public class wifination {
         //n !=0  Play is Start  0= Play is over
         Integer i = n;
         EventBus.getDefault().post(i,"OnPlayStatus");
+
 
     }
 
@@ -1180,7 +1177,7 @@ public class wifination {
 
 
     //  当模块状态改变时回调函数
-    private static void OnStatusChamnge(int nStatus) {
+    private static void OnStatusChange(int nStatus) {
         Integer n = nStatus;
         EventBus.getDefault().post(n, "SDStatus_Changed");      //调用第三方库来发送消图片显示消息。
         EventBus.getDefault().post(n, "onCameraStatusChanged");      //调用第三方库来发送消图片显示消息。
@@ -1325,11 +1322,11 @@ public class wifination {
         return videoMediaCoder.initMediaCodec(width,height,bitrate,fps);
     }
 
-    public   static  void offerEncoder(byte[] data,int nLen)
+    public   static  void offerEncoder(byte[] data,int nLen,double timepts)
     {
         if(videoMediaCoder!=null) {
             try {
-                videoMediaCoder.offerEncoder(data, nLen);
+                videoMediaCoder.offerEncoder(data, nLen,timepts);
             }
             catch ( Exception ignored)
             {
@@ -1337,6 +1334,8 @@ public class wifination {
             }
         }
     }
+
+
 
 
     public   static void F_CloseEncoder()
@@ -1653,9 +1652,10 @@ public class wifination {
         GP4225_Device.WriteAudioData(data);     //播放
     }
 
-    private static void ConvertWriteAudiData(byte[] data)
+    private static void ConvertWriteAudiData(byte[] data,double timepts)
     {
-        audioCodecExt.WriteData(data);
+        //audioCodecExt.WriteData(data);
+        AudioEncoder.Encode(data,(long)(timepts*1000000));
     }
 
     public static native void naGetPcmInfo();
@@ -1676,10 +1676,13 @@ public class wifination {
         GP4225_Device.F_StopPlayAudio();
     }
 
-    public static void naSetRecordAutioExt(boolean b) //录制的声音是从wifi端传来的
+    public static void naSetRecordAutioExt(int n) //录制的声音是从wifi端传来的
     {
+        GP4225_Device.bWifiPcm = false;
+        audioCodecExt.Reset();
+        AudioEncoder.SetDataExt(n);
         GP4225_Device.bWifiPcm = true;
-        AudioEncoder.SetDataExt(b);
+        GP4225_Device.bConvert = false;
     }
 
 
@@ -1715,8 +1718,10 @@ public class wifination {
         int re =naIsSupportAudioAndMJ(sPath);
         if(re >=0 && (re & 0x01 ) !=0)  {  //有声音
             GP4225_Device.bWifiPcm = false;
+            GP4225_Device.bConvert = true;
+            audioCodecExt.Reset();
             wifination.naSetRecordAudio(true);
-            wifination.naSetRecordAutioExt(true);
+            wifination.naSetRecordAutioExt(2);
             G_StartAudio(1);
         }
         return naConvertA(sPath,sOutPath);
@@ -1750,28 +1755,11 @@ public class wifination {
     {
 
     }
-    public static native  int naSetPrinter(Bitmap bmp);
-    public static native  int naInitPrinter();
-    public static native  int naReleasePrinter();
-    public static native  int naCreateTCP();
-    public static native  void naReleaseTCP();
-    public static native  int naSetPrintDataFormat(int nSet1,int nSet2);
-    //nSet1 点阵，灰度  nSet2 打印浓度
-    public static  native  int naStartSendData();
-    public static native  int naCancelPrint();
-    //1 naInitPrinter
-    //2 naCreateTCP
-    //3 naSetPrinter
-    //4 naSetPrintDataFormat
-    //5 等待返回状态
-    //6  naStartSendData;
-    //7 等待返回状态
-    //8  naReleaseTCP
-    //9 naReleasePrinter
+
 
     public static native void naSetRota90Disp(boolean b);
 
-
+   // para1 占图片的宽度， para1， 水印图片的高宽比
     public static native int naSetPicWaterMark(String sPath,boolean b,float para1,float para2); //设定水印贴图
     // para1 //水印图片占 图片的宽度比分比
     //para2 //s水印图片的高宽比
@@ -1831,9 +1819,9 @@ public class wifination {
 
 
 
-    //2025-06-27 和凡昆讨论确定
-    public static native  void naSetTftOrientation(int n);
-    public static native  void naGetTftOrientation();
+//    //2025-06-27 和凡昆讨论确定
+//    public static native  void naSetTftOrientation(int n);
+//    public static native  void naGetTftOrientation();
 
 
 
@@ -1843,5 +1831,93 @@ public class wifination {
     public static native void naGetWifiPasswordNewVer();
 
 
+     /// /////////////
+
+     private static native  int naGetPrinterStatusB();
+    public   static   void naGetPrinterDensityLevels()     //获取wifi打印浓度支持
+    {
+        gp4225_Device.bGetPrinterDensityLevels = true;
+        naGetPrinterStatusB();
+//        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+//            if(gp4225_Device.bGetPrinterDensityLevels)   //这样来确保如果固件没有反应，也可以超时退出
+//            {
+//                gp4225_Device.bGetPrinterDensityLevels = false;
+//                Integer nLevel = 0x80;
+//                EventBus.getDefault().post(nLevel, "onGetPrinterDensityLevels");
+//            }
+//        },300);
+    }
+
+
+    public static native  void naSetScreenSaverTime(int n);
+    public static native  void naGetScreenSaverTime();
+
+    public static native  void naSetAutoOffTime(int n);
+    public static native  void naGetAutoOffTime();
+
+
+    public static native void naYuv420ToBitmap(byte[] data, int w, int h, Bitmap bmp,boolean b,int rotation);
+
+     public static native  int naSetPrinter(Bitmap bmp);
+    public static native  int naInitPrinter();
+    public static native  int naReleasePrinter();
+    public static native  int naCreateTCP();
+    public static native  void naReleaseTCP();
+    public static native  int naSetPrintDataFormat(int nLattice,int nDensity);
+    //nSet1 点阵，灰度  nSet2 打印浓度
+    public static  native  int naStartSendData();
+    public static native  int naCancelPrint();
+    //naGetPrinterDensityLevels()
+    //1 naInitPrinter
+    //naGetPrinterDensityLevels()
+    //2 naCreateTCP
+    //3 naSetPrinter
+    //4 naSetPrintDataFormat
+    //5 等待返回状态
+    //6  naStartSendData;
+    //7 等待返回状态
+    //8  naReleaseTCP
+    //9 naReleasePrinter
+
+
+
+
+    public static native void F_PlayH265(String sh265);
+
+    public static native int naGetRtspIP();  //return 1 192.168.34, 2 192.168.35.1 0 error
+
+
+    ///
+
+//    private static  void InitHvcMediacodec(byte[] data,int nSel)
+//    {
+//        try {
+//            if(nSel==0) {
+//                H265_decoder.release();
+//                H265_decoder.initDecoder(data);
+//            }
+//            else
+//            {
+//                H265_decoderPlay.release();
+//                H265_decoderPlay.initDecoder(data);
+//            }
+//        }
+//        catch (Exception ignored)
+//        {
+//        }
+//
+//    }
+//
+//    public   static  void offerDecordH265(byte[] data,long timepts,int nSel)
+//    {
+//            if(nSel == 0) {
+//                H265_decoder.decodeFrame(data, timepts);
+//            }
+//            else
+//            {
+//                H265_decoderPlay.decodeFrame(data, timepts);
+//            }
+//    }
+//    public static  native void onGetH265DecordData(byte []data,int w,int h,int color,int nSel);
 
 }
