@@ -117,8 +117,6 @@ public class wifination {
 
             gp4225_Device = new GP4225_Device();
 
-
-
             mDirectBuffer = ByteBuffer.allocateDirect(BMP_Len + CmdLen);     //获取每帧数据，主要根据实际情况，分配足够的空间。
 
             naSetDirectBuffer(mDirectBuffer, BMP_Len + CmdLen);
@@ -237,6 +235,7 @@ public class wifination {
 
 
     public static native  void naStartRead20000_20001();
+    public static native  void naStopRead20000_20001();
     public static native  void naEnableWBmode(boolean b);  //有一个项目，需要判断 图片全白全黑的判断
 
 
@@ -413,11 +412,16 @@ public class wifination {
     public static native void na4225_ReadRecordTime();
     //格式化SD卡
     public static native void na4225_FormatSD();
+    public static native void na4225_GetFormatSDStatus();
     //读取固件版本信息
     public static native void na4225_ReadFireWareVer();
 
     //恢复出厂设置
     public static native void na4225_ResetDevice();
+
+
+    public static native void naSetSDLoopRecording(int b);
+    public static native void naGetSDLoopRecording();
 
     public static   void  naGetFirmwareVersion()
     {
@@ -444,7 +448,7 @@ public class wifination {
             1  文件操作
      */
 
-    public static native void na4225_SetMode(byte nMode);
+    public static native void na4225_SetMode(int nMode);
 
     /*
         APP 查询文件列表
@@ -1887,37 +1891,7 @@ public class wifination {
     public static native int naGetRtspIP();  //return 1 192.168.34, 2 192.168.35.1 0 error
 
 
-    ///
-
-//    private static  void InitHvcMediacodec(byte[] data,int nSel)
-//    {
-//        try {
-//            if(nSel==0) {
-//                H265_decoder.release();
-//                H265_decoder.initDecoder(data);
-//            }
-//            else
-//            {
-//                H265_decoderPlay.release();
-//                H265_decoderPlay.initDecoder(data);
-//            }
-//        }
-//        catch (Exception ignored)
-//        {
-//        }
-//
-//    }
-//
-//    public   static  void offerDecordH265(byte[] data,long timepts,int nSel)
-//    {
-//            if(nSel == 0) {
-//                H265_decoder.decodeFrame(data, timepts);
-//            }
-//            else
-//            {
-//                H265_decoderPlay.decodeFrame(data, timepts);
-//            }
-//    }
-//    public static  native void onGetH265DecordData(byte []data,int w,int h,int color,int nSel);
+    public static  native void naReadSyMa1080_720();  //读取司马的模块是支持1280 还是 720
+    //2025-11-19
 
 }

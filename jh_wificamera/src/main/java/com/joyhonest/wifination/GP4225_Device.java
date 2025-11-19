@@ -45,8 +45,8 @@ public class GP4225_Device {
     public boolean bSD=false;
     public boolean bFastTcp = false;
     public boolean bNewOnlinePlay = false;
-    public boolean bh264OnlinePlay = false;  //海思的在线播放，通过直接发送H264流
-
+    public boolean bh264OnlinePlay = false;  //海思的在线播放，表示支持RTSP播放
+    public boolean bSDNeedFormat = false;     //表示如果SD需要格式化（比如格式错误等。。。。）
     //public boolean bNewOnlinePlayByTcpH264 = false;
 
     //后来这个功能没有使用
@@ -62,7 +62,8 @@ public class GP4225_Device {
     public int PhotoCount;
 
     public long nSDAllSize;        //1024*1024 unit
-    public long nSDAvaildSize;
+    public long nSDAvailableSize;
+
 
     public int nBattery;
     public boolean bAdjfocus = false;
@@ -104,7 +105,7 @@ public class GP4225_Device {
         PhotoCount = 0;
         bSD = false;
         nSDAllSize = -1;
-        nSDAvaildSize = -1;
+        nSDAvailableSize = -1;
 
         bSDRecording = false;
         nMode = 0;
@@ -196,18 +197,19 @@ public class GP4225_Device {
             bSDRecording = ((data[11] & 0x02) != 0);
             bFastTcp = ((data[11] & 0x08) != 0);
             bNewOnlinePlay = ((data[11] & 0x10) != 0);
-            bh264OnlinePlay = ((data[11] & 0x40) != 0); //2025-07-09。 支持RTSP在线播放
 
-            //bNewOnlinePlayByTcpH264 = ((data[11] & 0x20) != 0);
-            //bNewOnlinePlayByTcpH264 = ((data[11] & 0x20) != 0);
+            bh264OnlinePlay = ((data[11] & 0x40) != 0); //2025-07-09。 支持RTSP在线播放
+            bSDNeedFormat = ((data[11] & 0x80) != 0);
+
 
             VideosCount = ((data[12] & 0xFF) + (data[13] & 0xFF) * 0x100 + (data[14] & 0xFF) * 0x10000 + (data[15] & 0xFF) * 0x1000000);
+//            Log.e("Status","Video count ="+VideosCount);
             LockedCount = ((data[16] & 0xFF) + (data[17] & 0xFF) * 0x100 + (data[18] & 0xFF) * 0x10000 + (data[19] & 0xFF) * 0x1000000);
             PhotoCount = ((data[20] & 0xFF) + (data[21] & 0xFF) * 0x100 + (data[22] & 0xFF) * 0x10000 + (data[23] & 0xFF) * 0x1000000);
 
             if (n_len >= 0x36) {
                 nSDAllSize = ((data[24] & 0xFF) + (data[25] & 0xFF) * 0x100 + (data[26] & 0xFF) * 0x10000 + (data[27] & 0xFF) * 0x1000000L + (data[34] & 0xFF) * 0x100000000L);
-                nSDAvaildSize = ((data[28] & 0xFF) + (data[29] & 0xFF) * 0x100 + (data[30] & 0xFF) * 0x10000 + (data[31] & 0xFF) * 0x1000000L + (data[35] & 0xFF) * 0x100000000L);
+                nSDAvailableSize = ((data[28] & 0xFF) + (data[29] & 0xFF) * 0x100 + (data[30] & 0xFF) * 0x10000 + (data[31] & 0xFF) * 0x1000000L + (data[35] & 0xFF) * 0x100000000L);
             }
             if (data.length >= 34) {
                 nBattery = data[32] & 0xFF;
@@ -421,7 +423,7 @@ public class GP4225_Device {
             }
 
             switch (s_cmd) {
-                case 0x00001:          //delete a file
+                case 0x0001:          //delete a file
                     MyFile file = new MyFile("", sFileName, (int) nStatus);
                     EventBus.getDefault().post(file, "GP4225_DeleteFile");
                     break;
@@ -529,19 +531,18 @@ public class GP4225_Device {
                 {
                     byte a = data[10];
                     Integer aa = (int) a;
-                 //   Log.e("Format", a + "");
-                    EventBus.getDefault().post(aa, "GP4225_FormatSD_Status");
+                    EventBus.getDefault().post(aa, "onGetFormatStatus");
                 }
                 break;
                 case 0x0009:  //Ver
                 {
-                    byte[] buffer = new byte[n_len];
-                    System.arraycopy(data, 10, buffer, 0, n_len);
-                    sVer = new String(buffer);
-
-                    EventBus.getDefault().post(sVer, "GP4225_GetFireWareVersion");
-                    EventBus.getDefault().post(sVer, "onGetFirmwareVersion");
-
+                        byte[] buffer = new byte[n_len];
+                        System.arraycopy(data, 10, buffer, 0, n_len);
+                        sVer = new String(buffer);
+                        if(!sVer.isEmpty()) {
+                            EventBus.getDefault().post(sVer, "GP4225_GetFireWareVersion");
+                            EventBus.getDefault().post(sVer, "onGetFirmwareVersion");
+                        }
                 }
                 break;
                 case 0x000A: {
@@ -859,6 +860,14 @@ public class GP4225_Device {
                 }
                 break;
 
+                case 0x002F:   //SD卡是否支持循环录像（SDK满，就覆盖旧资料）
+                {
+                    byte a = data[10];
+                    Integer aa = (int)a;
+                    EventBus.getDefault().post(aa, "onGetSDLoopRecording");
+                }
+                break;
+
 
                 case  0x0030:           //wifi 打印。
                 {
@@ -979,7 +988,7 @@ public class GP4225_Device {
                 case 0x0055:  //自动关机
                 {
                     byte a = data[10];
-                    Integer aa = (int) a;  //屏幕保护0：关闭 1:1分钟 2:3分钟 3:5分钟 4:10分钟
+                    Integer aa = (int) a;  //自动关机0：关闭 1:1分钟 2:3分钟 3:5分钟 4:10分钟
                     EventBus.getDefault().post(aa, "onGetAutoOffTime");
                 }
                 break;
