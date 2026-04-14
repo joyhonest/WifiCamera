@@ -229,7 +229,7 @@ public class wifination {
     }
 
     //图像是否翻转
-    public static native void naSetFilp(boolean b);
+    public static native void naSetFlip(boolean b);
     // 是否VR显示
     public static native void naSet3D(boolean b);
 
@@ -1258,6 +1258,11 @@ public class wifination {
 
 
 
+    private static void  onGetFrame(Bitmap bmp)
+    {
+        EventBus.getDefault().post(bmp, "onGetFrame");
+    }
+
     private static void ReceiveBmp(int i) {
         //其中，i:bit00-bit15   为图像宽度
         //      i:bit16-bit31  为图像高度
@@ -1293,23 +1298,25 @@ public class wifination {
             else {
                 //if(gp4225_Device.nMode == 0)
                 {
-                    Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-                    bmp.copyPixelsFromBuffer(mDirectBuffer);
-                    EventBus.getDefault().post(bmp, "ReceiveBMP");
-                    EventBus.getDefault().post(bmp, "onGetFrame");
-//                if(bmpG!=null)
-//                {
-//                    if(bmpG.getWidth() !=w || bmpG.getHeight()!=h)
-//                    {
-//                        bmpG = null;
-//                    }
-//                }
-//                if(bmpG==null)
-//                {
-//                    bmpG = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-//                }
-//                bmpG.copyPixelsFromBuffer(mDirectBuffer);
-//                EventBus.getDefault().post(bmpG, "ReceiveBMP");
+//                    Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+//                    bmp.copyPixelsFromBuffer(mDirectBuffer);
+
+                    if(bmpG!=null)
+                    {
+                        if(bmpG.getWidth() !=w || bmpG.getHeight()!=h)
+                        {
+                            bmpG = null;
+                        }
+                    }
+                    if(bmpG==null)
+                    {
+                        bmpG = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                    }
+                    //mDirectBuffer.position(0);
+                    bmpG.copyPixelsFromBuffer(mDirectBuffer);
+                    EventBus.getDefault().post(bmpG, "ReceiveBMP");
+                    EventBus.getDefault().post(bmpG, "onGetFrame");
+
                 }
             }
         }
@@ -1413,6 +1420,7 @@ public class wifination {
     public  static native void naStartAdjFocus(int x,int y);
     public  static native int  naGetVcm();
     public  static native void  naSetVcm(int nvcm);
+    public static native void naResetDevice(); ////复位设备
     private  static  void  onAdjFocus(int n)
     {
         Integer  data = n;
@@ -1838,20 +1846,27 @@ public class wifination {
      /// /////////////
 
      private static native  int naGetPrinterStatusB();
+
+
     public   static   void naGetPrinterDensityLevels()     //获取wifi打印浓度支持
     {
         gp4225_Device.bGetPrinterDensityLevels = true;
         naGetPrinterStatusB();
-//        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-//            if(gp4225_Device.bGetPrinterDensityLevels)   //这样来确保如果固件没有反应，也可以超时退出
-//            {
-//                gp4225_Device.bGetPrinterDensityLevels = false;
-//                Integer nLevel = 0x80;
-//                EventBus.getDefault().post(nLevel, "onGetPrinterDensityLevels");
-//            }
-//        },300);
+        SystemClock.sleep(5);
+        naGetPrinterStatusB();
+        SystemClock.sleep(5);
+        naGetPrinterStatusB();
+        SystemClock.sleep(5);
+        naGetPrinterStatusB();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if(gp4225_Device.bGetPrinterDensityLevels)   //这样来确保如果固件没有反应，也可以超时退出
+            {
+                gp4225_Device.bGetPrinterDensityLevels = false;
+                Integer nLevel = 0x80;
+                EventBus.getDefault().post(nLevel, "onGetPrinterDensityLevels");
+            }
+        },1000);
     }
-
 
     public static native  void naSetScreenSaverTime(int n);
     public static native  void naGetScreenSaverTime();
@@ -1893,5 +1908,27 @@ public class wifination {
 
     public static  native void naReadSyMa1080_720();  //读取司马的模块是支持1280 还是 720
     //2025-11-19
+
+    public static  native void naSetDevicePlayVolume(int n);  //设定设备播放的音量
+    public static  native void naGetDevicePlayVolume();
+
+
+    public static native void naSetSendDataTimeout(int ms);  //设定wifi 打印 发送数据的检测超时的阈值、
+
+
+    public static void onSendWifiDataError()
+    {
+        EventBus.getDefault().post("", "onSendWifiDataError");
+    }
+
+    public static native void naSetScreen_CTL(byte [] data);  //根据协议。。。。
+    public static native void naGetScreen_CTL();
+
+    public static native void naSetPowerOff_CTL(byte [] data);
+    public static native void naGetPowerOff_CTL();
+
+    public static native void naSetFirmwareRotate(int nRota);  //设定固件发送的视频流旋转0-0  1:90 2:180 3:270
+    public static native void naGetFirmwareRotate();
+
 
 }

@@ -203,7 +203,6 @@ public class GP4225_Device {
 
 
             VideosCount = ((data[12] & 0xFF) + (data[13] & 0xFF) * 0x100 + (data[14] & 0xFF) * 0x10000 + (data[15] & 0xFF) * 0x1000000);
-//            Log.e("Status","Video count ="+VideosCount);
             LockedCount = ((data[16] & 0xFF) + (data[17] & 0xFF) * 0x100 + (data[18] & 0xFF) * 0x10000 + (data[19] & 0xFF) * 0x1000000);
             PhotoCount = ((data[20] & 0xFF) + (data[21] & 0xFF) * 0x100 + (data[22] & 0xFF) * 0x10000 + (data[23] & 0xFF) * 0x1000000);
 
@@ -436,12 +435,10 @@ public class GP4225_Device {
         }
         if (m_cmd == 0x0021) {
             if (s_cmd == 0x0001) {   //透传数据
-                if (n_len != 0) {
-                    byte[] buffer = new byte[n_len];
-                    System.arraycopy(data, 10, buffer, 0, n_len);
-                    EventBus.getDefault().post(buffer, "GP4225_Get_Transfer_data");
-                    return true;
-                }
+                byte[] buffer = new byte[n_len];
+                System.arraycopy(data, 10, buffer, 0, n_len);
+                EventBus.getDefault().post(buffer, "GP4225_Get_Transfer_data");
+                return true;
             }
             return false;
         }
@@ -966,14 +963,39 @@ public class GP4225_Device {
                 }
                 break;
 
+                case 0x0035:
+                {
+                    if(n_len==0x20)
+                    {
+                        byte[] aa = new byte[n_len];
+                        System.arraycopy(data, 10, aa, 0, n_len);
+                        EventBus.getDefault().post(aa, "onGetScreen_CTL");    //这个熄屏时间
+                    }
+                }
+                break;
+                case 0x0036:
+                {
+                    if(n_len==0x20)
+                    {
+                        byte[] aa = new byte[n_len];
+                        System.arraycopy(data, 10, aa, 0, n_len);
+                        EventBus.getDefault().post(aa, "onGetPowerOff_CTL");  //这个自动关机时间 是 x0055 的升级版。
+                    }
+                }
+                break;
+                case 0x0037:    //获取固件的图像旋转角度
+                {
+                    Integer b  = (int)data[10];
+                    EventBus.getDefault().post(b, "onGetFirmwareRotate");
+                }
+                break;
+
                 case 0x0050:
                 {
                     byte[] aa = null;
-                    if (n_len > 0) {
-                        aa = new byte[n_len];
-                        System.arraycopy(data, 10, aa, 0, n_len);
-                        EventBus.getDefault().post(aa, "GP4225_GetDeviceInfo");
-                    }
+                    aa = new byte[n_len];
+                    System.arraycopy(data, 10, aa, 0, n_len);
+                    EventBus.getDefault().post(aa, "GP4225_GetDeviceInfo");
                 }
                 break;
 
@@ -992,10 +1014,18 @@ public class GP4225_Device {
                     EventBus.getDefault().post(aa, "onGetAutoOffTime");
                 }
                 break;
+                case 0x0056:        //设备播放声音大小
+                {
+                    byte a = data[10];
+                    Integer aa = (int) a;  // 0  -  100   0关闭  20 低  50 中  100 高
+                    EventBus.getDefault().post(aa, "onGetDevicePlayVolume");
+                }
+                break;
 
                 default:
                     bOK = false;
                     break;
+
             }
             return bOK;
         }
