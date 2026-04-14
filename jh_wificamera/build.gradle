@@ -298,9 +298,9 @@ publish {
 //7.28      so改为16kb对齐
 //7.29      lib支持H265    2025-09-22
 //7.30      同步到Sports DV用的最新版 2025-11-19
-//7.31      同步到Sports DV用的最新版 2026-04-14
+//7.32      同步到Sports DV用的最新版 2026-04-14
 
-//git commit -m "7.31" -a
+//git commit -m "7.32" -a
 //git push -u origin main
 
 
