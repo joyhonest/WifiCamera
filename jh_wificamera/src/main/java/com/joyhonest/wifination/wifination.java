@@ -8,10 +8,12 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
+import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -428,11 +430,6 @@ public class wifination {
         na4225_ReadFireWareVer();
     }
 
-
-
-
-
-
     /*
         APP读取状态信息
     */
@@ -441,11 +438,11 @@ public class wifination {
     {
         na4225_ReadStatus();
     }
-
     /*
             APP设定工作模式
             0  实时图像  录像模式
             1  文件操作
+            2  拍照模式
      */
 
     public static native void na4225_SetMode(int nMode);
@@ -468,12 +465,61 @@ public class wifination {
 
     public static native void na4225_SetTcpReadDelay(int nMs);
 
+    private static native int naPlayFileUriA(int fd,long size ,PlayerInterface backCalled);
 
+    private static native void naSeekA(int fd,long size,float nSec);
+    public static  void naSeekUri(Context context, Uri uri,float nSec)
+    {
+        try {
+            ParcelFileDescriptor pfd =
+                    context.getContentResolver().openFileDescriptor(uri, "r");
 
+            if(pfd !=null) {
+                int fd = pfd.getFd();
+                // 获取文件大小（用于 seek）
+                long size = pfd.getStatSize();
+                naSeekA(fd,size,nSec);
+            }
+            else
+            {
+                return;
+            }
+
+            // playWithFd(fd, size);
+
+        } catch (Exception ignored) {
+
+        }
+    }
+    public static  void naPlayFileUri(Context context, Uri uri, PlayerInterface backCalled)
+    {
+
+        try {
+            ParcelFileDescriptor pfd =
+                    context.getContentResolver().openFileDescriptor(uri, "r");
+
+            if(pfd !=null) {
+                int fd = pfd.getFd();
+                // 获取文件大小（用于 seek）
+                long size = pfd.getStatSize();
+                naPlayFileUriA(fd,size,backCalled);
+            }
+            else
+            {
+                return;
+            }
+
+           // playWithFd(fd, size);
+
+        } catch (Exception ignored) {
+
+        }
+    }
     public static native int naPlayFile(String sFileName, PlayerInterface backCalled);
     public static native void naStopPlay();
     public static native void naPause();
     public static native void naSeek(float nSec);
+
 
 
 

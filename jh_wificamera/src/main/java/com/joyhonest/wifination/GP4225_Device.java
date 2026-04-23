@@ -193,6 +193,7 @@ public class GP4225_Device {
 
         if (m_cmd == 0x0000 && s_cmd == 0x0001) {   //Device Status
             nMode = data[10] & 0xFF;
+
             bSD = ((data[11] & 0x01) == 0);          // 0 SD OK    1 No SD
             bSDRecording = ((data[11] & 0x02) != 0);
             bFastTcp = ((data[11] & 0x08) != 0);
@@ -276,15 +277,10 @@ public class GP4225_Device {
         }
         if (m_cmd == 0x0002)  //GetFileList
         {
-            if (s_cmd == 0x0001 || s_cmd == 0x0002 || s_cmd == 0x0003) {  //VideoList   LockFileList  //图片文件
+            if (s_cmd == 0x0001 || s_cmd == 0x0002 || s_cmd == 0x0003) {
+                //VideoList   LockFileList  //图片文件
                 nStartInx = (data[10] & 0xFF) + (data[11] & 0xFF) * 0x100;
                 nEndInx = (data[12] & 0xFF) + (data[13] & 0xFF) * 0x100;
-
-//                int ni = nEndInx - nStartInx+1;
-//                int nCLen = data.length-14;
-//
-//                int nC2 = nCLen/ni;  //
-//                int nC3 = 32+nC2-68;
 
                 int nC3 = 32;
                 int nC2 = 68;
