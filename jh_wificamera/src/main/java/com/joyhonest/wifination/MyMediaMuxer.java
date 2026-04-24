@@ -1,14 +1,25 @@
 package com.joyhonest.wifination;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.os.Looper;
+import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.util.Log;
 //import android.util.Log;
 
+import java.io.FileDescriptor;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Paths;
 
 public class MyMediaMuxer {
 
@@ -33,20 +44,139 @@ public class MyMediaMuxer {
     public static  int nCt = (2048 * 1000000) / (16000 * 2);
 
 
-    public static long startTimeNanos; // 录制开始时的基准时间
+    public static long startTimeNanos = 0; // 录制开始时的基准时间
+    public static Context context = null;
+    public static ParcelFileDescriptor pfd=null;
+    static ContentResolver resolver =null;
+    static Uri uri=null;
 
-    public  static int  init(String strNme)
+    public static void F_CloseFD()
+    {
+        if(pfd!=null)
+        {
+            try {
+                pfd.close();
+            }
+            catch (IOException ignored)
+            {
+
+            }
+            finally {
+                pfd = null;
+            }
+            if(uri!=null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    ContentValues update = new ContentValues();
+                    update.put(MediaStore.Images.Media.IS_PENDING, 0);
+                    resolver.update(uri, update, null, null);
+                }
+                uri = null;
+            }
+
+        }
+
+    }
+    public static int F_getFd(String sFilename,String sAlam)
+    {
+        if(context==null)
+            return  -1;
+        String stype = sFilename.substring(sFilename.lastIndexOf(".") + 1);
+        resolver = context.getContentResolver();
+        String strNme = Paths.get(sFilename).getFileName().toString();
+
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Video.Media.DISPLAY_NAME, strNme);
+        if (stype.equalsIgnoreCase("png")) {
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+        } else {
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        }
+
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (sAlam == null) {
+                    values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_DCIM);
+                } else {
+                    values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/" + sAlam);
+                }
+
+                values.put(MediaStore.Images.Media.IS_PENDING, 1);
+            }
+        }
+        catch (Exception ignored)
+        {
+            uri = null;
+        }
+
+
+
+        try {
+            uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            if(uri!=null)
+                pfd = resolver.openFileDescriptor(uri, "w");
+
+            if (pfd != null) {
+                return pfd.getFd();
+            }
+        }
+        catch (Exception ignored)
+        {
+                ;
+        }
+        return   -1;
+
+    }
+
+    public  static int  init(String strNmeA,String sAlam)
     {
         int nResult = 0;
+
+        String strNme = Paths.get(strNmeA).getFileName().toString();
+        if(sAlam==null)
+            strNme = strNmeA;
         bRecording = false;
         nResult = 1;
         try {
             bStartWrite = false;
             formatV = null;
             formatA = null;
-            mediaMuxer = new MediaMuxer(strNme, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
             startTimeNanos = System.nanoTime();
-            // 记录基准时间
+            if(sAlam == null) {
+                uri = null;
+                resolver = null;
+                pfd = null;
+                mediaMuxer = new MediaMuxer(strNme, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+            }
+            else {
+
+                /// //////
+
+                //    mediaMuxer = new MediaMuxer(strNme, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+
+                resolver = context.getContentResolver();
+
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Video.Media.DISPLAY_NAME, strNme);
+                values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    values.put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/" + sAlam);
+
+                    values.put(MediaStore.Video.Media.IS_PENDING, 1);
+                }
+
+                uri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+
+                pfd = resolver.openFileDescriptor(uri, "w");
+
+                if (pfd != null) {
+                    FileDescriptor fd = pfd.getFileDescriptor();
+                    mediaMuxer = new MediaMuxer(fd, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+                }
+            }
+
+
 
         }catch (Exception e)
         {
@@ -206,13 +336,30 @@ public class MyMediaMuxer {
          {
              bRecording = false;
              SystemClock.sleep(100);
+             if(pfd!=null)
+             {
+                 try {
+                     pfd.close();
+                 }
+                 catch (IOException ignored)
+                 {
+
+                 }
+                 finally {
+                     pfd = null;
+                 }
+             }
              try {
                  mediaMuxer.stop();
                  mediaMuxer.release();
+
              }
              catch (Exception e)
              {
                  ;
+             }
+             finally {
+                 mediaMuxer = null;
              }
 
              formatV = null;
@@ -222,6 +369,13 @@ public class MyMediaMuxer {
 
              audioInx = -1;
              videoInx = -1;
+             if(uri!=null) {
+                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                     ContentValues update = new ContentValues();
+                     update.put(MediaStore.Video.Media.IS_PENDING, 0);
+                     resolver.update(uri, update, null, null);
+                 }
+             }
          }
     }
 

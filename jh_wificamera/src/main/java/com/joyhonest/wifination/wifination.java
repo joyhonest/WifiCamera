@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
+import android.media.MediaMuxer;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -16,6 +17,8 @@ import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.util.Log;
+
+import com.joyhonest.sports_dv.MyApp;
 
 import org.simple.eventbus.EventBus;
 
@@ -105,7 +108,13 @@ public class wifination {
     private  final  static int CmdLen = 2048;
     public static GP4225_Device gp4225_Device;
 
-    public static Context appContext = null;
+    private static Context appContext = null;
+    public static  void naSetContext(Context context1)
+    {
+        appContext = context1;
+        MyMediaMuxer.context = context1;
+
+    }
 
 
     private  static Bitmap Gesture_bmp =null; // = Bitmap.createBitmap(300,300, Bitmap.Config.ARGB_8888);
@@ -118,6 +127,7 @@ public class wifination {
             audioCodecExt = new AudioCodecExt();
 
             gp4225_Device = new GP4225_Device();
+            isRecordtoFile = true;
 
             mDirectBuffer = ByteBuffer.allocateDirect(BMP_Len + CmdLen);     //获取每帧数据，主要根据实际情况，分配足够的空间。
 
@@ -252,7 +262,26 @@ public class wifination {
     // TYPE_BOTH_PHONE_SD  ==  录像或者拍照同时到模块的SD卡和手机
     //
     //拍照
-    public static native int naSnapPhoto(String pFileName, int PhoneOrSD);
+    private static native int naSnapPhotoA(String pFileName, int fd,int PhoneOrSD);
+    public static int naSnapPhoto(String pFileName, int PhoneOrSD)
+    {
+        if(isRecordtoFile)
+        {
+            return naSnapPhotoA(pFileName,-1,PhoneOrSD);
+        }
+        else
+        {
+            int fd = MyMediaMuxer.F_getFd(pFileName,sAlam);
+            if(fd!=-1) {
+                return naSnapPhotoA(pFileName, fd, PhoneOrSD);
+            }
+            else
+            {
+                return  -1;
+            }
+        }
+    }
+
     //录像
     //bExitPcm 表示要从wifi传声音过来，一般会延迟个100ms，就把图像之前的4帧不录制。
     private static native int naStartRecordA(String pFileName, int PhoneOrSD,boolean bExitPcm);
@@ -264,26 +293,50 @@ public class wifination {
 
     public static  native void naSetScaleHighQuality(int nQ);
 
+    private static boolean isRecordtoFile = true;
+    public static  void naSetRecordVideoToFile(boolean b)
+    {
+        isRecordtoFile = b;
+    }
+
+    public static boolean naGetRecordVideoToFile()
+    {
+        return  isRecordtoFile;
+    }
+
+    public  static String sAlam=null;
+
+
     public static void naStartRecord(String pFileName, final  int PhoneOrSD)
     {
 
         if(PhoneOrSD != TYPE_ONLY_SD) {
             sVideoName = pFileName;
         }
-        String tmpFileName = sVideoName+"_.tmp";
+        String tmpFileName = pFileName+"_.tmp";
+        if(isRecordtoFile)
+        {
+            sAlam = null;
+        }
+        else
+        {
+            tmpFileName = pFileName;
+        }
+
+
         if(PhoneOrSD == TYPE_BOTH_PHONE_SD || PhoneOrSD == TYPE_ONLY_PHONE)
         {
             if(isPhoneRecording()) {
                 return;
             }
-
             if(tmpFileName.length()>10)
             {
-                int i = MyMediaMuxer.init(tmpFileName);
+                MyMediaMuxer.context = appContext;
+                int i = MyMediaMuxer.init(tmpFileName,sAlam);
                 if(i<0)
                 {
                     SystemClock.sleep(5);
-                    MyMediaMuxer.init(tmpFileName);
+                    MyMediaMuxer.init(tmpFileName,sAlam);
                 }
             }
             if(bG_Audio && AudioEncoder.nRecType == 0)
@@ -972,6 +1025,10 @@ public class wifination {
 
     private static void OnSave2ToGallery(String sName, int nPhoto)     //拍照或者录像完成。可以把它加入到系统图库中去
     {
+        if(nPhoto==0)
+        {
+            MyMediaMuxer.F_CloseFD();
+        }
         String Sn = String.format(Locale.ENGLISH,"%02d%s", nPhoto, sName);
         EventBus.getDefault().post(sName, "onSnapPhotoFinish");
         EventBus.getDefault().post(Sn, "SavePhotoOK");
@@ -1424,15 +1481,18 @@ public class wifination {
         if (oldFile.exists() && oldFile.isFile()) {
             oldFile.renameTo(newFile);
             String Sn = String.format(Locale.ENGLISH,"%02d%s", 1, sVideoName);
-            EventBus.getDefault().post(sVideoName, "onRecordFinish");
-            sVideoName="";
-            EventBus.getDefault().post(Sn, "SavePhotoOK");
-
+            if(isRecordtoFile) {
+                EventBus.getDefault().post(sVideoName, "onRecordFinish");
+                sVideoName = "";
+                EventBus.getDefault().post(Sn, "SavePhotoOK");
+            }
         }
         else
         {
-            sVideoName="";
-            EventBus.getDefault().post(sVideoName, "SavePhotoOK");
+            if(isRecordtoFile) {
+                sVideoName = "";
+                EventBus.getDefault().post(sVideoName, "SavePhotoOK");
+            }
         }
     }
 
@@ -1772,7 +1832,8 @@ public class wifination {
     public static native boolean naIsNeedConvert(String sPath);
 
     public static int naCovert(String sPath,String sOutPath) {
-        MyMediaMuxer.init(sOutPath);
+        MyMediaMuxer.context = appContext;
+        MyMediaMuxer.init(sOutPath,null);
         int re =naIsSupportAudioAndMJ(sPath);
         if(re >=0 && (re & 0x01 ) !=0)  {  //有声音
             GP4225_Device.bWifiPcm = false;
