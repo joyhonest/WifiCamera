@@ -18,7 +18,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.joyhonest.sports_dv.MyApp;
+
 
 import org.simple.eventbus.EventBus;
 

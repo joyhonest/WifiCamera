@@ -302,13 +302,13 @@ publish {
 //7.33       优化了H264 H265 的解码显示流程，当显示不过来时，就会没两帧跳过一帧显示 2026-04-15
 //7.34       优化了自定义播放器，当播放图库中的Uri时，直接使用Uri来播放，而不是先copy到临时文件来播放
 //            因为大文件时，copy会比较耗时。
-//7.35       优化了拍照，录像。直接储存到图库，可以不要再copy到图库
+//7.36       优化了拍照，录像。直接储存到图库，可以不要再copy到图库
 /*
              1  wifination.naSetContext(getApplicationContext());
              2  wifination.sAlam = "图库名称"
              3  wifination.naGetRecordVideoToFile(false);  //如果为ture，兼容之前的旧模式；
  */
-//git commit -m "7.35" -a
+//git commit -m "7.36" -a
 //git push -u origin main
 
 
