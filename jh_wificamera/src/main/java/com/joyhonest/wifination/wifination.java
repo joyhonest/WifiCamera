@@ -705,6 +705,8 @@ public class wifination {
     //镜头传过来的数据旋转 0 90 180 270
     public static native  void naSetCameraDataRota(int n);
 
+    public static native  String  naGetDeviceIP();
+
 
 
     public static native void naSetVrBackground(boolean b);

@@ -308,7 +308,10 @@ publish {
              2  wifination.sAlam = "图库名称"
              3  wifination.naGetRecordVideoToFile(false);  //如果为ture，兼容之前的旧模式；
  */
-//git commit -m "7.38" -a
+
+//7.39       优化旋转90度，拍照可能花屏的bug  2026-0518
+
+//git commit -m "7.39" -a
 //git push -u origin main
 
 
