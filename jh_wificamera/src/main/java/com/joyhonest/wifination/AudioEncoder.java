@@ -260,6 +260,8 @@ public class AudioEncoder implements AudioCodec {
 
 
 
+        long nPre = -1;
+
 
         public void encode(byte[] data,long nPts) {
 
@@ -270,10 +272,9 @@ public class AudioEncoder implements AudioCodec {
 
             long ppp = 0;
             int inputBufferId = mEncoder.dequeueInputBuffer(1000 * 50);
-            if (inputBufferId >= 0) {
-                ByteBuffer bb = mEncoder.getInputBuffer(inputBufferId);// inputBuffers[inputBufferId];
-                bb.put(data, 0, data.length);
-                //if (nPts > 36000L * 9 * 1000000)
+            if (inputBufferId >= 0)
+            {
+
                 if (nPts <0)
                 {
                     ppp = pts * pts_unit;
@@ -281,31 +282,40 @@ public class AudioEncoder implements AudioCodec {
                     ppp = nPts;
                 }
                 pts++;
-                mEncoder.queueInputBuffer(inputBufferId, 0, data.length, ppp, 0);
-
-              //  Log.e(TAG,"audio ppp = "+ppp);
+                ByteBuffer bb = mEncoder.getInputBuffer(inputBufferId);// inputBuffers[inputBufferId];
+                if(bb!=null) {
+                    bb.put(data, 0, data.length);
+                    mEncoder.queueInputBuffer(inputBufferId, 0, data.length, ppp, 0);
+                }
             }
-
             MediaCodec.BufferInfo aBufferInfo = new MediaCodec.BufferInfo();
             int outputBufferIndex = mEncoder.dequeueOutputBuffer(aBufferInfo, 1000 * 10);
 
             if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 MediaFormat newFormat = mEncoder.getOutputFormat();
                 MyMediaMuxer.AddAudioTrack(newFormat);
-                Log.e(TAG,"add audio track");
+                outputBufferIndex = mEncoder.dequeueOutputBuffer(aBufferInfo, 1000 * 10);
+                //return;
             }
 
-            if (outputBufferIndex >= 0) {  //编码器有可能一次性突出多条数据 所以使用while
-                // outputBuffers[outputBufferId] is ready to be processed or rendered.
+            while (outputBufferIndex >= 0) {  //编码器有可能一次性突出多条数据 所以使用while
                 ByteBuffer bb =mEncoder.getOutputBuffer(outputBufferIndex);//  outputBuffers[outputBufferIndex];
                 bb.rewind();
                 byte[] dataA = new byte[aBufferInfo.size];
                 bb.get(dataA, 0, dataA.length);
+                if (MyMediaMuxer.audioInx < 0)
+                {
+                    MediaFormat newFormat = mEncoder.getOutputFormat();
+                    MyMediaMuxer.AddAudioTrack(newFormat);
+                }
+
+
+                nPre = aBufferInfo.presentationTimeUs;
                 int re = MyMediaMuxer.WritSample(dataA,false,aBufferInfo);
-                if(re!=0)
-                    Log.e("","timeC sapC = "+re);
                 mEncoder.releaseOutputBuffer(outputBufferIndex, false);
+                outputBufferIndex = mEncoder.dequeueOutputBuffer(aBufferInfo, 1000 * 10);
             }
+            //mEncoder.releaseOutputBuffer(outputBufferIndex, false);
         }
 
         /**

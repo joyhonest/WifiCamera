@@ -1438,7 +1438,7 @@ public class wifination {
         return videoMediaCoder.initMediaCodec(width,height,bitrate,fps);
     }
 
-    public   static  void offerEncoder(byte[] data,int nLen,double timepts)
+    public   static  void offerEncoder(byte[] data,int nLen,long timepts)
     {
         if(videoMediaCoder!=null) {
             try {
@@ -1772,10 +1772,11 @@ public class wifination {
         GP4225_Device.WriteAudioData(data);     //播放
     }
 
-    private static void ConvertWriteAudiData(byte[] data,double timepts)
+    private static void ConvertWriteAudiData(byte[] data,long timepts)
     {
         //audioCodecExt.WriteData(data);
-        AudioEncoder.Encode(data,(long)(timepts*1000000));
+        //AudioEncoder.Encode(data,(long)(timepts*1000000));
+        AudioEncoder.Encode(data,timepts);
     }
 
     public static native void naGetPcmInfo();

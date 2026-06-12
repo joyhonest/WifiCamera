@@ -207,7 +207,7 @@ public class VideoMediaCoder {
 
 
         int  ddd=0;
-    public  void  offerEncoder(byte[] data,int nLen,double timePts)
+    public  void  offerEncoder(byte[] data,int nLen,long timePts)
     {
         if(mMediaCodec==null)
         {
@@ -222,7 +222,8 @@ public class VideoMediaCoder {
             }
             else
             {
-                pts_ = (long)(timePts*1000000);      //如果是转换视频格式，就把原来时间戳传过来。
+                //pts_ = (long)(timePts*1000000);      //如果是转换视频格式，就把原来时间戳传过来。
+                pts_ = (long)(timePts);      //如果是转换视频格式，就把原来时间戳传过来。
             }
 
             pts++;
@@ -231,16 +232,17 @@ public class VideoMediaCoder {
                 inputBuffer.put(data);//往输入缓冲区写入数据,
                 ////五个参数，第一个是输入缓冲区的索引，第二个数据是输入缓冲区起始索引，第三个是放入的数据大小，第四个是时间戳，保证递增就是
                 mMediaCodec.queueInputBuffer(inputBufferIndex, 0, data.length, pts_, 0);
-                Log.e(TAG,"video pts = "+pts_);
+                //Log.e(TAG,"video pts = "+pts_);
                 MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
                 int outputBufferIndex = mMediaCodec.dequeueOutputBuffer(bufferInfo, 10000);//拿到输出缓冲区的索引  10ms
                 if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                     MediaFormat newFormat = mMediaCodec.getOutputFormat();
-//                ByteBuffer csd0 =  newFormat.getByteBuffer("csd-0");
-//                ByteBuffer csd1 =  newFormat.getByteBuffer("csd-1");
                     MyMediaMuxer.AddVideoTrack(newFormat);
+                    //mMediaCodec.releaseOutputBuffer(outputBufferIndex, false);
+                    outputBufferIndex = mMediaCodec.dequeueOutputBuffer(bufferInfo, 10000);//拿到输出缓冲区的索引  10ms
                 }
-                if (outputBufferIndex >= 0) {
+                while (outputBufferIndex >= 0)
+                {
                     ByteBuffer outputBuffer = mMediaCodec.getOutputBuffer(outputBufferIndex);
                     byte[] outData = new byte[bufferInfo.size];
                     outputBuffer.get(outData);
@@ -249,21 +251,24 @@ public class VideoMediaCoder {
                         if (!bGetPPS) {
                             bGetPPS = true;
                         }
-                    } else {
+                    }
+                    //else
+                    {
                         if (MyMediaMuxer.videoInx < 0)
                         {
                             MediaFormat newFormat = mMediaCodec.getOutputFormat();
                             MyMediaMuxer.AddVideoTrack(newFormat);
-//                            Log.e(TAG,"add Video track2");
-
                         }
+                        //Log.e("dddd","time =  "+bufferInfo.presentationTimeUs);
                         MyMediaMuxer.WritSample(outData, true, bufferInfo);
-
-
-
+                        mMediaCodec.releaseOutputBuffer(outputBufferIndex, false);
+                        outputBufferIndex = mMediaCodec.dequeueOutputBuffer(bufferInfo, 10000);//拿到输出缓冲区的索引  10ms
                     }
-                    mMediaCodec.releaseOutputBuffer(outputBufferIndex, false);
+
                 }
+                //mMediaCodec.releaseOutputBuffer(outputBufferIndex, false);
+
+
             }
         }
     }
