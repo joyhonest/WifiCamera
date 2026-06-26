@@ -35,8 +35,8 @@ public class MyMediaMuxer {
     public  static  int videoInx=-1;
 
 
-//    public  static MediaFormat formatV;
-//    public  static MediaFormat formatA;
+    public  static MediaFormat formatV;
+    public  static MediaFormat formatA;
 
     public  static   int fps = 25;
 
@@ -48,7 +48,7 @@ public class MyMediaMuxer {
     public static  int nCt = (2048 * 1000000) / (16000 * 2);
 
 
-    //public static long startTimeNanos = 0; // 录制开始时的基准时间
+    public static long startTimeNanos = 0; // 录制开始时的基准时间
     public static Context context = null;
     public static ParcelFileDescriptor pfd=null;
     static ContentResolver resolver =null;
@@ -156,8 +156,8 @@ public class MyMediaMuxer {
 
     }
 
-    private static final Queue<MuxerData> videoCache = new LinkedList<>();
-    private static final Queue<MuxerData> audioCache = new LinkedList<>();
+    private static Queue<MuxerData> videoCache = new LinkedList<>();
+    private static Queue<MuxerData> audioCache = new LinkedList<>();
 
     public  static int  init(String strNmeA,String sAlam)
     {
@@ -168,7 +168,7 @@ public class MyMediaMuxer {
         File file = new File(strNmeA);
         if(file.exists() && file.isFile())
         {
-            boolean delete = file.delete();
+            file.delete();
         }
 
         String strNme = Paths.get(strNmeA).getFileName().toString();
@@ -179,9 +179,9 @@ public class MyMediaMuxer {
         nResult = 1;
         try {
             bStartWrite = false;
-//            formatV = null;
-//            formatA = null;
-            //startTimeNanos = System.nanoTime();
+            formatV = null;
+            formatA = null;
+            startTimeNanos = System.nanoTime();
             if(sAlam == null) {
                 uri = null;
                 resolver = null;
@@ -233,9 +233,9 @@ public class MyMediaMuxer {
     }
 
     // 计算当前时间戳（微秒）
-//    private static long getCurrentTimestampUs() {
-//        return (System.nanoTime() - startTimeNanos) / 1000;
-//    }
+    private static long getCurrentTimestampUs() {
+        return (System.nanoTime() - startTimeNanos) / 1000;
+    }
 
 
     private static class MuxerData {
@@ -250,8 +250,8 @@ public class MyMediaMuxer {
         }
     }
 
-//    static int nCountV = 0;
-//    static int nCountH = 0;
+    static int nCountV = 0;
+    static int nCountH = 0;
     static int WritSample(byte[] data, boolean bVideo,  MediaCodec.BufferInfo info)  //long ppp,
     {
         int re = -5;
@@ -267,13 +267,14 @@ public class MyMediaMuxer {
             {
                 if(videoInx>=0) {
                     videoCache.add(dataA);
+
+                    nCountV++;
                 }
             }
             else
             {
-                if(audioInx>=0) {
+                if(audioInx>=0)
                     audioCache.add(dataA);
-                }
             }
         }
 
@@ -297,8 +298,10 @@ public class MyMediaMuxer {
                 for (MuxerData da : videoCache) {
                     if ((da.info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) == 0) {
                         try {
+
                             mediaMuxer.writeSampleData(videoInx, ByteBuffer.wrap(da.data), da.info);
                             nCountFrame++;
+
                             re = 0;
                         } catch (Exception ignored) {
 
@@ -312,6 +315,7 @@ public class MyMediaMuxer {
                 if ((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) == 0)
                 {
                     try {
+
                         mediaMuxer.writeSampleData(videoInx, ByteBuffer.wrap(data), info);
                         nCountFrame++;
                         re = 0;
@@ -347,6 +351,61 @@ public class MyMediaMuxer {
                 }
             }
         }
+/*
+        if(!bStartWrite && bVideo && (info.flags & MediaCodec.BUFFER_FLAG_KEY_FRAME)!=0)
+        {
+            bStartWrite = true;
+        }
+        if(!bStartWrite && bVideo) {
+            return -4;
+        }
+
+        if(bVideo)
+        {
+            if (data != null && mediaMuxer != null)
+            {
+                if ((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) == 0)
+                {
+                    try
+                    {
+                        mediaMuxer.writeSampleData(videoInx,ByteBuffer.wrap(data), info);
+                      //  Log.e(""," video timeABC = "+info.presentationTimeUs/1000000.0f);
+                        nCountFrame++;
+                        re = 0;
+                    }
+                    catch (Exception ignored)
+                    {
+
+                    }
+                }
+                else
+                {
+                    re = 0;
+                }
+            }
+        }
+        else
+        {
+            if (data != null && mediaMuxer != null)
+            {
+                //if(audioInx>=0)
+                {
+                    try {
+                        mediaMuxer.writeSampleData(audioInx, ByteBuffer.wrap(data), info);
+                      //  Log.e(""," audio timeABC = "+info.presentationTimeUs/1000000.0f);
+                        nFramesAudio++;
+                        re = 0;
+                    }
+                    catch (Exception ignored)
+                    {
+
+                    }
+                }
+            }
+
+        }
+
+ */
         return re;
     }
 
@@ -382,6 +441,20 @@ public class MyMediaMuxer {
             {
                 videoInx=-1;
             }
+//            if(videoInx>=0)
+//            {
+//                if(wifination.bG_Audio)
+//                {
+//                    if(audioInx>=0)
+//                    {
+//                        startMuxer();
+//                    }
+//                }
+//                else
+//                {
+//                    startMuxer();
+//                }
+//            }
         }
     }
     static void AddAudioTrack(MediaFormat format)
@@ -398,6 +471,13 @@ public class MyMediaMuxer {
             {
                 audioInx=-1;
             }
+//            if(audioInx>=0)
+//            {
+//                if(videoInx>=0)
+//                {
+//                    startMuxer();
+//                }
+//            }
         }
     }
 
@@ -435,11 +515,11 @@ public class MyMediaMuxer {
                  mediaMuxer = null;
              }
 
-//             formatV = null;
-//             formatA = null;
+             formatV = null;
+             formatA = null;
 
-             videoCache.clear();
-             audioCache.clear();
+             mediaMuxer=null;
+
              audioInx = -1;
              videoInx = -1;
              if(uri!=null) {

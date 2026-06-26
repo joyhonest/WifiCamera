@@ -48,14 +48,14 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch(v.getId())
         {
-//            case R.id.btn_Play:
-//                break;
-//            case R.id.btn_Seek:
-//                break;
-//            case R.id.btn_Pause:
-//                break;
-//            case R.id.btn_Stop:
-//                break;
+            case R.id.btn_Play:
+                break;
+            case R.id.btn_Seek:
+                break;
+            case R.id.btn_Pause:
+                break;
+            case R.id.btn_Stop:
+                break;
         }
 
     }
