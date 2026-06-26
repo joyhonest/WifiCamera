@@ -8,7 +8,6 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
-import android.media.MediaMuxer;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -1834,7 +1833,7 @@ public class wifination {
 
     public static native boolean naIsNeedConvert(String sPath);
 
-    public static int naCovert(String sPath,String sOutPath) {
+    public static void naCovert(String sPath, String sOutPath) {
         MyMediaMuxer.context = appContext;
         MyMediaMuxer.init(sOutPath,null);
         int re =naIsSupportAudioAndMJ(sPath);
@@ -1846,7 +1845,7 @@ public class wifination {
             wifination.naSetRecordAutioExt(2);
             G_StartAudio(1);
         }
-        return naConvertA(sPath,sOutPath);
+        naConvertA(sPath, sOutPath);
     };
 
 

@@ -63,27 +63,35 @@ public class SubsciberMethodHunter {
         if (mSubcriberMap == null) {
             throw new NullPointerException("the mSubcriberMap is null. ");
         }
+
+
         Class<?> clazz = subscriber.getClass();
+
         // 查找类中符合要求的注册方法,直到Object类
         while (clazz != null && !isSystemCalss(clazz.getName())) {
-            final Method[] allMethods = clazz.getDeclaredMethods();
-            for (int i = 0; i < allMethods.length; i++) {
-                Method method = allMethods[i];
-                // 根据注解来解析函数
-                Subscriber annotation = method.getAnnotation(Subscriber.class);
-                if (annotation != null) {
-                    // 获取方法参数
-                    Class<?>[] paramsTypeClass = method.getParameterTypes();
-                    // 订阅函数只支持一个参数
-                    if (paramsTypeClass != null && paramsTypeClass.length == 1) {
-                        Class<?> paramType = convertType(paramsTypeClass[0]);
-                        EventType eventType = new EventType(paramType, annotation.tag());
-                        TargetMethod subscribeMethod = new TargetMethod(method, eventType,
-                                annotation.mode());
-                        subscibe(eventType, subscribeMethod, subscriber);
-                    }
+                try {
+                    final Method[] allMethods = clazz.getDeclaredMethods();
+                    for (int i = 0; i < allMethods.length; i++) {
+                        Method method = allMethods[i];
+                        // 根据注解来解析函数
+                        Subscriber annotation = method.getAnnotation(Subscriber.class);
+                        if (annotation != null) {
+                            // 获取方法参数
+                            Class<?>[] paramsTypeClass = method.getParameterTypes();
+                            // 订阅函数只支持一个参数
+                            if (paramsTypeClass != null && paramsTypeClass.length == 1) {
+                                Class<?> paramType = convertType(paramsTypeClass[0]);
+                                EventType eventType = new EventType(paramType, annotation.tag());
+                                TargetMethod subscribeMethod = new TargetMethod(method, eventType,
+                                        annotation.mode());
+                                subscibe(eventType, subscribeMethod, subscriber);
+                            }
+                        }
+                    } // end for
+                } catch (NoClassDefFoundError e) {
+                    Log.e("dddd", "failed = " + clazz.getName(), e);
                 }
-            } // end for
+
               // 获取父类,以继续查找父类中符合要求的方法
             clazz = clazz.getSuperclass();
         }
@@ -142,7 +150,7 @@ public class SubsciberMethodHunter {
             }
 
             // 如果针对某个Event的订阅者数量为空了,那么需要从map中清除
-            if (subscriptions == null || subscriptions.size() == 0) {
+            if (subscriptions == null || subscriptions.isEmpty()) {
                 iterator.remove();
             }
         }
@@ -176,7 +184,11 @@ public class SubsciberMethodHunter {
     }
 
     private boolean isSystemCalss(String name) {
-        return name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("android.");
+        return name.startsWith("java.")
+                || name.startsWith("javax.")
+                || name.startsWith("android.")
+                || name.startsWith("androidx.")
+                || name.startsWith("kotlin..");
     }
 
 }

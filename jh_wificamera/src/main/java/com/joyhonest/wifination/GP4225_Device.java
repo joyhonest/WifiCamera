@@ -498,7 +498,6 @@ public class GP4225_Device {
                 {
                      {
                         byte[]  da = new byte[n_len];
-                        //da[n_len]=0;
                         System.arraycopy(data, 10, da, 0,n_len);
                         try {
                             String str = new String(da);
@@ -523,19 +522,21 @@ public class GP4225_Device {
                 case 0x0008:  //format SD卡
                 {
                     byte a = data[10];
-                    Integer aa = (int) a;
+                    Integer aa = (int)a;
                     EventBus.getDefault().post(aa, "onGetFormatStatus");
                 }
                 break;
                 case 0x0009:  //Ver
                 {
-                        byte[] buffer = new byte[n_len];
-                        System.arraycopy(data, 10, buffer, 0, n_len);
-                        sVer = new String(buffer);
-                        if(!sVer.isEmpty()) {
-                            EventBus.getDefault().post(sVer, "GP4225_GetFireWareVersion");
-                            EventBus.getDefault().post(sVer, "onGetFirmwareVersion");
-                        }
+                    byte[] buffer = new byte[n_len];
+                    System.arraycopy(data, 10, buffer, 0, n_len);
+                    sVer = new String(buffer);
+                    if(!sVer.isEmpty())
+                    {
+                        EventBus.getDefault().post(sVer, "GP4225_GetFireWareVersion");
+                        EventBus.getDefault().post(sVer, "onGetFirmwareVersion");
+                    }
+
                 }
                 break;
                 case 0x000A: {
