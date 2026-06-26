@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+    namespace 'com.joyhonest.jh_camera'
     compileSdkVersion 32
     //buildToolsVersion '28.0.3'
     defaultConfig {
@@ -43,9 +44,8 @@ android {
     }
     compileOptions {
 
-        sourceCompatibility JavaVersion.VERSION_1_8
-
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
 
     }
 

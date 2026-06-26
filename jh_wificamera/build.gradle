@@ -1,9 +1,10 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
+//apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.joyhonest'
 
 android {
     //compileSdkVersion 32
+    namespace 'com.joyhonest.wifination'
     compileSdkVersion 32
     //buildToolsVersion '28.0.3'
     defaultConfig {
@@ -311,9 +312,9 @@ publish {
 
 //7.40       优化旋转90度，拍照可能花屏的bug  2026-0518
 //7.41       优化视频格式转换。 2026-0612
-//7.42       修改了 eventbus中的 findSubcribeMethods ，添加了对 androidx. 的判断。以免在低版本的Android 崩溃
+//7.43       修改了 eventbus中的 findSubcribeMethods ，添加了对 androidx. 的判断。以免在低版本的Android 崩溃
 
-//git commit -m "7.42" -a
+//git commit -m "7.43" -a
 //git push -u origin main
 
 

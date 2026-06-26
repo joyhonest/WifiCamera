@@ -68,7 +68,8 @@ public class SubsciberMethodHunter {
         Class<?> clazz = subscriber.getClass();
 
         // 查找类中符合要求的注册方法,直到Object类
-        while (clazz != null && !isSystemCalss(clazz.getName())) {
+        while (clazz != null && !isSystemCalss(clazz.getName()))
+        {
                 try {
                     final Method[] allMethods = clazz.getDeclaredMethods();
                     for (int i = 0; i < allMethods.length; i++) {
@@ -89,7 +90,7 @@ public class SubsciberMethodHunter {
                         }
                     } // end for
                 } catch (NoClassDefFoundError e) {
-                    Log.e("dddd", "failed = " + clazz.getName(), e);
+                    Log.e("", "failed = " + clazz.getName(), e);
                 }
 
               // 获取父类,以继续查找父类中符合要求的方法
@@ -184,11 +185,7 @@ public class SubsciberMethodHunter {
     }
 
     private boolean isSystemCalss(String name) {
-        return name.startsWith("java.")
-                || name.startsWith("javax.")
-                || name.startsWith("android.")
-                || name.startsWith("androidx.")
-                || name.startsWith("kotlin..");
+        return name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("android.") || name.startsWith("androidx.") || name.startsWith("kotlin..");
     }
 
 }
