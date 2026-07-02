@@ -985,6 +985,12 @@ public class GP4225_Device {
                     EventBus.getDefault().post(b, "onGetFirmwareRotate");
                 }
                 break;
+                case 0x0038:
+                {
+                    Integer b  = (int)data[10];
+                    EventBus.getDefault().post(b, "onGetBeepAndVibration");
+                }
+                break;
 
                 case 0x0050:
                 {
