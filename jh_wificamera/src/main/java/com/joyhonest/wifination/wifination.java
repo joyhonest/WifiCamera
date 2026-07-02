@@ -2040,5 +2040,13 @@ public class wifination {
     public static native void naSetFirmwareRotate(int nRota);  //设定固件发送的视频流旋转0-0  1:90 2:180 3:270
     public static native void naGetFirmwareRotate();
 
+    /*
+    Bit0= 0/1:忽略/发出声音； Bit1= 0/1:忽略/振动
+    Bit2= 0/1:忽略/灯光闪烁 Bit3= 0/1:未定义
+    Bit4= 0/1:忽略/停止声音； Bit5= 0/1:忽略/停止振动
+    Bit6= 0/1:忽略/停止灯光闪烁 Bit7= 0/1:未定义
+     */
+    public static native  void naSetBeepAndVibration(int n); //设定设备蜂鸣和振动
+    public static native  void naGetBeepAndVibration(); //获取设备蜂鸣和振动
 
 }

@@ -312,8 +312,9 @@ publish {
 //7.40       优化旋转90度，拍照可能花屏的bug  2026-0518
 //7.41       优化视频格式转换。 2026-0612
 //7.44       优化 EventBus findSubcribeMethods 函数，以免在低版本崩溃
+//7.45       添加了 naSetBeepAndVibration
 
-//git commit -m "7.44" -a
+//git commit -m "7.45" -a
 //git push -u origin main
 
 

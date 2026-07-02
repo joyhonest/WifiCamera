@@ -234,8 +234,7 @@ public final class EventBus {
 
     /**
      * 移除Sticky事件
-     * 
-     * @param type
+     *
      */
     public EventType removeStickyEvent(Class<?> eventClass, String tag) {
         Iterator<EventType> iterator = mStickyEvents.iterator();
@@ -365,7 +364,7 @@ public final class EventBus {
         MatchPolicy mMatchPolicy = new DefaultMatchPolicy();
 
         /**
-         * @param event
+         * @param aEvent
          */
         void dispatchEvents(Object aEvent) {
             Queue<EventType> eventsQueue = mLocalEvents.get();
@@ -435,7 +434,7 @@ public final class EventBus {
          * 处理单个Sticky事件
          * 
          * @param eventType
-         * @param aEvent
+         * @param subscriber
          */
         private void handleStickyEvent(EventType eventType, Object subscriber) {
             List<EventType> eventTypes = getMatchedEventTypes(eventType, eventType.event);

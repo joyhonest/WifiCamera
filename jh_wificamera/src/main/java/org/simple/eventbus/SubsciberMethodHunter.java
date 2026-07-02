@@ -145,7 +145,7 @@ public class SubsciberMethodHunter {
             }
 
             // 如果针对某个Event的订阅者数量为空了,那么需要从map中清除
-            if (subscriptions == null || subscriptions.size() == 0) {
+            if (subscriptions == null || subscriptions.isEmpty()) {
                 iterator.remove();
             }
         }
