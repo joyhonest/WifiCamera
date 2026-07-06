@@ -313,9 +313,9 @@ publish {
 //7.41       优化视频格式转换。 2026-0612
 //7.44       优化 EventBus findSubcribeMethods 函数，以免在低版本崩溃
 //7.46       添加了 naSetBeepAndVibration
-//7.48       把FFmpeg 改为.so 更稳定。
+//7.49       把FFmpeg 改为.so 更稳定。
 
-//git commit -m "7.48" -a
+//git commit -m "7.49" -a
 //git push -u origin main
 
 
