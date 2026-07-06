@@ -705,7 +705,7 @@ public class wifination {
     //镜头传过来的数据旋转 0 90 180 270
     public static native  void naSetCameraDataRota(int n);
 
-    public static native  String  naGetDeviceIP();
+    //public static native  String  naGetDeviceIP();
 
 
 
@@ -1382,6 +1382,10 @@ public class wifination {
         if(bRevBmp) {
             int w = i & 0xFFFF;
             int h = ((i >> 16) & 0xFFFF);
+            if(w == 0 || h == 0)
+            {
+                return;
+            }
             mDirectBuffer.rewind();
             if(onReceiveFrame!=null)
             {
