@@ -298,8 +298,15 @@ public class GP4225_Device {
                     nPaInx = (10+4)+(ii*nC2);
                     for(int xx = 0;xx<24;xx++)
                     {
-                        if (data[nPaInx + xx] != 0) {
-                            da++;
+                        int bx = nPaInx + xx;
+                        if(bx<data.length) {
+                            if (data[nPaInx + xx] != 0) {
+                                da++;
+                            }
+                        }
+                        else
+                        {
+                            return true;
                         }
                     }
 

@@ -223,7 +223,7 @@ public class wifination {
     public static  native long naGetTime();
     public static  int naStop()
     {
-
+        naStopPlayAudio();
         onReceiveFrame = null;
         bSupportPcmAudio = false;
         return naStopB();
@@ -1202,7 +1202,7 @@ public class wifination {
             case 0xFFF0:     // UVCA 状态返回
             {
                 int xx = (nStatus>>8) &0xFF;
-                Integer dat = (nStatus) &0xFF;
+                int dat = (nStatus) &0xFF;
                 switch (xx)
                 {
                     case 0x11:
@@ -1363,12 +1363,13 @@ public class wifination {
 
 
 
-    private static void  onGetFrame(Bitmap bmp)
+    private static void  onGetFrame(Bitmap bmp)  //新版本
     {
         EventBus.getDefault().post(bmp, "onGetFrame");
+        EventBus.getDefault().post(bmp, "ReceiveBMP");  //兼容旧版本
     }
 
-    private static void ReceiveBmp(int i) {
+    private static void ReceiveBmp(int i) {   //旧版本
         //其中，i:bit00-bit15   为图像宽度
         //      i:bit16-bit31  为图像高度
         // 此函数需要把数据尽快处理和保存。
@@ -1423,7 +1424,7 @@ public class wifination {
                     }
                     //mDirectBuffer.position(0);
                     bmpG.copyPixelsFromBuffer(mDirectBuffer);
-                    EventBus.getDefault().post(bmpG, "ReceiveBMP");
+                    EventBus.getDefault().post(bmpG, "ReceiveBMP");  //兼容旧版本
                     EventBus.getDefault().post(bmpG, "onGetFrame");
 
                 }
