@@ -316,8 +316,9 @@ publish {
 //7.50       把FFmpeg 改为.so 更稳定。
 //7.51       恢复改成单元 libJoyCamera.so 添加编译参数，支持高版本NDK可以编译OK
 //7.52       修改回传图像到JAVA时，直接返回bitmap
+//7.53       修复圆形显示因为对齐问题引起的显示不正常。
 
-//git commit -m "7.52" -a
+//git commit -m "7.53" -a
 //git push -u origin main
 
 
